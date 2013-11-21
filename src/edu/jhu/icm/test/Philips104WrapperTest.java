@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.jhu.icm.ecgFormatConverter.ECGformatConverter;
-import edu.jhu.icm.ecgFormatConverter.Philips104_wrapper;
+import edu.jhu.icm.ecgFormatConverter.philips.Philips104_wrapper;
 
 public class Philips104WrapperTest {
 
@@ -38,41 +38,27 @@ public class Philips104WrapperTest {
 			if(wrapper.parse()){
 				System.out.println("SampleCount: " + wrapper.getSampleCount());
 				System.out.println("Channels: " + wrapper.getChannels());
+				System.out.println("AduGain: " + wrapper.getAduGain());
+				System.out.println("AllocatedChannels: " + wrapper.getAllocatedChannels());
+				System.out.println("NumberOfPoints: " + wrapper.getNumberOfPoints());
+				System.out.println("SamplingRate: " + wrapper.getSamplingRate());
 			}
 			
 			System.out.println(((System.currentTimeMillis() - start)/1000.0) + " sec(s).");
 			
+			for (int i = 0; i < wrapper.getData().length; i++) {
+				for (int j = 0; j < wrapper.getData()[i].length; j++) {
+					int item = wrapper.getData()[i][j];
+					System.out.print(item + "\t");
+				}
+				System.out.println();
+			}			
 			
 		} catch (Exception e) {
 			Assert.fail(e.getMessage());
 		}
 	}
-	
-	
-	@Test
-	public void convertionPhilips104NewTest(){
-		
-		Philips104_wrapper wrapper =  new Philips104_wrapper();
-		
-		try {
-			long start = System.currentTimeMillis();
-			
-			wrapper.init(in + fileName);
-			
-			System.out.println(" ---- Sumary New code ---- ");
-			
-			if(wrapper.parse()){
-				System.out.println("SampleCount: " + wrapper.getSampleCount());
-				System.out.println("Channels: " + wrapper.getChannels());
-			}
-			
-			System.out.println(((System.currentTimeMillis() - start)/1000.0) + " sec(s).");
-			
-			
-		} catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
+
 	
 	@Test
 	public void convertTest(){

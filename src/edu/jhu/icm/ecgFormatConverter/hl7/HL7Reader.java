@@ -1,4 +1,4 @@
-package edu.jhu.icm.ecgFormatConverter;
+package edu.jhu.icm.ecgFormatConverter.hl7;
 //package edu.jhu.icm.ecgFormatConverter;
 
 import java.io.*;

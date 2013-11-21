@@ -1,6 +1,14 @@
 package edu.jhu.icm.ecgFormatConverter;
 import java.io.File;
 
+import edu.jhu.icm.ecgFormatConverter.hl7.HL7Reader;
+import edu.jhu.icm.ecgFormatConverter.muse.GEMuse_wrapper;
+import edu.jhu.icm.ecgFormatConverter.muse.MuseXML_wrapper;
+import edu.jhu.icm.ecgFormatConverter.philips.Philips103_wrapper;
+import edu.jhu.icm.ecgFormatConverter.philips.Philips104_wrapper;
+import edu.jhu.icm.ecgFormatConverter.rdt.RDTParser;
+import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBApplicationWrapper;
+import edu.jhu.icm.ecgFormatConverter.xy.XYWrapper;
 import edu.jhu.icm.parser.Writer;
 
 /** Loads ECG data from one of several file formats and 
@@ -88,13 +96,13 @@ public class ECGformatConverter {
 				break;
 			case WFDB: // defaults to sub-format 16
 			case WFDB_16:
-				rowsWritten = writeWFDB_16(outputPath, recordName);
+				rowsWritten = writeWFDB(outputPath, recordName, 16);
 				break;
 			case WFDB_61:
-				rowsWritten = writeWFDB_61(outputPath, recordName);
+				rowsWritten = writeWFDB(outputPath, recordName, 61);
 				break;
 			case WFDB_212:
-				rowsWritten = writeWFDB_212(outputPath, recordName);
+				rowsWritten = writeWFDB(outputPath, recordName, 212);
 				break;
 			case  GEMUSE:
 				rowsWritten = write_geMuse(outputPath, recordName);
@@ -225,10 +233,10 @@ public class ECGformatConverter {
 	 * @return - success/fail 
 	 */ 
 	public boolean loadWFDB(String filePath, String recordName) {
-		WFDB_wrapper WFwrap = new WFDB_wrapper();
-		WFwrap.setFilePath(filePath);
+		WFDBApplicationWrapper wrapper = new WFDBApplicationWrapper();
+		wrapper.setFilePath(filePath);
 		
-		int signalsRequested = WFwrap.getSignalCount(recordName);
+		int signalsRequested = wrapper.getSignalCount(recordName);
 		if (signalsRequested <=0) 
 			return false;
 
@@ -243,7 +251,7 @@ public class ECGformatConverter {
 	 * @return - success/fail 
 	 */ 
 	public boolean loadWFDB(String filePath, String recordName, int signalsRequested) {
-		WFDB_wrapper WFwrap = new WFDB_wrapper();
+		WFDBApplicationWrapper WFwrap = new WFDBApplicationWrapper();
 		WFwrap.setFilePath(filePath);
 		
 		samplesPerChannel = WFwrap.WFDBtoArray(recordName, signalsRequested);
@@ -259,7 +267,7 @@ public class ECGformatConverter {
 			return false;
 		}
 	}
-
+	
 	/** Reads the requested number of the channels from a geMuse record file into the converter's work space.
 	 * 
 	 * @param filePath - full path of the input file, e.g. "/mnt/hgfs/SharedFiles/70183993_10sec.txt"
@@ -382,48 +390,25 @@ public class ECGformatConverter {
 	}
 	
 	/**
-	 * writes the data array out in the WFDB Format 16
-	 * @param outRecordName - Used as the file name, suffixes will be added
-	 */
-	public int writeWFDB_16(String filePath, String outRecordName){
-		return writeWFDB(filePath, outRecordName, (short)16);		
-	}
-	
-	/**
-	 * writes the data array out in the WFDB Format 61
-	 * @param outRecordName - Used as the file name, suffixes will be added
-	 */
-	public int writeWFDB_61(String filePath, String outRecordName){
-		return writeWFDB(filePath, outRecordName, (short)61);		
-	}
-
-	/**
-	 * writes the data array out in the WFDB Format 212
-	 * @param outRecordName - Used as the file name, suffixes will be added
-	 */
-	public int writeWFDB_212(String filePath, String outRecordName){
-		return writeWFDB(filePath, outRecordName, (short)212);
-	}
-	
-	/**
 	 * writes the data array out in one of 3 WFDB formats (16, 61, or 212)
 	 * @param outRecordName - Used as the file name, suffixes will be added
 	 * @param Format - one of the following WFDB formats: 16, 61, or 212
 	 */
-	public int writeWFDB(String filePath, String outRecordName, short Format){
+	public int writeWFDB(String filePath, String outRecordName, int Format){
 		int rowsWritten = 0;
-		WFDB_wrapper wrap = new WFDB_wrapper();
+		WFDBApplicationWrapper wrap = new WFDBApplicationWrapper();
 		wrap.samplesPerSignal = samplesPerChannel;
 		wrap.signalCount = channels;
+		wrap.sampleFrequency = samplingRate; // Hz
 		wrap.setFilePath(filePath);
 		wrap.recordName = outRecordName;		
-		wrap.sampleFrequency = samplingRate; // Hz
 		wrap.fmt = Format;
 		wrap.sampleADCResolution = 1;
+		wrap.gain = aduGain;
 		
 		try {
 			wrap.data = data;
-			rowsWritten = wrap.arrayToWFDB(aduGain);
+			rowsWritten = wrap.arrayToWFDB();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

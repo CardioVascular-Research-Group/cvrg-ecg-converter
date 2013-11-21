@@ -1,4 +1,4 @@
-package edu.jhu.icm.ecgFormatConverter;
+package edu.jhu.icm.ecgFormatConverter.muse;
 
 import java.util.ArrayList;
 import edu.jhu.icm.parser.MuseBase64Parser;

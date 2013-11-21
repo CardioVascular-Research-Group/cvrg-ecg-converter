@@ -1,4 +1,4 @@
-package edu.jhu.icm.ecgFormatConverter;
+package edu.jhu.icm.ecgFormatConverter.philips;
 
 import java.io.File;
 import java.io.IOException;

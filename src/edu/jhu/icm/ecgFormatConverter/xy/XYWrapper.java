@@ -1,4 +1,4 @@
-package edu.jhu.icm.ecgFormatConverter;
+package edu.jhu.icm.ecgFormatConverter.xy;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

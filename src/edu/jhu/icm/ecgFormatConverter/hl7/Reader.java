@@ -2,7 +2,7 @@
  * Created on Apr 5, 2006
  *
  */
-package edu.jhu.icm.ecgFormatConverter;
+package edu.jhu.icm.ecgFormatConverter.hl7;
 
 import hl7OrgV3.AnnotatedECGDocument;
 import hl7OrgV3.PORTMT020001AnnotatedECG;
