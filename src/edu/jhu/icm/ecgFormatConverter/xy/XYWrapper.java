@@ -11,7 +11,9 @@ import java.io.InputStreamReader;
 import java.util.Vector;
 import java.lang.Math;
 
-public class XYWrapper {
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+
+public class XYWrapper implements WrapperLoader{
 	private File geMuseFile;
 	private FileInputStream geMuseFis;
 	private DataInputStream geMuseDis;
@@ -23,9 +25,6 @@ public class XYWrapper {
 	private int aduGain = 200;
 
 	private int[][] data; //[channel][index] or [column][row], changed from double, since the largest WFDB resolution is 16 bits.
-	//private static final ByteOrder BYTEORDER = ByteOrder.LITTLE_ENDIAN;
-//	private static final int HEADERBYTES = 4;
-//	private static final int SHORTBYTES = 2;
 	private static final boolean verbose = true;
 
 	public XYWrapper() {
@@ -34,32 +33,6 @@ public class XYWrapper {
 	public XYWrapper(File geMuseFile) {
 		this.geMuseFile = geMuseFile;
 	}
-
-	
-	/** Reads the requested number of the channels from a WFDB record file set into the converter's work space.
-	 * 
-	 * @param filePath - path of the input files, e.g. "/mnt/hgfs/SharedFiles/"
-	 * @param recordName - name of the record, used to build file names by adding file extensions.
- 	 * @param signalsRequested - Number of signals to read, starting with 1st signal.
-	 * @return - success/fail 
-	 */
-	/* 
-	public boolean load_geMuse (String filePath, String recordName, int signalsRequested) {
-		String path = filePath + recordName; // is a separate step because they may need to be passed as separate parameters in future versions.
-		return load_geMuse(path, signalsRequested);
-	}
-		
-	public boolean load_geMuse (String filePath, int signalsRequested) {
-		geMuseFile = new File(filePath);
-		if(!parse()) return false;
-		
-		if (sampleCount > 0 ) {
-			return true;
-		}else { 
-			return false;
-		}
-	}*/
-	
 
 	/** Opens the File object which was passed into the constructor, 
 	 *  validate it, parse out the header data, and then parse the 
@@ -70,8 +43,6 @@ public class XYWrapper {
 	public boolean parse(boolean useDefault) {
 		if (!validate()) return false;
 
-		if (!parseHeader()) return false;
-		
 		if (!parseECGdata(useDefault)) return false;
 
 		return true;
@@ -108,32 +79,6 @@ public class XYWrapper {
 	}
 		
 	/**
-	 * Opens a BufferedInputStream and parses the geMuse header. 
-	 * @return  - success/fail
-	 */
-	private boolean parseHeader() {
-		try{
-		    // Open the file that is the first 
-		    // command line parameter
-		    // FileInputStream fstream = new FileInputStream("textfile.txt");
-		    // Get the object of DataInputStream
-		    
-			
-		}catch (Exception e){//Catch exception if any
-			System.err.println("Error: " + e.getMessage());
-			try {
-			    //Close the input stream
-			    geMuseDis.close();
-				geMuseFis.close();
-			} catch (IOException e2) {
-				System.err.println("Error: " + e2.getMessage());
-			}
-			return false;
-		}	
-		return true;
-	}
-
-	/**
 	 * Using the BufferedInputStream in parsHeader(), reads the data lines into data[][]. 
 	 * @return  - success/fail
 	 */
@@ -157,12 +102,10 @@ public class XYWrapper {
 		    
 		    double lastSec = 2.5;
 		    double firstMsec = 0;
-		    int numLines = 0;
 		    
 		    while ((strLine = br.readLine()) != null)   {
 		    	if(strLine.length()>0) {
-			    	numLines++;
-		    		this.sampleCount++;
+					this.sampleCount++;
 			    	numbers = strLine.split(",");
 		    		firstMsec = Double.parseDouble(numbers[0]);
 		    		mSecs.add(firstMsec);
@@ -182,7 +125,6 @@ public class XYWrapper {
 		    
 		    while ((strLine = br.readLine()) != null)   {
 		    	if (strLine.length() > 0) {
-			    	numLines++;
 			    	this.sampleCount++;
 			    	numbers = strLine.split(",");
 		    		lastSec = Double.parseDouble(numbers[0])/1000;
@@ -200,7 +142,7 @@ public class XYWrapper {
 		    
 		    double hertzDecimals = (new Integer(this.sampleCount).doubleValue())/lastSec;
 		    if (useDefaultSampleRate) {
-		    	this.samplingRate = this.DEFAULT_HERTZ;
+		    	this.samplingRate = XYWrapper.DEFAULT_HERTZ;
 		    	this.sampleCount = (int) Math.round(this.samplingRate * lastSec);
 		    }
 		    else {
@@ -393,14 +335,6 @@ public class XYWrapper {
 		return s;
 	}
 
-	//	*********** properties *******
-	/*public File getFile () {
-		return this.geMuseFile;
-	}
-	public void setFile (File geMuseFile) {
-		this.geMuseFile = geMuseFile;
-	}
-	*/
 	public void viewData(int count) {
 		if (this.data != null) {
 			for (int index = 0; index < count; index++) {
@@ -434,16 +368,12 @@ public class XYWrapper {
 		channels = channelsIn;
 	}
 	
-	public int getCounts() {
-		return sampleCount;
-	}
-	
 	public void setCounts(int countsIn) {
 		sampleCount = countsIn;
 	}
 
-	public int getSamplingRate() {
-		return samplingRate;
+	public float getSamplingRate() {
+		return Integer.valueOf(samplingRate).floatValue();
 	}
 	
 	public void setSamplingRate(int samplingRateIn) {
@@ -452,5 +382,15 @@ public class XYWrapper {
 	
 	public int getAduGain() {
 		return aduGain;
+	}
+
+	@Override
+	public int getSamplesPerChannel() {
+		return sampleCount;
+	}
+
+	@Override
+	public int getNumberOfPoints() {
+		return this.getChannels() + this.getSamplesPerChannel();
 	}
 }

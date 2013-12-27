@@ -1,11 +1,20 @@
 package edu.jhu.icm.ecgFormatConverter.rdt;
 // package nodeDataService;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class RDTParser {
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+import edu.jhu.icm.ecgFormatConverter.WrapperWriter;
+
+public class RDTParser implements WrapperWriter, WrapperLoader{
 
 	private File rdtFile;
 	private int channels, samplingRate;
@@ -58,6 +67,7 @@ public class RDTParser {
 			int result = rdtBis.read(header);
 			if (result != HEADERBYTES) {
 				System.err.println("error occured while reading header.");
+				rdtBis.close();
 				return false;
 			}
 			ByteBuffer bbHead = ByteBuffer.wrap(header);
@@ -79,6 +89,10 @@ public class RDTParser {
 		final int REALBUFFERSIZE = (int) fileSize - HEADERBYTES;
 		if (REALBUFFERSIZE % (channels * SHORTBYTES) != 0) {
 			System.err.println("rdt file is not aligned.");
+			try {
+				rdtBis.close();
+			} catch (IOException e1) {
+			}
 			return false;
 		}
 
@@ -263,69 +277,36 @@ public class RDTParser {
 		return counts;
 	}
 	
-	public void setCounts(int countsIn) {
-		counts = countsIn;
-	}
-
-	public int getSamplingRate() {
-		return samplingRate;
-	}
-	
-	public void setSamplingRate(int samplingRateIn) {
-		samplingRate = samplingRateIn;
-	}
-	
 	public int getAduGain() {
 		return aduGain;
 	}
-//
-//	/**
-//	 * writes the data array out in the WFDB Format 16
-//	 * @param outRecordName - Used as the file name, suffixes will be added
-//	 */
-//	public int writeWFDB_16(String outRecordName){
-//		return writeWFDB( outRecordName, (short)16);		
-//	}
-//	
-//	/**
-//	 * writes the data array out in the WFDB Format 61
-//	 * @param outRecordName - Used as the file name, suffixes will be added
-//	 */
-//	public int writeWFDB_61(String outRecordName){
-//		return writeWFDB( outRecordName, (short)61);		
-//	}
-//
-//	/**
-//	 * writes the data array out in the WFDB Format 212
-//	 * @param outRecordName - Used as the file name, suffixes will be added
-//	 */
-//	public int writeWFDB_212(String outRecordName){
-//		return writeWFDB( outRecordName, (short)212);
-//	}
-//	
-//	/**
-//	 * writes the data array out in one of 3 WFDB formats (16, 61, or 212)
-//	 * @param outRecordName - Used as the file name, suffixes will be added
-//	 * @param Format - one of the following WFDB formats: 16, 61, or 212
-//	 */
-//	public int writeWFDB(String outRecordName, short Format){
-//		int writtenRows = 0;
-//		WFDB_wrapper wrap = new WFDB_wrapper();
-//		wrap.samplesPerSignal = getCounts();
-//		wrap.signalCount = getChannels();
-//		wrap.recordName = outRecordName;		
-//		wrap.sampleFrequency = samplingRate; // Hz
-//		wrap.fmt = Format;
-//		
-//		try {
-//			wrap.data = data;
-//			writtenRows = wrap.arrayToWFDB();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		return writtenRows;
-//	}
+
+	@Override
+	public void setSamplesPerChannel(int samplesPerChannel) {
+		counts = samplesPerChannel;
+	}
+
+	@Override
+	public void setSamplingRate(float frequency) {
+		samplingRate = Float.valueOf(frequency).intValue();
+	}
+
+
+	@Override
+	public float getSamplingRate() {
+		return Integer.valueOf(samplingRate).floatValue();
+	}
+
+
+	@Override
+	public int getSamplesPerChannel() {
+		return counts;
+	}
+
+
+	@Override
+	public int getNumberOfPoints() {
+		return counts * channels;
+	}
 	
 };

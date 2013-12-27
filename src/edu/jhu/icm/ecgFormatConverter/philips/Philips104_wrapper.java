@@ -13,7 +13,9 @@ import org.cvrgrid.philips.jaxb.beans.Signalcharacteristics;
 //import org.sierraecg.schema.*;
 //import org.sierraecg.*;
 
-public class Philips104_wrapper {
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+
+public class Philips104_wrapper implements WrapperLoader{
 	private Restingecgdata philipsECG;
 	private DecodedLead[] leadData;
 	private int[][] data;
@@ -86,7 +88,7 @@ public class Philips104_wrapper {
 		return samplingRate;
 	}
 	
-	public int getSampleCount() {
+	public int getSamplesPerChannel() {
 		// TODO:  Take the size of the length of each DecodedLead, multiply that by the number of DecodedLeads
 		// Not sure if the durationChannelProperty would be the correct thing to use here.  If it is then
 		// just get that

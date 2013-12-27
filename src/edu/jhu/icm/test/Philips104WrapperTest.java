@@ -36,7 +36,7 @@ public class Philips104WrapperTest {
 			System.out.println(" ---- Sumary Old code ---- ");
 			
 			if(wrapper.parse()){
-				System.out.println("SampleCount: " + wrapper.getSampleCount());
+				System.out.println("SampleCount: " + wrapper.getSamplesPerChannel());
 				System.out.println("Channels: " + wrapper.getChannels());
 				System.out.println("AduGain: " + wrapper.getAduGain());
 				System.out.println("AllocatedChannels: " + wrapper.getAllocatedChannels());

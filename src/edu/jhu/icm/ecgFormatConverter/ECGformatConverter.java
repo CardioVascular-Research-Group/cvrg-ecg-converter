@@ -24,7 +24,6 @@ public class ECGformatConverter {
 	private int samplesPerChannel=0; // rows read by LoadXXX methods
 	private float samplingRate=0; // Hz read by LoadXXX methods	
 	
-	private int allocatedChannels;
 	private int numberOfPoints;
 	
 	static public enum fileFormat  {RDT, HL7, WFDB, WFDB_16, WFDB_61, WFDB_212, GEMUSE, RAW_XY_CONST_SAMPLE, RAW_XY_VAR_SAMPLE, PHILIPS103, PHILIPS104, MUSEXML};
@@ -167,10 +166,11 @@ public class ECGformatConverter {
 		XYWrapper geMuseWrap = new XYWrapper(geMuseFile);
 		if(geMuseWrap.parse(variableSample)) {
 			samplingRate = (float)geMuseWrap.getSamplingRate();
-			samplesPerChannel = geMuseWrap.getCounts();
+			samplesPerChannel = geMuseWrap.getSamplesPerChannel();
 			channels = geMuseWrap.getChannels();
 			data = geMuseWrap.getData();
 			aduGain = geMuseWrap.getAduGain();
+			numberOfPoints = geMuseWrap.getNumberOfPoints();
 			ret = true;
 		}
 		
@@ -193,6 +193,7 @@ public class ECGformatConverter {
 			channels = rdtPar.getChannels();
 			data = rdtPar.getData();
 			aduGain = rdtPar.getAduGain();
+			numberOfPoints = rdtPar.getNumberOfPoints();
 			ret = true;
 		}
 
@@ -208,16 +209,15 @@ public class ECGformatConverter {
 		boolean ret = false;
 		if (verbose) System.err.println("loadHL7 called for:" + hl7FileName);
 		
-//		File rdtFile = new File(fileName);
-		//RDTParser rdtPar = new RDTParser(rdtFile);
 		HL7Reader hl7Par =  new HL7Reader(hl7FileName);
 		
 		if(hl7Par.parse()) {
 			samplingRate = (float)hl7Par.getSamplingRate();
-			samplesPerChannel = hl7Par.getCounts();
+			samplesPerChannel = hl7Par.getSamplesPerChannel();
 			channels = hl7Par.getChannels();
 			data = hl7Par.getData();
 			aduGain = hl7Par.getAduGain();
+			numberOfPoints = hl7Par.getNumberOfPoints();
 			ret = true;
 			if (verbose) System.err.println("HL7 file parsed successfully, found " + channels + " leads, with " + samplesPerChannel + " data points.");
 		}
@@ -251,17 +251,17 @@ public class ECGformatConverter {
 	 * @return - success/fail 
 	 */ 
 	public boolean loadWFDB(String filePath, String recordName, int signalsRequested) {
-		WFDBApplicationWrapper WFwrap = new WFDBApplicationWrapper();
-		WFwrap.setFilePath(filePath);
+		WFDBApplicationWrapper wfdbWrap = new WFDBApplicationWrapper();
+		wfdbWrap.setFilePath(filePath);
 		
-		samplesPerChannel = WFwrap.WFDBtoArray(recordName, signalsRequested);
+		samplesPerChannel = wfdbWrap.WFDBtoArray(recordName, signalsRequested);
 
 		if (samplesPerChannel > 0 ) {
-			samplingRate = WFwrap.sampleFrequency;
-			channels = WFwrap.signalCount;
-			data = WFwrap.data;
-			aduGain = WFwrap.getAduGain();
-
+			samplingRate = wfdbWrap.getSamplingRate();
+			channels = wfdbWrap.getChannels();
+			data = wfdbWrap.getData();
+			aduGain = wfdbWrap.getAduGain();
+			numberOfPoints = wfdbWrap.getNumberOfPoints();
 			return true;
 		}else { 
 			return false;
@@ -278,10 +278,11 @@ public class ECGformatConverter {
 		GEMuse_wrapper geMuseWrap = new GEMuse_wrapper(geMuseFile);
 		if(geMuseWrap.parse()) {
 			samplingRate = (float)geMuseWrap.getSamplingRate();
-			samplesPerChannel = geMuseWrap.getCounts();
+			samplesPerChannel = geMuseWrap.getSamplesPerChannel();
 			channels = geMuseWrap.getChannels();
 			data = geMuseWrap.getData();
 			aduGain = geMuseWrap.getAduGain();
+			numberOfPoints = geMuseWrap.getNumberOfPoints();
 			return true;
 		}
 
@@ -296,11 +297,10 @@ public class ECGformatConverter {
 			
 			if(philipsWrap.parse()) {
 				samplingRate = philipsWrap.getSamplingRate();
-				samplesPerChannel = philipsWrap.getSampleCount();
+				samplesPerChannel = philipsWrap.getSamplesPerChannel();
 				channels = philipsWrap.getChannels();
 				data = philipsWrap.getData();
 				aduGain = philipsWrap.getAduGain();
-				allocatedChannels = philipsWrap.getAllocatedChannels();
 				numberOfPoints = philipsWrap.getNumberOfPoints();
 				philipsRestingecgdata = philipsWrap.getPhilipsECG();
 				return true;
@@ -318,12 +318,11 @@ public class ECGformatConverter {
 		MuseXML_wrapper museXMLWrap = new MuseXML_wrapper();
 		
 		if(museXMLWrap.parse(filePath)) {
-			samplingRate = (float)museXMLWrap.getSamplingRate();
-			samplesPerChannel = museXMLWrap.getSampleCount();
+			samplingRate = museXMLWrap.getSamplingRate();
+			samplesPerChannel = museXMLWrap.getSamplesPerChannel();
 			channels = museXMLWrap.getChannels();
 			data = museXMLWrap.getData();
 			aduGain = museXMLWrap.getAduGain();
-			allocatedChannels = museXMLWrap.getAllocatedChannels();
 			numberOfPoints = museXMLWrap.getNumberOfPoints();
 			return true;
 		}
@@ -339,11 +338,10 @@ public class ECGformatConverter {
 			
 			if(philipsWrap.parse()) {
 				samplingRate = philipsWrap.getSamplingRate();
-				samplesPerChannel = philipsWrap.getSampleCount();
+				samplesPerChannel = philipsWrap.getSamplesPerChannel();
 				channels = philipsWrap.getChannels();
 				data = philipsWrap.getData();
 				aduGain = philipsWrap.getAduGain();
-				allocatedChannels = philipsWrap.getAllocatedChannels();
 				numberOfPoints = philipsWrap.getNumberOfPoints();
 				philipsRestingecgdata = philipsWrap.getPhilipsECG();
 				return true;
@@ -371,8 +369,8 @@ public class ECGformatConverter {
 		File rdtFile = new File(filePath + sep + fileName);
 		RDTParser rdtPar = new RDTParser(rdtFile);
 		rdtPar.setChannels(channels);
-		rdtPar.setCounts(samplesPerChannel);
-		rdtPar.setSamplingRate((int) samplingRate);
+		rdtPar.setSamplesPerChannel(samplesPerChannel);
+		rdtPar.setSamplingRate(samplingRate);
 		rdtPar.setData(data);	
 		
 		return rdtPar.writeRDT();
@@ -383,7 +381,6 @@ public class ECGformatConverter {
 	 * @return - rowsWritten
 	 * */
 	public int writeHL7(String filePath, String fileName) {
-		//Writer hl7Wtr = new Writer();
 		Writer.writeHL7(filePath + fileName, data, samplingRate);
 		
 		return samplesPerChannel;
@@ -397,9 +394,9 @@ public class ECGformatConverter {
 	public int writeWFDB(String filePath, String outRecordName, int Format){
 		int rowsWritten = 0;
 		WFDBApplicationWrapper wrap = new WFDBApplicationWrapper();
-		wrap.samplesPerSignal = samplesPerChannel;
-		wrap.signalCount = channels;
-		wrap.sampleFrequency = samplingRate; // Hz
+		wrap.setSamplesPerChannel(samplesPerChannel);
+		wrap.setChannels(channels);
+		wrap.setSamplingRate(samplingRate); // Hz
 		wrap.setFilePath(filePath);
 		wrap.recordName = outRecordName;		
 		wrap.fmt = Format;
@@ -407,10 +404,9 @@ public class ECGformatConverter {
 		wrap.gain = aduGain;
 		
 		try {
-			wrap.data = data;
+			wrap.setData(data);
 			rowsWritten = wrap.arrayToWFDB();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			rowsWritten = -1;
 		}
@@ -428,7 +424,7 @@ public class ECGformatConverter {
 		File geMuseFile = new File(filePath + fileName);
 		GEMuse_wrapper geMuseWrap = new GEMuse_wrapper(geMuseFile);
 		geMuseWrap.setChannels(channels);
-		geMuseWrap.setCounts(samplesPerChannel);
+		geMuseWrap.setSamplesPerChannel(samplesPerChannel);
 		geMuseWrap.setSamplingRate((int) samplingRate);
 		geMuseWrap.setData(data);		
 		
@@ -437,10 +433,6 @@ public class ECGformatConverter {
 
 	public Object getPhilipsRestingecgdata() {
 		return philipsRestingecgdata;
-	}
-
-	public int getAllocatedChannels() {
-		return allocatedChannels;
 	}
 
 	public int getNumberOfPoints() {

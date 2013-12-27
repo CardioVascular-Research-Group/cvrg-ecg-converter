@@ -4,10 +4,11 @@ package edu.jhu.icm.ecgFormatConverter.hl7;
 import java.io.*;
 import org.jfree.data.xy.XYDataset;
 
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 import edu.jhu.icm.parser.EcgLeadData;
 
 
-public class HL7Reader {
+public class HL7Reader implements WrapperLoader{
 
 	private File hl7File;
 	private String hl7FileName="";
@@ -16,16 +17,9 @@ public class HL7Reader {
 	private int counts;
 	private int[][] data; 
 	private int aduGain = 200;
-	//[channel][index] or [column][row], changed from double, since the largest WFDB resolution is 16 bits.
-//	private static final ByteOrder BYTEORDER = ByteOrder.LITTLE_ENDIAN;
-//	private static final int HEADERBYTES = 4;
-//	private static final int SHORTBYTES = 2;
+
 	private static final boolean verbose = true;
-//
-//	public HL7Reader(File hl7File) {
-//		this.hl7File = hl7File;
-//	}
-//	
+
 	public HL7Reader (String hl7FileName){
 		this.hl7FileName = hl7FileName;
 	}
@@ -171,16 +165,12 @@ public class HL7Reader {
 		channels = channelsIn;
 	}
 	
-	public int getCounts() {
-		return counts;
-	}
-	
 	public void setCounts(int countsIn) {
 		counts = countsIn;
 	}
 
-	public int getSamplingRate() {
-		return samplingRate;
+	public float getSamplingRate() {
+		return Integer.valueOf(samplingRate).floatValue();
 	}
 	
 	public int getAduGain() {
@@ -191,5 +181,17 @@ public class HL7Reader {
 		if(timeUnit.equalsIgnoreCase("s")){
 			samplingRate = (int)(1/samplingRateIn);
 		}
+	}
+
+
+	@Override
+	public int getSamplesPerChannel() {
+		return counts;
+	}
+
+
+	@Override
+	public int getNumberOfPoints() {
+		return this.getChannels() + this.getSamplesPerChannel();
 	}
 };

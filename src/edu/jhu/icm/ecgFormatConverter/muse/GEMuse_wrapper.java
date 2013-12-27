@@ -3,7 +3,10 @@ package edu.jhu.icm.ecgFormatConverter.muse;
 
 import java.io.*;
 
-public class GEMuse_wrapper {
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+import edu.jhu.icm.ecgFormatConverter.WrapperWriter;
+
+public class GEMuse_wrapper implements WrapperLoader, WrapperWriter{
 
 	private File geMuseFile;
 	private FileInputStream geMuseFis;
@@ -13,10 +16,6 @@ public class GEMuse_wrapper {
 	private int sampleCount;
 	private int[][] data; 
 	private int aduGain = 200;
-	//[channel][index] or [column][row], changed from double, since the largest WFDB resolution is 16 bits.
-	//private static final ByteOrder BYTEORDER = ByteOrder.LITTLE_ENDIAN;
-//	private static final int HEADERBYTES = 4;
-//	private static final int SHORTBYTES = 2;
 	private static final boolean verbose = true;
 
 	public GEMuse_wrapper() {
@@ -25,32 +24,6 @@ public class GEMuse_wrapper {
 	public GEMuse_wrapper(File geMuseFile) {
 		this.geMuseFile = geMuseFile;
 	}
-
-	
-	/** Reads the requested number of the channels from a WFDB record file set into the converter's work space.
-	 * 
-	 * @param filePath - path of the input files, e.g. "/mnt/hgfs/SharedFiles/"
-	 * @param recordName - name of the record, used to build file names by adding file extensions.
- 	 * @param signalsRequested - Number of signals to read, starting with 1st signal.
-	 * @return - success/fail 
-	 */
-	/* 
-	public boolean load_geMuse (String filePath, String recordName, int signalsRequested) {
-		String path = filePath + recordName; // is a separate step because they may need to be passed as separate parameters in future versions.
-		return load_geMuse(path, signalsRequested);
-	}
-		
-	public boolean load_geMuse (String filePath, int signalsRequested) {
-		geMuseFile = new File(filePath);
-		if(!parse()) return false;
-		
-		if (sampleCount > 0 ) {
-			return true;
-		}else { 
-			return false;
-		}
-	}*/
-	
 
 	/** Opens the File object which was passed into the constructor, 
 	 *  validate it, parse out the header data, and then parse the 
@@ -161,21 +134,18 @@ public class GEMuse_wrapper {
 		      // Print the content on the console
 		    	strLine = strLine.trim();
 		    	if(strLine.length()>0) {
-		    		// if (verbose) System.out.println (strLine);
 		    		numbers = strLine.split("\\s");
-					//for (int s = 0; s < sampleCount; s++) {
-						for (int c = 0; c < channels; c++) {
-							short value = Short.parseShort(numbers[c]);
-							if ((s < 3) & verbose) {
-								System.out.print(value + " ");
-							}
-							this.data[c][s] = value;
-						}
+					for (int c = 0; c < channels; c++) {
+						short value = Short.parseShort(numbers[c]);
 						if ((s < 3) & verbose) {
-							System.out.println("  s(" + s + ")");
+							System.out.print(value + " ");
 						}
-					//}
-						s++;
+						this.data[c][s] = value;
+					}
+					if ((s < 3) & verbose) {
+						System.out.println("  s(" + s + ")");
+					}
+					s++;
 		    	}
 		    }
 		    //Close the input stream
@@ -239,14 +209,6 @@ public class GEMuse_wrapper {
 		return s;
 	}
 
-	//	*********** properties *******
-	/*public File getFile () {
-		return this.geMuseFile;
-	}
-	public void setFile (File geMuseFile) {
-		this.geMuseFile = geMuseFile;
-	}
-	*/
 	public void viewData(int count) {
 		if (this.data != null) {
 			for (int index = 0; index < count; index++) {
@@ -280,16 +242,8 @@ public class GEMuse_wrapper {
 		channels = channelsIn;
 	}
 	
-	public int getCounts() {
-		return sampleCount;
-	}
-	
-	public void setCounts(int countsIn) {
-		sampleCount = countsIn;
-	}
-
-	public int getSamplingRate() {
-		return samplingRate;
+	public float getSamplingRate() {
+		return Integer.valueOf(samplingRate).floatValue();
 	}
 	
 	public void setSamplingRate(int samplingRateIn) {
@@ -298,6 +252,27 @@ public class GEMuse_wrapper {
 	
 	public int getAduGain() {
 		return aduGain;
+	}
+
+	@Override
+	public int getSamplesPerChannel() {
+		return sampleCount;
+	}
+
+	@Override
+	public int getNumberOfPoints() {
+		return this.getChannels() * this.getSamplesPerChannel();
+	}
+
+	@Override
+	public void setSamplesPerChannel(int samplesPerChannel) {
+		sampleCount = samplesPerChannel;
+		
+	}
+
+	@Override
+	public void setSamplingRate(float frequency) {
+		samplingRate = Float.valueOf(frequency).intValue();
 	}
 	
 };

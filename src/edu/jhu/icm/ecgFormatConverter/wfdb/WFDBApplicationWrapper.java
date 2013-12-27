@@ -9,17 +9,19 @@ import java.io.IOException;
 import java.util.Properties;
 
 import edu.jhu.cvrg.waveform.service.ApplicationWrapper;
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+import edu.jhu.icm.ecgFormatConverter.WrapperWriter;
 
-public class WFDBApplicationWrapper extends ApplicationWrapper{
+public class WFDBApplicationWrapper extends ApplicationWrapper implements WrapperLoader, WrapperWriter{
 	
 	private String filePath;
 	
 	public int fmt; /// WFDB encoding format (8,16 ...)	
-	public int signalCount;// number of signals
-	public float sampleFrequency; // Hz
+	private int signalCount;// number of signals
+	private float sampleFrequency; // Hz
 	public float counterFrequency=0; /// Hz counter frequency (in ticks per second) [optional]
 	public float counterBase=0; /// base counter value [optional]if the counterFrequency is present
-	public int samplesPerSignal; // number of samples per signal 
+	private int samplesPerSignal; // number of samples per signal 
 	public int segmentCount; /// number of segments [optional] (for header file).
 	public String baseTime = "";/// HH:MM:SS [optional]if the samplesPerSignal is present.
 	public String baseDate = ""; /// DD/MM/YYYY [optional]if the baseTime is present. 
@@ -27,7 +29,7 @@ public class WFDBApplicationWrapper extends ApplicationWrapper{
 	public String recordName;
 	public int gain = 200;
 	public String[] signalName;
-	public int[][] data;
+	private int[][] data;
 	private String sep = File.separator;
 	protected String[] aSigNames;
 	
@@ -308,7 +310,7 @@ public class WFDBApplicationWrapper extends ApplicationWrapper{
 			}
 			if(fieldCount>5) { // "& baseTime exists" is implied.
 				baseDate = fields[3];
-			}
+			} 
 
 			return signalCount;
 		}else {
@@ -329,6 +331,52 @@ public class WFDBApplicationWrapper extends ApplicationWrapper{
 			filePath = filePath + sep; // Because this class was written with the assumption that the path ends with "/".
 		}
 		this.filePath = filePath;
+	}
+
+	@Override
+	public float getSamplingRate() {
+		return sampleFrequency;
+	}
+
+	@Override
+	public int getSamplesPerChannel() {
+		return samplesPerSignal;
+	}
+
+	@Override
+	public int getChannels() {
+		return signalCount;
+	}
+
+	@Override
+	public int[][] getData() {
+		return data;
+	}
+
+	@Override
+	public int getNumberOfPoints() {
+		return this.getChannels() * this.getSamplesPerChannel();
+	}
+
+	@Override
+	public void setSamplesPerChannel(int samplesPerChannel) {
+		samplesPerSignal = samplesPerChannel;
+	}
+
+	@Override
+	public void setChannels(int channels) {
+		signalCount = channels;
+		
+	}
+
+	@Override
+	public void setSamplingRate(float frequency) {
+		sampleFrequency = frequency;
+		
+	}
+
+	public void setData(int[][] data) {
+		this.data = data;
 	}
 
 }

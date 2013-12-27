@@ -246,37 +246,6 @@ public class Writer {
         }
         return aecgdoc;
     }
-
-
-    /**
-     * External entry point
-     * 
-     * @param args
-     *        args[0] = RDT input full path
-     *        args[1] = AecgXML output full path (HL7)
-     */
-    /*
-    public static void main(String[] args) {
-        initLogger();
-        if (args.length < 2) {
-            logger
-                    .error("have to specify fullPathToRdtFile fullPathToAecgFile");
-            return;
-        }
-        RdtParserSimple rps = new RdtParserSimple(args[0]); //args[0] = RDT input filename
-        if (!rps.parse()) {
-            logger.error("rdt file parsing failed.");
-            return;
-        }
-        AnnotatedECGDocument aecgdoc = createTemplate(true);
-        aecgdoc = createAecgDoc(rps, aecgdoc);
-        rps=null;
-        System.gc();
-        saveAecgXML(aecgdoc, args[1]); //args[1] = XML output filename (HL7)
-        aecgdoc = null;
-        logger.debug("done.");
-    }
-    */
     
     public static void writeHL7(String fullPathOutput, int[][] data, float samplingRate) {
         initLogger();
