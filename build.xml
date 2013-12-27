@@ -52,6 +52,8 @@
 		
 		<mkdir dir="${dependencies}/cvrg-broker-service-dependencies"/>
     	<copy todir="${dependencies}/cvrg-broker-service-dependencies" file="build/dist/ecgFormatConverter.jar" />
+
+		<copy todir="${app.server.deploy.dir}/axis2/WEB-INF/lib" file="build/dist/ecgFormatConverter.jar" />
 		
 	</target>
 	

@@ -35,10 +35,9 @@ public class Philips103WrapperTest {
 			System.out.println(" ---- Sumary Old code ---- ");
 			
 			if(wrapper.parse()){
-				System.out.println("SampleCount: " + wrapper.getSampleCount());
+				System.out.println("SampleCount: " + wrapper.getSamplesPerChannel());
 				System.out.println("Channels: " + wrapper.getChannels());
 				System.out.println("AduGain: " + wrapper.getAduGain());
-				System.out.println("AllocatedChannels: " + wrapper.getAllocatedChannels());
 				System.out.println("NumberOfPoints: " + wrapper.getNumberOfPoints());
 				System.out.println("SamplingRate: " + wrapper.getSamplingRate());
 			}
@@ -46,7 +45,7 @@ public class Philips103WrapperTest {
 			System.out.println(((System.currentTimeMillis() - start)/1000.0) + " sec(s).");
 			
 			int channels = wrapper.getChannels();
-			int samples = wrapper.getSampleCount();
+			int samples = wrapper.getSamplesPerChannel();
 			
 			for (int i = 0; i < samples; i++) {
 				for (int j = 0; j < channels; j++) {

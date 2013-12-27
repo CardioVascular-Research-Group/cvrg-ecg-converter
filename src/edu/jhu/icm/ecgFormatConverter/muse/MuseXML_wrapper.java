@@ -1,9 +1,11 @@
 package edu.jhu.icm.ecgFormatConverter.muse;
 
 import java.util.ArrayList;
+
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 import edu.jhu.icm.parser.MuseBase64Parser;
 
-public class MuseXML_wrapper {
+public class MuseXML_wrapper implements WrapperLoader{
 	private String fileLocation = "";
 	private MuseBase64Parser base64Parser;
 	private ArrayList<int[]> leadData;
@@ -66,23 +68,22 @@ public class MuseXML_wrapper {
 		
 	}
 	
+	@Override
 	public int[][] getData() {
 		return data;
 	}
 	
+	@Override
 	public int getChannels() {
 		return channels;
 	}
 	
+	@Override
 	public float getSamplingRate() {
 		return samplingRate;
 	}
 	
-	public int getSampleCount() {
-		
-		return sampleCount;
-	}
-	
+	@Override
 	public int getAduGain() {
 		return aduGain;
 	}
@@ -91,8 +92,14 @@ public class MuseXML_wrapper {
 		return allocatedChannels;
 	}
 
+	@Override
 	public int getNumberOfPoints() {
 		return numberOfPoints;
+	}
+
+	@Override
+	public int getSamplesPerChannel() {
+		return sampleCount;
 	}
 	
 }

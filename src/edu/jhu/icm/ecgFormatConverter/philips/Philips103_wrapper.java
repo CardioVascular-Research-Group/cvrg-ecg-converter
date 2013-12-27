@@ -8,12 +8,13 @@ import javax.xml.bind.JAXBException;
 import org.sierraecg.schema.*;
 import org.sierraecg.*;
 
-public class Philips103_wrapper {
+import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+
+public class Philips103_wrapper implements WrapperLoader{
 	private Restingecgdata philipsECG;
 	private DecodedLead[] leadData;
 	private int[][] data;
 	private int validChannels;
-	private int allocatedChannels;
 	private int numberOfPoints;
 	private float samplingRate;
 	private int sampleCount;
@@ -34,11 +35,10 @@ public class Philips103_wrapper {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
 			
 			samplingRate = Float.valueOf(signalMetaData.getSamplingrate());
-			allocatedChannels = Integer.valueOf(signalMetaData.getNumberchannelsallocated());
-			validChannels = Integer.valueOf(signalMetaData.getNumberchannelsallocated());
+			validChannels = Integer.valueOf(signalMetaData.getNumberchannelsvalid());
 			int previousSample = leadData[0].size();
 			
-			numberOfPoints = previousSample * allocatedChannels;
+			numberOfPoints = previousSample * validChannels;
 			// Make sure all leads are the same size.
 			for(int i=0; i<leadData.length; i++) {
 				int currentSample = leadData[i].size();
@@ -79,7 +79,7 @@ public class Philips103_wrapper {
 		return samplingRate;
 	}
 	
-	public int getSampleCount() {
+	public int getSamplesPerChannel() {
 		// TODO:  Take the size of the length of each DecodedLead, multiply that by the number of DecodedLeads
 		// Not sure if the durationChannelProperty would be the correct thing to use here.  If it is then
 		// just get that
@@ -102,10 +102,6 @@ public class Philips103_wrapper {
 
 	public Restingecgdata getPhilipsECG() {
 		return philipsECG;
-	}
-
-	public int getAllocatedChannels() {
-		return allocatedChannels;
 	}
 
 	public int getNumberOfPoints() {
