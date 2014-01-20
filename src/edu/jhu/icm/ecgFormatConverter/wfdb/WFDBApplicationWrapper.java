@@ -104,6 +104,9 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
 	protected void processReturnLine(String line){
 		if(lineNum==0){
     		aSigNames = line.split(",");
+    		if(signalCount > (aSigNames.length-1)){
+    			signalCount = (aSigNames.length-1);
+    		}
     		signalName = new String[signalCount];
     		for(int sig=1;sig<=signalCount;sig++){ // zeroth column is time, not a signal
     			signalName[sig-1] = aSigNames[sig];// column names to be used later to verify the order.
@@ -111,6 +114,9 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
     	}else if (lineNum > 1){
 		    // data.
     		String[] aSample = line.split(",");
+    		if(signalCount > (aSample.length-1)){
+    			signalCount = (aSample.length-1);
+    		}
 			for(int sig=1;sig<=signalCount;sig++){ // zeroth column is time, not a signal
 				data[sig-1][lineNum-2] = (int)(Float.parseFloat(aSample[sig])*1000);// convert float millivolts to integer microvolts.
 			}		    	  
