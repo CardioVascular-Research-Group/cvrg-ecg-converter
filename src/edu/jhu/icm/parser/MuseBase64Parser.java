@@ -141,6 +141,7 @@ public class MuseBase64Parser {
 	 * 
 	 */
 	private void decodeWaveformData() throws IOException {
+		boolean recheckNumberOfPoints = false;
 		for(String base64String : base64Strings) {
 			ArrayList<Integer> intList = new ArrayList<Integer>();
 			
@@ -158,21 +159,22 @@ public class MuseBase64Parser {
 				
 	            int[] payload = new int[intList.size()];
 	            
-	            System.out.println("Start Lead");
-	            
 	            for(int i=0; i<payload.length; i++) {
 	            	payload[i] = intList.get(i);
-	            	System.out.println(payload[i] + ",");
 	            }
 	            
-	            System.out.println("End Lead");
-
 	            decodedData.add(payload);
 	            
 	            if(decodedData.size() == 2) {
 	            	reconstructLeads();
+	            	recheckNumberOfPoints = true;
 	            }
 				
+		}
+		
+		if(recheckNumberOfPoints){
+			int missingLead = decodedData.size() - allocatedChannels;
+			numberOfPoints += (numberOfPoints/allocatedChannels) * missingLead;
 		}
 	}
 	
@@ -218,6 +220,7 @@ public class MuseBase64Parser {
 		}
 		
 		decodedData.add(leadAVF);
+		
 		
 	}
 	
