@@ -305,8 +305,8 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
 			if(fieldCount>2) {
 				sub2 = fields[2].split("[/()]");
 				sampleFrequency = Float.parseFloat(sub2[0]);
-				if(sub2.length>=2) counterFrequency = Integer.parseInt(sub2[1]);
-				if(sub2.length==3) counterBase = Integer.parseInt(sub2[2]);
+				if(sub2.length>=2) counterFrequency = Float.parseFloat(sub2[1]);
+				if(sub2.length==3) counterBase = Float.parseFloat(sub2[2]);
 			}
 			if(fieldCount>3) { // "& sampleFrequency exists" is implied.
 				samplesPerSignal = Integer.parseInt(fields[3]);
