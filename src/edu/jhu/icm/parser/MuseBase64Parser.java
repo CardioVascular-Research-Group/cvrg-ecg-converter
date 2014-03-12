@@ -18,8 +18,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-//import org.apache.commons.codec.binary.Base64;
-//import org.apache.commons.codec.binary.StringUtils;
+
 
 public class MuseBase64Parser {
 	
@@ -81,11 +80,11 @@ public class MuseBase64Parser {
 	
 	private void retrieveWaveformData() throws JDOMException {
 
-			Document xmlDoc = build(this.initialXML.toString());
+			Document xmlDoc = buildDOM(this.initialXML.toString());
 			Element rootElement = xmlDoc.getRootElement();
 			List waveformElements = rootElement.getChildren("Waveform");
 			
-			// Since the DTD was unable to be found, the XML had to be traversed one level at a time
+			// traverse through each occurance of the Waveform element to find the one the Rhythm type
 			if(!(waveformElements.isEmpty())) {
 				Iterator waveformIter = waveformElements.iterator();
 				while(waveformIter.hasNext()) {
@@ -233,7 +232,7 @@ public class MuseBase64Parser {
 	 *                  <root><stuff>Some stuff</stuff></root>
 	 * @return Document from an XML document represented as a String
 	 */
-	private static Document build(String xmlDocAsString) 
+	public static Document buildDOM(String xmlDocAsString) 
 	        throws JDOMException {
 		Document doc = null;
 	    SAXBuilder builder = new SAXBuilder();
