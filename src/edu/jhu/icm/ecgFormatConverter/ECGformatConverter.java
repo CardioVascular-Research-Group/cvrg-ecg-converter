@@ -31,6 +31,7 @@ public class ECGformatConverter {
 	private String sep = File.separator;
 	
 	private Object philipsRestingecgdata;
+	private String museXMLData;
 	
 /*********** Get result properties ********************************/
 	/** Returns the ECG data array which was produced by the last Load method */
@@ -324,6 +325,7 @@ public class ECGformatConverter {
 			data = museXMLWrap.getData();
 			aduGain = museXMLWrap.getAduGain();
 			numberOfPoints = museXMLWrap.getNumberOfPoints();
+			museXMLData = museXMLWrap.getMuseXML();
 			return true;
 		}
 		
@@ -433,6 +435,10 @@ public class ECGformatConverter {
 
 	public Object getPhilipsRestingecgdata() {
 		return philipsRestingecgdata;
+	}
+	
+	public String getMuseRawXML() {
+		return museXMLData;
 	}
 
 	public int getNumberOfPoints() {

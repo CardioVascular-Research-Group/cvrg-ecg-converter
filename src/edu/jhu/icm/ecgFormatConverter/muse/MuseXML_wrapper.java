@@ -16,6 +16,7 @@ public class MuseXML_wrapper implements WrapperLoader{
 	private int numberOfPoints;
 	private float samplingRate;
 	private int sampleCount;
+	private String museRawXML;
 	
 	// Initialization happens outside of the constructor since the methods called throw exceptions.
 	public MuseXML_wrapper () {
@@ -59,6 +60,7 @@ public class MuseXML_wrapper implements WrapperLoader{
 			}
 			
 			aduGain = base64Parser.getAduGain();
+			museRawXML = base64Parser.getInitialXML();
 			
 			return true;
 		} catch (Exception e) {
@@ -100,6 +102,10 @@ public class MuseXML_wrapper implements WrapperLoader{
 	@Override
 	public int getSamplesPerChannel() {
 		return sampleCount;
+	}
+	
+	public String getMuseXML() {
+		return museRawXML;
 	}
 	
 }
