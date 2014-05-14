@@ -7,37 +7,24 @@ import edu.jhu.icm.ecgFormatConverter.ECGformatConverter;
 public class Main {
 	public static void main(String[] args) {
 	    System.out.println("main() started, init'ing WFDB_AnninfoArray");
-//		WFDB_AnninfoArray an = new WFDB_AnninfoArray(2);
 
-		ECGformatConverter.fileFormat ff = ECGformatConverter.fileFormat.RDT;
-		//String filename="/mnt/hgfs/SharedFiles/RDTtoHL7Test/jhu103.rdt"; // 1.8MB
-		//String filename="/mnt/hgfs/SharedFiles/RDTtoHL7Test/jhu113.rdt"; // 1.8MB
-		//String filename="/mnt/hgfs/SharedFiles/RDTtoHL7Test/jhu114.rdt"; // 1.4MB
-		//String filename="/mnt/hgfs/SharedFiles/RDTtoHL7Test/jhu161.rdt"; // 1.9MB
-		//String filename="/mnt/hgfs/SharedFiles/RDTtoHL7Test/jhu175.rdt"; // 1.8MB
-		//String filename="/mnt/hgfs/SharedFiles/RDT_101onward/jhu109.rdt"; // 0.67MB
-		//String filename="/mnt/hgfs/SharedFiles/RDT_101onward/jhu254.rdt"; // 3.4MB
-//		String filename="C:\Users\mshipwa1\FromXP box\L_drive\SharedFiles\RDTtoHL7Test\jhu103.rdt"; // 1.8MB
-		// 1.4MB
+		//ECGformatConverter.fileFormat ff = ECGformatConverter.fileFormat.SCHILLER;
+		//String filename="/home/WIN/dhopki12/Desktop/QRS-score/APACE-1.xml";
 
-		//String filePath = ".\\",
-//		String recordName = "test.csv";
-		int signalsRequested = 0; // zero means all.
-//		String inputPath = "C:\\Documents and Settings\\mtoerpe1\\Desktop\\";
-//		String outputPath = "C:\\Documents and Settings\\mtoerpe1\\Desktop\\";
-//		String recordName = "Example4.xml"; //
-//		String inputPath = "C:\\Users\\mshipwa1\\FromXP box\\L_drive\\SharedFiles\\RDTtoHL7Test\\";
-//		String outputPath = "C:\\Users\\mshipwa1\\FromXP box\\L_drive\\SharedFiles\\RDTtoHL7Test\\output\\";
-//		String recordName = "jhu718.rdt"; //
-//		String inputPath = "C:\\Users\\mshipwa1\\Downloads\\ECG 15 leads\\FromLarisa\\";
-//		String outputPath = "C:\\Users\\mshipwa1\\Downloads\\ECG 15 leads\\FromLarisa\\output\\";
-//		String recordName = "1_10sec.txt"; 
-//		String inputPath = "C:\\Users\\mshipwa1\\Documents\\tempCTRIP\\Magellan_Analysis_743ECGs_Anony-8-5-10\\Magellan_Analysis_743ECGs_Anony-8-5-10\\CTRIP743ECGs-anony\\SplitFilesCTRIP\\";
-//		String outputPath = "C:\\Users\\mshipwa1\\Documents\\tempCTRIP\\Magellan_Analysis_743ECGs_Anony-8-5-10\\Magellan_Analysis_743ECGs_Anony-8-5-10\\CTRIP743ECGs-anony\\WFDB\\";
-//		String fileSuffix = "_10sec.txt"; 
-		String inputPath = "C:\\Users\\mshipwa1\\Documents\\tempCTRIP\\Magellan_Analysis_743ECGs_Anony-8-5-10\\Magellan_Analysis_743ECGs_Anony-8-5-10\\CTRIP743ECGs-anony\\SplitFilesCTRIP\\";
-		String outputPath = "C:\\Users\\mshipwa1\\Documents\\tempCTRIP\\Magellan_Analysis_743ECGs_Anony-8-5-10\\Magellan_Analysis_743ECGs_Anony-8-5-10\\CTRIP743ECGs-anony\\WFDBmedian\\";
-		String fileSuffix = "_median.txt"; 
+/*	    //gemuse xml test data
+		String inputPath = "/home/WIN/dhopki12/Desktop/muse-test-data/";
+		String outputPath = "/home/WIN/dhopki12/Desktop/muse-test-data/output/";
+		String fileSuffix = "xml"; */
+
+	    //philips 104 test data
+/*		String inputPath = "/home/WIN/dhopki12/Desktop/104-test-data/";
+		String outputPath = "/home/WIN/dhopki12/Desktop/104-test-data/output/";
+		String fileSuffix = "xml"; */
+		
+		//schiller test data
+		String inputPath = "/home/WIN/dhopki12/Desktop/QRS-score-mod2/";
+		String outputPath = "/home/WIN/dhopki12/Desktop/QRS-score-mod2/output/";
+		String fileSuffix = "xml"; 
 		
 		convertSubDirectories(inputPath, outputPath, fileSuffix);
 		
@@ -169,10 +156,16 @@ public class Main {
 	static void convertSubDirectories(String sParentDir, String sResultDir, String nameSuffix){
 		int signalsRequested = 0; // zero means all.
 		String currentFile="";
-		ECGformatConverter.fileFormat ff = ECGformatConverter.fileFormat.RDT;
+		//ECGformatConverter.fileFormat ff = ECGformatConverter.fileFormat.MUSEXML;
+		//ECGformatConverter.fileFormat ff = ECGformatConverter.fileFormat.PHILIPS104;
+		ECGformatConverter.fileFormat ff = ECGformatConverter.fileFormat.SCHILLER;
 		
 		File dir = new File(sParentDir);
 		String[] inFiles = dir.list();
+		
+//		if(dir.exists() && dir.isDirectory()){ System.out.println ("Directory is a directory: " + dir); }
+//		System.out.println ("Directory: " + dir);
+//		System.out.println ("Directory listing: " + inFiles);
 
 		if(inFiles!=null){
 			for (int i=0; i < inFiles.length; i++) {
@@ -184,8 +177,17 @@ public class Main {
 					if ((currentFile.endsWith(nameSuffix))) {
 						String baseFileName = child.getName();
 						
+						System.out.println ("FileName: " + baseFileName );
+					
+//						ECGformatConverter conv20 = new ECGformatConverter();
+////					ff.RAW_XY_CONST_SAMPLE
+//					conv20.convert(ff.GEMUSE, ff.WFDB_16, recordName, signalsRequested, inputPath, outputPath);
+//					conv20 = null;
+
 						ECGformatConverter convMUSE = new ECGformatConverter();
-						convMUSE.convert(ff.GEMUSE, ff.WFDB_16, baseFileName, signalsRequested, sParentDir, sResultDir);
+						//convMUSE.convert(ff.MUSEXML, ff.WFDB_16, baseFileName, signalsRequested, sParentDir, sResultDir);
+						//convMUSE.convert(ff.PHILIPS104, ff.WFDB_16, baseFileName, signalsRequested, sParentDir, sResultDir);
+						convMUSE.convert(ff.SCHILLER, ff.WFDB_16, baseFileName, signalsRequested, sParentDir, sResultDir);
 						convMUSE = null;
 					}
 				}
@@ -193,9 +195,6 @@ public class Main {
 			}
 		}
 	}
-	
-	
-	
 	
 	/* (non-Java-doc)
 	 * @see java.lang.Object#Object()
