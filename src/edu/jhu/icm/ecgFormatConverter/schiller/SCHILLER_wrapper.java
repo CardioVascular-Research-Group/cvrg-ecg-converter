@@ -30,7 +30,6 @@ public class SCHILLER_wrapper implements WrapperLoader{
 		PreprocessReturn ret = SchillerEcgFiles.preprocess(inputFile);
 
 		samplingRate = Float.valueOf(ret.getPrepSampleRate());
-		//System.out.println("SCHILLERWRAP 33: " + samplingRate);	
 		comXiriuzSemaXmlSchillerEDISchillerEDI = ret.getComXiriuzSemaXmlSchillerEDISchillerEDI();
 		leadData = ret.getDecodedLeads();
 	}
@@ -95,7 +94,6 @@ public class SCHILLER_wrapper implements WrapperLoader{
 		if(comXiriuzSemaXmlSchillerEDISchillerEDI != null) {
 			return true;
 		}
-		
 		return false;
 	}
 

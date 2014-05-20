@@ -465,6 +465,10 @@ public class ECGformatConverter {
 	public Object getPhilipsRestingecgdata() {
 		return philipsRestingecgdata;
 	}
+
+	public Object getComXiriuzSemaXmlSchillerEDISchillerEDI() {
+		return comXiriuzSemaXmlSchillerEDISchillerEDI;
+	}
 	
 	public String getMuseRawXML() {
 		return museXMLData;
