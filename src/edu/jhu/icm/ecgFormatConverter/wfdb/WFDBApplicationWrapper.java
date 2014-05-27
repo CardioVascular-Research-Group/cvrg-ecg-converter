@@ -82,10 +82,10 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
 			this.stdReturnMethodHandler();
 			
 		    if(log.isDebugEnabled()){
-		    	log.debug("First 10 rows of data read:");
+		    	log.info("First 10 rows of data read:");
 			    for (int row = 0; row < 10; row++) {  // try reading the first 10 rows. 
 			        for (int sig = 0; sig < signalCount; sig++) {
-						log.debug(data[sig][row] + " ");
+						log.info(data[sig][row] + " ");
 			        }
 				}
 		    }
