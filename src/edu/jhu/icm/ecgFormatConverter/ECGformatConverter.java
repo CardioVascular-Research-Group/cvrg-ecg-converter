@@ -6,6 +6,7 @@ import edu.jhu.icm.ecgFormatConverter.muse.GEMuse_wrapper;
 import edu.jhu.icm.ecgFormatConverter.muse.MuseXML_wrapper;
 import edu.jhu.icm.ecgFormatConverter.philips.Philips103_wrapper;
 import edu.jhu.icm.ecgFormatConverter.philips.Philips104_wrapper;
+import edu.jhu.icm.ecgFormatConverter.schiller.SCHILLER_wrapper;
 import edu.jhu.icm.ecgFormatConverter.rdt.RDTParser;
 import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBApplicationWrapper;
 import edu.jhu.icm.ecgFormatConverter.xy.XYWrapper;
@@ -26,11 +27,12 @@ public class ECGformatConverter {
 	
 	private int numberOfPoints;
 	
-	static public enum fileFormat  {RDT, HL7, WFDB, WFDB_16, WFDB_61, WFDB_212, GEMUSE, RAW_XY_CONST_SAMPLE, RAW_XY_VAR_SAMPLE, PHILIPS103, PHILIPS104, MUSEXML};
+	static public enum fileFormat  {RDT, HL7, WFDB, WFDB_16, WFDB_61, WFDB_212, GEMUSE, RAW_XY_CONST_SAMPLE, RAW_XY_VAR_SAMPLE, PHILIPS103, PHILIPS104, SCHILLER, MUSEXML};
 	private static final boolean verbose = true;
 	private String sep = File.separator;
-	
+
 	private Object philipsRestingecgdata;
+	private Object comXiriuzSemaXmlSchillerEDISchillerEDI;
 	private String museXMLData;
 	
 /*********** Get result properties ********************************/
@@ -104,7 +106,7 @@ public class ECGformatConverter {
 			case WFDB_212:
 				rowsWritten = writeWFDB(outputPath, recordName, 212);
 				break;
-			case  GEMUSE:
+			case GEMUSE:
 				rowsWritten = write_geMuse(outputPath, recordName);
 				break;
 			default:
@@ -150,6 +152,9 @@ public class ECGformatConverter {
 				break;
 			case PHILIPS104:
 				ret = loadPhilips104(inputPath + fileName);
+				break;
+			case SCHILLER:
+				ret = loadSCHILLER(inputPath + fileName);
 				break;
 			default:
 				ret = false; // load format not specified.
@@ -331,7 +336,7 @@ public class ECGformatConverter {
 		
 		return false;
 	}
-	
+
 	private boolean loadPhilips104(String filePath) {
 		// Put in calls to the Sierra ECG Library here.  Then call the Philips103_wrapper
 		try {
@@ -354,6 +359,30 @@ public class ECGformatConverter {
 			return false;
 		}
 		
+		return false;
+	}
+
+	private boolean loadSCHILLER(String filePath) {
+		// Put in calls to the Schiller ECG Library here.  Then call the SCHILLER_wrapper
+		try {
+			SCHILLER_wrapper schillerWrap = new SCHILLER_wrapper();
+			schillerWrap.init(filePath);
+			
+			if(schillerWrap.parse()) {
+				samplingRate = schillerWrap.getSamplingRate();
+				samplesPerChannel = schillerWrap.getSamplesPerChannel();
+				channels = schillerWrap.getChannels();
+				data = schillerWrap.getData();
+				aduGain = schillerWrap.getAduGain();
+				numberOfPoints = schillerWrap.getNumberOfPoints();
+				comXiriuzSemaXmlSchillerEDISchillerEDI = schillerWrap.getComXiriuzSemaXmlSchillerEDISchillerEDI();
+				return true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		return false;
 	}
 
@@ -435,6 +464,10 @@ public class ECGformatConverter {
 
 	public Object getPhilipsRestingecgdata() {
 		return philipsRestingecgdata;
+	}
+
+	public Object getComXiriuzSemaXmlSchillerEDISchillerEDI() {
+		return comXiriuzSemaXmlSchillerEDISchillerEDI;
 	}
 	
 	public String getMuseRawXML() {
