@@ -118,7 +118,14 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
     			signalCount = (aSample.length-1);
     		}
 			for(int sig=1;sig<=signalCount;sig++){ // zeroth column is time, not a signal
-				data[sig-1][lineNum-2] = (int)(Float.parseFloat(aSample[sig])*1000);// convert float millivolts to integer microvolts.
+				float fSamp;
+				try{ // Check if value is a not a number, e.g. "-" or "na", substitute zero so rdsamp won't break; Mike Shipway (7/21/2014)
+					fSamp  = Float.parseFloat(aSample[sig]); // assumes unit is float millivolts.
+				}catch(NumberFormatException nfe){
+					fSamp = 0;
+				}
+					
+				data[sig-1][lineNum-2] = (int)(fSamp*1000);// convert float millivolts to integer microvolts.
 			}		    	  
 		}		    	  
     }
