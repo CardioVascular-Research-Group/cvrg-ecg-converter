@@ -8,7 +8,6 @@
 	<property name="portlet-ext" value="${liferay}/portlet-ext"/>
 	<property file="${liferay}/liferay-plugins-sdk-6.1.1/build.${user.name}.properties" />
 	<property name="dependencies" value="${liferay}/projects-dependencies" />
-<!--	<property name="tomcat-bin-ext" value="${liferay}/waveform3/tomcat-7.0.27/lib/ext"/> -->
 	
 	<target name="clean">
 		<echo>Clean the temporary area</echo>
@@ -52,11 +51,11 @@
 		</jar>
 		
 		<mkdir dir="${dependencies}/cvrg-broker-service-dependencies"/>
+		<mkdir dir="${dependencies}/physionet-analysis-service-dependencies"/>
+		
     	<copy todir="${dependencies}/cvrg-broker-service-dependencies" file="build/dist/ecgFormatConverter.jar" />
 		<copy todir="${dependencies}/physionet-analysis-service-dependencies" file="build/dist/ecgFormatConverter.jar" />
-
 		<copy todir="${app.server.deploy.dir}/axis2/WEB-INF/lib" file="build/dist/ecgFormatConverter.jar" />
-<!--		<copy todir="${tomcat-bin-ext}" file="build/dist/ecgFormatConverter.jar" /> -->
 	</target>
 	
 </project>
