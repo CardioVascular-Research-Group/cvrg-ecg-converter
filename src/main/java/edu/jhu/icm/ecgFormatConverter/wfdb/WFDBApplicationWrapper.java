@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
-import edu.jhu.cvrg.waveform.service.ApplicationWrapper;
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 import edu.jhu.icm.ecgFormatConverter.WrapperWriter;
 
