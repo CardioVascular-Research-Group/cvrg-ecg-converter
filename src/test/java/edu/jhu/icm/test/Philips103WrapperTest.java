@@ -1,13 +1,15 @@
 package edu.jhu.icm.test;
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import edu.jhu.icm.ecgFormatConverter.ECGformatConverter;
-import edu.jhu.icm.ecgFormatConverter.philips.Philips104_wrapper;
+import edu.jhu.icm.ecgFormatConverter.philips.Philips103_wrapper;
 
-public class Philips104WrapperTest {
+public class Philips103WrapperTest {
 
 	String fileName;
 	String in;
@@ -16,17 +18,16 @@ public class Philips104WrapperTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		fileName = "Doe_John_CHOA_Philips.xml";
-		//fileName = "ecg_900657176_1.xml";
-		in = "/home/WIN/avilard4/XML/Philips104/";
-		out = "/home/WIN/avilard4/XML/Philips104/out/";
+		fileName = "ecg_97082525_1.xml";
+		in = "/opt/liferay/mavenTestResources/ECG_Converter4/philips103/";
+		out = in + "out/";
 		
 	}
-	
+
 	@Test
-	public void convertionPhilips104Test(){
+	public void convertionPhilips103Test(){
 		
-		Philips104_wrapper wrapper =  new Philips104_wrapper();
+		Philips103_wrapper wrapper =  new Philips103_wrapper();
 		
 		try {
 			long start = System.currentTimeMillis();
@@ -39,26 +40,29 @@ public class Philips104WrapperTest {
 				System.out.println("SampleCount: " + wrapper.getSamplesPerChannel());
 				System.out.println("Channels: " + wrapper.getChannels());
 				System.out.println("AduGain: " + wrapper.getAduGain());
-				System.out.println("AllocatedChannels: " + wrapper.getAllocatedChannels());
 				System.out.println("NumberOfPoints: " + wrapper.getNumberOfPoints());
 				System.out.println("SamplingRate: " + wrapper.getSamplingRate());
 			}
 			
 			System.out.println(((System.currentTimeMillis() - start)/1000.0) + " sec(s).");
 			
-			for (int i = 0; i < wrapper.getData().length; i++) {
-				for (int j = 0; j < wrapper.getData()[i].length; j++) {
-					int item = wrapper.getData()[i][j];
-					System.out.print(item + "\t");
+			int channels = wrapper.getChannels();
+			int samples = wrapper.getSamplesPerChannel();
+			
+			for (int i = 0; i < samples; i++) {
+				for (int j = 0; j < channels; j++) {
+					int item = wrapper.getData()[j][i];
+					//System.out.print(item + "\t");
 				}
-				System.out.println();
-			}			
+				//System.out.println();
+			}
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
-
+	
 	
 	@Test
 	public void convertTest(){
@@ -66,7 +70,10 @@ public class Philips104WrapperTest {
 		long start = System.currentTimeMillis();
 		
 		ECGformatConverter c = new ECGformatConverter();
-		c.convert(ECGformatConverter.fileFormat.PHILIPS104, ECGformatConverter.fileFormat.WFDB_16, fileName, 0, in, out);
+		
+		new File(out).mkdirs();
+		
+		c.convert(ECGformatConverter.fileFormat.PHILIPS103, ECGformatConverter.fileFormat.WFDB_16, fileName, 0, in, out);
 		
 		System.out.println(" ---- Sumary ---- ");
 		System.out.println(((System.currentTimeMillis() - start)/1000.0) + " sec(s).");

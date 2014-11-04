@@ -5,8 +5,11 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
-import org.sierraecg.schema.*;
-import org.sierraecg.*;
+import org.sierraecg.DecodedLead;
+import org.sierraecg.PreprocessReturn;
+import org.sierraecg.SierraEcgFiles;
+import org.sierraecg.schema.Restingecgdata;
+import org.sierraecg.schema.Signalcharacteristics;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 

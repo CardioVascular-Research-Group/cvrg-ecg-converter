@@ -2,7 +2,6 @@ package edu.jhu.icm.ecgFormatConverter.schiller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -10,9 +9,9 @@ import org.cvrgrid.schiller.DecodedLead;
 import org.cvrgrid.schiller.PreprocessReturn;
 import org.cvrgrid.schiller.SchillerEcgFiles;
 import org.cvrgrid.schiller.jaxb.beans.ComXiriuzSemaXmlSchillerEDISchillerEDI;
-//import org.cvrgrid.schiller.jaxb.beans.Wavedata;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+//import org.cvrgrid.schiller.jaxb.beans.Wavedata;
 
 public class SCHILLER_wrapper implements WrapperLoader{
 	private ComXiriuzSemaXmlSchillerEDISchillerEDI comXiriuzSemaXmlSchillerEDISchillerEDI;

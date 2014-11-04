@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.cvrgrid.philips.codecs.Base64;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
