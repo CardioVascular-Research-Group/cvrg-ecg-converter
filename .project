@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-  <name>ecgFormatConverter</name>
+  <name>ECG_Converter4</name>
   <comment>NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
-  <projects/>
+  <projects>
+    <project>jsierraecg</project>
+    <project>Phlilips1.04</project>
+    <project>schiller-data</project>
+  </projects>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>

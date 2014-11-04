@@ -13,8 +13,8 @@
   <classpathentry kind="var" path="M2_REPO/stax/stax-api/1.0.1/stax-api-1.0.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jdom/jdom/1.1/jdom-1.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/pcj/pcj/1.2/pcj-1.2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sierraecg/jsierraecg/1.0-SNAPSHOT/jsierraecg-1.0-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/cvrgrid/philips/philips1.04/1.0-SNAPSHOT/philips1.04-1.0-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/cvrgrid/schiller/schiller-data/1.0-SNAPSHOT/schiller-data-1.0-SNAPSHOT.jar"/>
+  <classpathentry kind="src" path="/jsierraecg"/>
+  <classpathentry kind="src" path="/Phlilips1.04"/>
+  <classpathentry kind="src" path="/schiller-data"/>
   <classpathentry kind="var" path="M2_REPO/hl7OrgV3/aecg/1.0/aecg-1.0.jar"/>
 </classpath>
