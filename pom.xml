@@ -51,16 +51,19 @@
 	    <groupId>org.sierraecg</groupId>
 	    <artifactId>jsierraecg</artifactId>
 	    <version>1.0-SNAPSHOT</version>
+	    <scope>provided</scope>
 	</dependency>
   	<dependency>
 	    <groupId>org.cvrgrid.philips</groupId>
   		<artifactId>Phlilips1.04</artifactId>
 	    <version>1.0-SNAPSHOT</version>
+	    <scope>provided</scope>
 	</dependency>
 	<dependency>
 	    <groupId>org.cvrgrid.schiller</groupId>
   		<artifactId>schiller-data</artifactId>
 	    <version>1.0-SNAPSHOT</version>
+	    <scope>provided</scope>
 	</dependency>
 	<dependency>
 		<groupId>hl7OrgV3</groupId>
