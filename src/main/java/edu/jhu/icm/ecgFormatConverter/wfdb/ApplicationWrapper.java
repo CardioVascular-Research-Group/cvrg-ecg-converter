@@ -83,7 +83,7 @@ public abstract class ApplicationWrapper {
 	 * @throws IOException
 	 */	
 	
-	protected String stdReturnHandler() throws IOException{
+	protected String stdReturnHandler(boolean withLineBreak) throws IOException{
 	    
 		StringBuilder sb = new StringBuilder();
 		lineNum = 0;
@@ -93,6 +93,9 @@ public abstract class ApplicationWrapper {
 	    while ((tempLine = stdInputBuffer.readLine()) != null) {
 	    	debugPrintln(lineNum + ")" + tempLine);
 	    	sb.append(tempLine);
+	    	if(withLineBreak){
+	    		sb.append('\n');
+	    	}
 	    	lineNum++;
 	    }
 	    

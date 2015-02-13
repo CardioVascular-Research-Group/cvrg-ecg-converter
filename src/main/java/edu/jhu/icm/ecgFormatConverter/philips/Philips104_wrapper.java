@@ -2,18 +2,21 @@ package edu.jhu.icm.ecgFormatConverter.philips;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import org.cvrgrid.philips.DecodedLead;
 import org.cvrgrid.philips.PreprocessReturn;
 import org.cvrgrid.philips.SierraEcgFiles;
+import org.cvrgrid.philips.jaxb.beans.Leadmeasurement;
 import org.cvrgrid.philips.jaxb.beans.Restingecgdata;
 import org.cvrgrid.philips.jaxb.beans.Signalcharacteristics;
-//import org.sierraecg.schema.*;
-//import org.sierraecg.*;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
+//import org.sierraecg.schema.*;
+//import org.sierraecg.*;
 
 public class Philips104_wrapper implements WrapperLoader{
 	private Restingecgdata philipsECG;
@@ -25,6 +28,7 @@ public class Philips104_wrapper implements WrapperLoader{
 	private float samplingRate;
 	private int sampleCount;
 	private int aduGain = 200;
+	private List<String> leadNames;
 	
 	// Initialization happens outside of the constructor since the methods called throw exceptions.
 	public void init(String filePath) throws IOException, JAXBException {
@@ -39,6 +43,14 @@ public class Philips104_wrapper implements WrapperLoader{
 	public boolean parse() {
 		if(this.isInitialized()) {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
+			
+			List<Leadmeasurement> leads = philipsECG.getInternalmeasurements().getLeadmeasurements().getLeadmeasurement();
+			if(leads != null){
+				leadNames = new ArrayList<String>();
+				for (Leadmeasurement lead : leads) {
+					leadNames.add(lead.getLeadname().toUpperCase());
+				}
+			}
 			
 			samplingRate = Float.valueOf(signalMetaData.getSamplingrate());
 			
@@ -119,6 +131,11 @@ public class Philips104_wrapper implements WrapperLoader{
 
 	public Restingecgdata getPhilipsECG() {
 		return philipsECG;
+	}
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 	
 }

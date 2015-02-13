@@ -1,7 +1,16 @@
 package edu.jhu.icm.ecgFormatConverter.muse;
 // package nodeDataService;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 import edu.jhu.icm.ecgFormatConverter.WrapperWriter;
@@ -17,6 +26,7 @@ public class GEMuse_wrapper implements WrapperLoader, WrapperWriter{
 	private int[][] data; 
 	private int aduGain = 200;
 	private static final boolean verbose = true;
+	private List<String> leadNames;
 
 	public GEMuse_wrapper() {
 	}
@@ -273,6 +283,11 @@ public class GEMuse_wrapper implements WrapperLoader, WrapperWriter{
 	@Override
 	public void setSamplingRate(float frequency) {
 		samplingRate = Float.valueOf(frequency).intValue();
+	}
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 	
 };

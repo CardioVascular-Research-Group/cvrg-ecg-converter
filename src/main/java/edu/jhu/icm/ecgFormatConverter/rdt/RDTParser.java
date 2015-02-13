@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.List;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 import edu.jhu.icm.ecgFormatConverter.WrapperWriter;
@@ -25,6 +26,7 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 	private static final int SHORTBYTES = 2;
 	private static final boolean verbose = true;
 	private int aduGain = 200;
+	private List<String> leadNames;
 
 	public RDTParser(File rdtFile) {
 		this.rdtFile = rdtFile;
@@ -307,6 +309,12 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 	@Override
 	public int getNumberOfPoints() {
 		return counts * channels;
+	}
+
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 	
 };

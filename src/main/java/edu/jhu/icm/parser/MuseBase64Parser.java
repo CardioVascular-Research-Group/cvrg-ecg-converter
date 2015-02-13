@@ -28,6 +28,7 @@ public class MuseBase64Parser {
 	private int aduGain;
 	private int allocatedChannels = 0;
 	private int numberOfPoints = 0;
+	private ArrayList<String> leadNames;
 	
 	
 	public MuseBase64Parser() {
@@ -101,6 +102,7 @@ public class MuseBase64Parser {
 						if(!(leadDataList.isEmpty())) {
 							
 							allocatedChannels = leadDataList.size();
+							leadNames = new ArrayList<String>();
 							
 							Iterator leadIter = leadDataList.iterator();
 							while(leadIter.hasNext()) {
@@ -121,6 +123,11 @@ public class MuseBase64Parser {
 								if(numberOfPoints == 0){
 									Element sampleCount = leadData.getChild("LeadSampleCountTotal");
 									numberOfPoints = Integer.valueOf(sampleCount.getText()) * allocatedChannels;
+								}
+								
+								Element leadID = leadData.getChild("LeadID");
+								if(leadID != null){
+									leadNames.add(leadID.getText().toUpperCase());
 								}
 							}
 						}
@@ -197,6 +204,7 @@ public class MuseBase64Parser {
 		}
 		
 		decodedData.add(leadIII);
+		leadNames.add(2, "III");
 
 		// lead aVR = -(I + II)/2
 		for (int i = 0; i < leadAVR.length; i++) {
@@ -204,6 +212,7 @@ public class MuseBase64Parser {
 		}
 		
 		decodedData.add(leadAVR);
+		leadNames.add(3, "AVR");
 
 		// lead aVL = I - II/2
 		for (int i = 0; i < leadAVL.length; i++) {
@@ -211,6 +220,7 @@ public class MuseBase64Parser {
 		}
 		
 		decodedData.add(leadAVL);
+		leadNames.add(4, "AVL");
 
 		// lead aVF = II - I/2
 		for (int i = 0; i < leadAVF.length; i++) {
@@ -218,7 +228,7 @@ public class MuseBase64Parser {
 		}
 		
 		decodedData.add(leadAVF);
-		
+		leadNames.add(5, "AVF");
 		
 	}
 	
@@ -250,6 +260,10 @@ public class MuseBase64Parser {
 
 	public int getNumberOfPoints() {
 		return numberOfPoints;
+	}
+
+	public ArrayList<String> getLeadNames() {
+		return leadNames;
 	}
 	
 }

@@ -1,5 +1,8 @@
 package edu.jhu.icm.ecgFormatConverter;
 
+import java.util.List;
+
+
 public interface WrapperLoader {
 
 	/**
@@ -28,5 +31,11 @@ public interface WrapperLoader {
 	 * @return (getChannels() * getSampleCount())
 	 * */
 	public int getNumberOfPoints();
+	/**
+	 * Get the lead names in order. <br>
+	 * <br>
+	 * @return List of extracted lead names from original file. 
+	 * */
+	public List<String> getLeadNames();
 	
 }

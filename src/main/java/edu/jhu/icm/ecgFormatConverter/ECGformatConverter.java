@@ -1,15 +1,18 @@
 package edu.jhu.icm.ecgFormatConverter;
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 import edu.jhu.icm.ecgFormatConverter.hl7.HL7Reader;
 import edu.jhu.icm.ecgFormatConverter.muse.GEMuse_wrapper;
 import edu.jhu.icm.ecgFormatConverter.muse.MuseXML_wrapper;
 import edu.jhu.icm.ecgFormatConverter.philips.Philips103_wrapper;
 import edu.jhu.icm.ecgFormatConverter.philips.Philips104_wrapper;
-import edu.jhu.icm.ecgFormatConverter.schiller.SCHILLER_wrapper;
 import edu.jhu.icm.ecgFormatConverter.rdt.RDTParser;
+import edu.jhu.icm.ecgFormatConverter.schiller.SCHILLER_wrapper;
 import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBApplicationWrapper;
 import edu.jhu.icm.ecgFormatConverter.xy.XYWrapper;
+import edu.jhu.icm.enums.LeadEnum;
 import edu.jhu.icm.parser.Writer;
 
 /** Loads ECG data from one of several file formats and 
@@ -23,7 +26,9 @@ public class ECGformatConverter {
 	private int aduGain = 200;
 	private int channels=0; // number of channels read by LoadXXX methods
 	private int samplesPerChannel=0; // rows read by LoadXXX methods
-	private float samplingRate=0; // Hz read by LoadXXX methods	
+	private float samplingRate=0; // Hz read by LoadXXX methods
+	private String leadNames;
+	private fileFormat inputFileFormat = null;
 	
 	private int numberOfPoints;
 	
@@ -73,6 +78,8 @@ public class ECGformatConverter {
 	 * @return - number of rows written, -1 on error.
 	 */
 	public int convert(fileFormat inputFormat, fileFormat outputFormat, String fileName, int signalsRequested, String inputPath, String outputPath) {
+		
+		inputFileFormat = inputFormat;
 		
 		String recordName = fileName.substring(0, fileName.lastIndexOf(".")); // trim off the extension
 		
@@ -268,6 +275,7 @@ public class ECGformatConverter {
 			data = wfdbWrap.getData();
 			aduGain = wfdbWrap.getAduGain();
 			numberOfPoints = wfdbWrap.getNumberOfPoints();
+			this.setLeadNames(wfdbWrap.getLeadNames());
 			return true;
 		}else { 
 			return false;
@@ -309,6 +317,7 @@ public class ECGformatConverter {
 				aduGain = philipsWrap.getAduGain();
 				numberOfPoints = philipsWrap.getNumberOfPoints();
 				philipsRestingecgdata = philipsWrap.getPhilipsECG();
+				this.setLeadNames(philipsWrap.getLeadNames());
 				return true;
 			}
 			
@@ -331,6 +340,7 @@ public class ECGformatConverter {
 			aduGain = museXMLWrap.getAduGain();
 			numberOfPoints = museXMLWrap.getNumberOfPoints();
 			museXMLData = museXMLWrap.getMuseXML();
+			this.setLeadNames(museXMLWrap.getLeadNames());
 			return true;
 		}
 		
@@ -351,6 +361,7 @@ public class ECGformatConverter {
 				aduGain = philipsWrap.getAduGain();
 				numberOfPoints = philipsWrap.getNumberOfPoints();
 				philipsRestingecgdata = philipsWrap.getPhilipsECG();
+				this.setLeadNames(philipsWrap.getLeadNames());
 				return true;
 			}
 			
@@ -376,6 +387,7 @@ public class ECGformatConverter {
 				aduGain = schillerWrap.getAduGain();
 				numberOfPoints = schillerWrap.getNumberOfPoints();
 				comXiriuzSemaXmlSchillerEDISchillerEDI = schillerWrap.getComXiriuzSemaXmlSchillerEDISchillerEDI();
+				this.setLeadNames(schillerWrap.getLeadNames());
 				return true;
 			}
 			
@@ -482,4 +494,56 @@ public class ECGformatConverter {
 		return samplingRate;
 	}
 
+	private void setLeadNames(List<String> leadNames) {
+		String leadNamesOut = null;
+		
+		if(leadNames != null){
+			boolean leadNamesOK = true;
+			String lName = null;
+			try{
+				for (Iterator<String> iterator = leadNames.iterator(); iterator.hasNext();) {
+					lName = iterator.next();
+					if(LeadEnum.valueOf(lName) == null){
+						leadNamesOK = false;
+						break;
+					}
+				}
+			}catch (Exception e){
+				System.err.println("Lead not found: " + lName);
+				leadNamesOK = false;
+			}
+			
+			if(!leadNamesOK){
+				if(this.getChannelCount() == 15){
+					switch (inputFileFormat) {
+						case MUSEXML:
+						case PHILIPS103:
+						case PHILIPS104:
+							leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6,V3R,V4R,V7";
+							break;
+						default:
+							leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6,VX,VY,VZ";
+							break;
+					}
+				}else if(this.getChannelCount() == 12){
+					leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6";
+				}
+			}else{
+				StringBuilder sb = new StringBuilder();
+				for (String l : leadNames) {
+					sb.append(l).append(',');
+				}
+				sb.deleteCharAt(sb.length()-1);
+				leadNamesOut = sb.toString();
+			}
+		}
+		
+		this.leadNames = leadNamesOut;
+	}
+
+	public String getLeadNames() {
+		return leadNames;
+	}
+
 }
+

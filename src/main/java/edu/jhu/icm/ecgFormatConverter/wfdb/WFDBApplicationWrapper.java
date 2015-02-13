@@ -1,11 +1,15 @@
 package edu.jhu.icm.ecgFormatConverter.wfdb;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
@@ -31,11 +35,13 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
 	private int[][] data;
 	private String sep = File.separator;
 	protected String[] aSigNames;
+	private List<String> leadNames;
 	
 	public WFDBApplicationWrapper() {
 		Properties pr = System.getProperties();
 		pr.put("java.library.path", "/usr/lib");
 		System.setProperties(pr);
+		leadNames = new ArrayList<String>();
 	}
 	
 	/** Reads the specified WFDB record into the data array
@@ -54,7 +60,7 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
 		    
 		    this.executeCommand(command, null, "/");
 		    
-		    String freq = this.stdReturnHandler();
+		    String freq = this.stdReturnHandler(false);
 		    
 		    log.info("WFDBtoArray frequency: " + freq);
 			sampleFrequency = Float.parseFloat(freq);
@@ -211,38 +217,66 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
 	public int getSignalCount(String recordNm) {
 		int count = 0;
 		File headerFile = new File(filePath + recordNm + ".hea");
-		FileInputStream fis;
-		boolean isEOF = false;
-
+		
 		if (!headerFile.exists()) {
 			log.error(headerFile.getName() + " does not exist.");
 			return -1; // unable to read header file
 		}
 		
+		BufferedReader reader = null;
 		try {
-			fis = new FileInputStream(headerFile);
-		} catch (FileNotFoundException e) {
-			fis = null;
-			log.error(e.getMessage());
-			return -3;
-		}
-		
-		while(!isEOF) {
-			String line =readLine(fis);
-			if(line==null) {
-				isEOF=true;
-			}else {
+			reader = new BufferedReader(new FileReader(headerFile));
+			
+			int lineCount = 0;
+			String line = null;
+			while((line = reader.readLine()) != null){
 				if(!line.startsWith("#")) {
 					if(line.length()>0) { // first non-comment line is the record line.
-						count = parseHeaderRecordLine(line);
-						if(count == -1){
-							return -2; // incorrect header file format
+						if(lineCount == 0){
+							count = parseHeaderRecordLine(line);
+							if(count == -1){
+								return -2; // incorrect header file format
+							}
+							break;
 						}
-						break;
+						lineCount++;
 					}
+					
+				}
+			}
+			reader.close();
+			
+			
+			String command = "signame -r " + filePath + recordNm;
+		    log.info("WFDBtoArray command: " + command);
+		    
+		    this.executeCommand(command, null, "/");
+		    
+		    String signameRet = this.stdReturnHandler(true);
+		    
+		    if(signameRet != null){
+		    	String[] signames = signameRet.split("\n");
+		    	for (String name : signames) {
+					leadNames.add(name.toUpperCase());
+				}
+		    }
+			
+		} catch (FileNotFoundException e) {
+			log.error(e.getMessage());
+			return -3;
+		} catch (IOException e) {
+			log.error(e.getMessage());
+			return -3;
+		}finally{
+			if(reader != null){
+				try {
+					reader.close();
+				} catch (IOException e) {
+					log.error(e.getMessage());
 				}
 			}
 		}
+	
 		return count;
 	}
 	
@@ -389,6 +423,11 @@ public class WFDBApplicationWrapper extends ApplicationWrapper implements Wrappe
 
 	public void setData(int[][] data) {
 		this.data = data;
+	}
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 
 }

@@ -2,12 +2,15 @@ package edu.jhu.icm.ecgFormatConverter.philips;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import org.sierraecg.DecodedLead;
 import org.sierraecg.PreprocessReturn;
 import org.sierraecg.SierraEcgFiles;
+import org.sierraecg.schema.Leadmeasurement;
 import org.sierraecg.schema.Restingecgdata;
 import org.sierraecg.schema.Signalcharacteristics;
 
@@ -22,6 +25,7 @@ public class Philips103_wrapper implements WrapperLoader{
 	private float samplingRate;
 	private int sampleCount;
 	private int aduGain = 200;
+	private List<String> leadNames;
 	
 	// Initialization happens outside of the constructor since the methods called throw exceptions.
 	public void init(String filePath) throws IOException, JAXBException {
@@ -36,6 +40,14 @@ public class Philips103_wrapper implements WrapperLoader{
 	public boolean parse() {
 		if(this.isInitialized()) {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
+			
+			List<Leadmeasurement> leads = philipsECG.getMeasurements().getLeadmeasurements().getLeadmeasurement();
+			if(leads != null){
+				leadNames = new ArrayList<String>();
+				for (Leadmeasurement lead : leads) {
+					leadNames.add(lead.getLeadname().toUpperCase());
+				}
+			}
 			
 			samplingRate = Float.valueOf(signalMetaData.getSamplingrate());
 			validChannels = Integer.valueOf(signalMetaData.getNumberchannelsvalid());
@@ -109,6 +121,11 @@ public class Philips103_wrapper implements WrapperLoader{
 
 	public int getNumberOfPoints() {
 		return numberOfPoints;
+	}
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 	
 }

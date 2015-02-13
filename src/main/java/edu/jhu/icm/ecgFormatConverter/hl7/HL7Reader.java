@@ -1,7 +1,9 @@
 package edu.jhu.icm.ecgFormatConverter.hl7;
 //package edu.jhu.icm.ecgFormatConverter;
 
-import java.io.*;
+import java.io.File;
+import java.util.List;
+
 import org.jfree.data.xy.XYDataset;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
@@ -17,6 +19,7 @@ public class HL7Reader implements WrapperLoader{
 	private int counts;
 	private int[][] data; 
 	private int aduGain = 200;
+	private List<String> leadNames;
 
 	private static final boolean verbose = true;
 
@@ -193,5 +196,11 @@ public class HL7Reader implements WrapperLoader{
 	@Override
 	public int getNumberOfPoints() {
 		return this.getChannels() + this.getSamplesPerChannel();
+	}
+
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 };

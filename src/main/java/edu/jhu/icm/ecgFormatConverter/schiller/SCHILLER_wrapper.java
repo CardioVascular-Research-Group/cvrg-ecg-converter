@@ -2,6 +2,7 @@ package edu.jhu.icm.ecgFormatConverter.schiller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -9,6 +10,7 @@ import org.cvrgrid.schiller.DecodedLead;
 import org.cvrgrid.schiller.PreprocessReturn;
 import org.cvrgrid.schiller.SchillerEcgFiles;
 import org.cvrgrid.schiller.jaxb.beans.ComXiriuzSemaXmlSchillerEDISchillerEDI;
+import org.cvrgrid.schiller.jaxb.beans.Wavedata;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 //import org.cvrgrid.schiller.jaxb.beans.Wavedata;
@@ -22,6 +24,7 @@ public class SCHILLER_wrapper implements WrapperLoader{
 	private float samplingRate;
 	private int sampleCount;
 	private int aduGain = 200;
+	private List<String> leadNames;
 	
 	// Initialization happens outside of the constructor since the methods called throw exceptions.
 	public void init(String filePath) throws IOException, JAXBException {
@@ -31,6 +34,7 @@ public class SCHILLER_wrapper implements WrapperLoader{
 		samplingRate = Float.valueOf(ret.getPrepSampleRate());
 		comXiriuzSemaXmlSchillerEDISchillerEDI = ret.getComXiriuzSemaXmlSchillerEDISchillerEDI();
 		leadData = ret.getDecodedLeads();
+		leadNames = ret.getLeadNames();
 	}
 	
 	public boolean parse() {
@@ -106,6 +110,11 @@ public class SCHILLER_wrapper implements WrapperLoader{
 
 	public ComXiriuzSemaXmlSchillerEDISchillerEDI getComXiriuzSemaXmlSchillerEDISchillerEDI() {
 		return comXiriuzSemaXmlSchillerEDISchillerEDI;
+	}
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 	
 }

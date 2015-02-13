@@ -1,6 +1,7 @@
 package edu.jhu.icm.ecgFormatConverter.muse;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 import edu.jhu.icm.parser.MuseBase64Parser;
@@ -17,6 +18,7 @@ public class MuseXML_wrapper implements WrapperLoader{
 	private float samplingRate;
 	private int sampleCount;
 	private String museRawXML;
+	private List<String> leadNames;
 	
 	// Initialization happens outside of the constructor since the methods called throw exceptions.
 	public MuseXML_wrapper () {
@@ -61,6 +63,7 @@ public class MuseXML_wrapper implements WrapperLoader{
 			
 			aduGain = base64Parser.getAduGain();
 			museRawXML = base64Parser.getInitialXML();
+			leadNames = base64Parser.getLeadNames();
 			
 			return true;
 		} catch (Exception e) {
@@ -106,6 +109,11 @@ public class MuseXML_wrapper implements WrapperLoader{
 	
 	public String getMuseXML() {
 		return museRawXML;
+	}
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 	
 }

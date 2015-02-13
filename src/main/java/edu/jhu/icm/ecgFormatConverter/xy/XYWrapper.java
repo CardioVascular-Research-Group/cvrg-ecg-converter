@@ -8,8 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Vector;
-import java.lang.Math;
 
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 
@@ -23,6 +23,7 @@ public class XYWrapper implements WrapperLoader{
 	private static int DEFAULT_HERTZ = 1000;
 	private double errorTolerance = .10;
 	private int aduGain = 200;
+	private List<String> leadNames;
 
 	private int[][] data; //[channel][index] or [column][row], changed from double, since the largest WFDB resolution is 16 bits.
 	private static final boolean verbose = true;
@@ -392,5 +393,10 @@ public class XYWrapper implements WrapperLoader{
 	@Override
 	public int getNumberOfPoints() {
 		return this.getChannels() + this.getSamplesPerChannel();
+	}
+
+	@Override
+	public List<String> getLeadNames() {
+		return leadNames;
 	}
 }
