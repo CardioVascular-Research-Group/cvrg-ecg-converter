@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import edu.jhu.icm.ecgFormatConverter.hl7.HL7Reader;
+import edu.jhu.icm.ecgFormatConverter.hl7.HL7_wrapper;
 import edu.jhu.icm.ecgFormatConverter.muse.GEMuse_wrapper;
 import edu.jhu.icm.ecgFormatConverter.muse.MuseXML_wrapper;
 import edu.jhu.icm.ecgFormatConverter.philips.Philips103_wrapper;
@@ -222,17 +223,24 @@ public class ECGformatConverter {
 		boolean ret = false;
 		if (verbose) System.err.println("loadHL7 called for:" + hl7FileName);
 		
-		HL7Reader hl7Par =  new HL7Reader(hl7FileName);
-		
-		if(hl7Par.parse()) {
-			samplingRate = (float)hl7Par.getSamplingRate();
-			samplesPerChannel = hl7Par.getSamplesPerChannel();
-			channels = hl7Par.getChannels();
-			data = hl7Par.getData();
-			aduGain = hl7Par.getAduGain();
-			numberOfPoints = hl7Par.getNumberOfPoints();
-			ret = true;
-			if (verbose) System.err.println("HL7 file parsed successfully, found " + channels + " leads, with " + samplesPerChannel + " data points.");
+		try {
+			//HL7Reader hl7 =  new HL7Reader(hl7FileName);
+			
+			HL7_wrapper hl7 = new HL7_wrapper(hl7FileName);
+			
+			if(hl7.parse()) {
+				samplingRate = (float)hl7.getSamplingRate();
+				samplesPerChannel = hl7.getSamplesPerChannel();
+				channels = hl7.getChannels();
+				data = hl7.getData();
+				aduGain = hl7.getAduGain();
+				numberOfPoints = hl7.getNumberOfPoints();
+				this.setLeadNames(hl7.getLeadNames());
+				ret = true;
+				if (verbose) System.err.println("HL7 file parsed successfully, found " + channels + " leads, with " + samplesPerChannel + " data points.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return ret;

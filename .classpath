@@ -16,5 +16,6 @@
   <classpathentry kind="var" path="M2_REPO/org/sierraecg/jsierraecg/1.0-SNAPSHOT/jsierraecg-1.0-SNAPSHOT.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/cvrgrid/philips/Phlilips1.04/1.0-SNAPSHOT/Phlilips1.04-1.0-SNAPSHOT.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/cvrgrid/schiller/schiller-data/1.0-SNAPSHOT/schiller-data-1.0-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/cvrgrid/hl7aecg/hl7aECG/1.0-SNAPSHOT/hl7aECG-1.0-SNAPSHOT.jar"/>
   <classpathentry kind="var" path="M2_REPO/hl7OrgV3/aecg/1.0/aecg-1.0.jar"/>
 </classpath>

@@ -23,6 +23,7 @@ import org.apache.xmlbeans.XmlException;
  * 
  * @author cyang
  */
+@Deprecated
 public class Reader {
     static Logger logger = Logger.getLogger(Reader.class.getName());
 

@@ -9,7 +9,7 @@ import org.jfree.data.xy.XYDataset;
 import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
 import edu.jhu.icm.parser.EcgLeadData;
 
-
+@Deprecated
 public class HL7Reader implements WrapperLoader{
 
 	private File hl7File;

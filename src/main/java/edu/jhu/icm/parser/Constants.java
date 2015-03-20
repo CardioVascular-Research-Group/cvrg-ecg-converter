@@ -7,6 +7,7 @@ package edu.jhu.icm.parser;
  * constants for annoted ecg
  * @author cyang
  */
+@Deprecated
 public class Constants {
 
 	public static final String codeTA="TIME_ABSOLUTE";

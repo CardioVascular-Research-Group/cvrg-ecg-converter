@@ -3,29 +3,19 @@
  *
  */
 
-package edu.jhu.icm.parser;
+package edu.jhu.icm.ecgFormatConverter.hl7;
 
-import hl7OrgV3.GLISTPQ;
-import hl7OrgV3.GLISTTS;
-import hl7OrgV3.PORTMT020001Component9;
-import hl7OrgV3.PORTMT020001Sequence;
-import hl7OrgV3.PQ;
-import hl7OrgV3.SLISTPQ;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
-//import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlSimpleList;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
+import org.cvrgrid.hl7aecg.jaxb.beans.GLISTPQ;
+import org.cvrgrid.hl7aecg.jaxb.beans.GLISTTS;
+import org.cvrgrid.hl7aecg.jaxb.beans.PORTMT020001Component9;
+import org.cvrgrid.hl7aecg.jaxb.beans.PORTMT020001Sequence;
+import org.cvrgrid.hl7aecg.jaxb.beans.PQ;
+import org.cvrgrid.hl7aecg.jaxb.beans.SLISTPQ;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
@@ -37,58 +27,24 @@ import org.jfree.data.xy.XYDataset;
  * @author cyang
  *  
  */
-@Deprecated
-public class EcgLeadData {
-
-//    static Logger logger = Logger.getLogger(EcgLeadData.class.getName());
+public class HL7_EcgLeadData {
 
     private BigDecimal[] leadOriginValue, leadScaleValue;
-
-    public double getLeadScaleValue(int lead) {
-		return leadScaleValue[lead].doubleValue();
-	}
-
  	private String[] leadOriginUnit, leadScaleUnit;
-
-    public String getLeadScaleUnit(int lead) {
-		return leadScaleUnit[lead];
-	}
-
 	private String[] leadName;
-
-    private List[] leadDigits;
-
-    //private List time;
+    private List<BigInteger>[] leadDigits;
     private String timeStart;
-
     private BigDecimal timeIncrement;
-
-    public double getTimeIncrement() {
-		return timeIncrement.doubleValue();
-	}
-
 	private String timeUnit;
-
-    public String getTimeUnit() {
-		return timeUnit;
-	}
-
 	private List timeSeries;
 
     // jfreechart
     private int numberOfLeads;
-
     private int numberOfPoints;
-
-    public int getNumberOfPoints() {
-		return numberOfPoints;
-	}
 
 	// 1 based index
     private int pageNumber = 1;
-
     private int pageSize = 3000;
-
     private int pageCount;
 
     public void pageForward(int step) {
@@ -119,78 +75,8 @@ public class EcgLeadData {
 
     private void calcPageCount() {
         if (pageSize != 0) {
-            double tmp = Math.ceil(((double) this.numberOfPoints)
-                    / this.pageSize);
+            double tmp = Math.ceil(((double) this.numberOfPoints) / this.pageSize);
             this.pageCount = (int) tmp;
-//            logger.debug("page count is " + this.pageCount);
-        }
-    }
-
-    /**
-     * test run
-     * 
-     * @param args
-     */
-//    public static void main(String[] args) {
-//        Reader.initLogger();
-//        Reader r = new Reader("example.xml");
-//        EcgLeadData ds = new EcgLeadData(r.getC9s());
-//        ds.pageForward(2);
-//        ds.writeToFile("total.png");
-//    }
-
-    /**
-     * write sequence to outputstream.
-     * 
-     * @param os
-     *            outputstream object
-     */
-    public void writeToStream(OutputStream os) {
-        saveChartAsPng(DrawEcg.combinedPlot(this), os);
-    }
-
-
-    /**
-     * write sequence data to file
-     * 
-     * @param fileName
-     *            file name
-     */
-    public void writeToFile(String fileName) {
-
-        FileOutputStream fos = null;
-        try {
-
-            fos = new FileOutputStream(new File(fileName));
-            saveChartAsPng(DrawEcg.combinedPlot(this), fos);
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-
-//            logger.error(e.getMessage());
-        } catch (IOException e) {
-//            logger.error(e.getMessage());
-        }
-
-    }
-    
-    /**
-     * save chart as png to an outputstream
-     * 
-     * @param chart
-     *            JFreeChart object
-     * @param os
-     *            destination outputStream
-     */
-    private void saveChartAsPng(JFreeChart chart, OutputStream os) {
-
-        try {
-            int height = this.numberOfLeads * 200;
-            ChartUtilities.writeChartAsPNG(os, chart, 1200, height);
-        } catch (FileNotFoundException e) {
-//            logger.error(e.getMessage());
-        } catch (IOException e) {
-//            logger.error(e.getMessage());
         }
     }
 
@@ -200,78 +86,66 @@ public class EcgLeadData {
      * @param c9s
      *            array of data
      */
-    public EcgLeadData(PORTMT020001Component9[] c9s) {
+    public HL7_EcgLeadData(List<PORTMT020001Component9> c9s) {
         if (c9s == null) {
-//            logger.error("c9s is null");
             return;
         }
-//        logger.debug("number of data series: " + c9s.length);
-        this.numberOfLeads = c9s.length - 1;
+
+        this.numberOfLeads = c9s.size() - 1;
         this.leadOriginUnit = new String[numberOfLeads];
         this.leadOriginValue = new BigDecimal[numberOfLeads];
         this.leadScaleUnit = new String[numberOfLeads];
         this.leadScaleValue = new BigDecimal[numberOfLeads];
         this.leadName = new String[numberOfLeads];
-        this.leadDigits = new XmlSimpleList[numberOfLeads];
+        this.leadDigits = new ArrayList[numberOfLeads];
         int leadIndex = -1;
         boolean isSet = false;
-        for (int i = 0; i < c9s.length; i++) {
-            PORTMT020001Sequence sequence = c9s[i].getSequence();
+        
+        for (PORTMT020001Component9 component9 : c9s) {
+		    PORTMT020001Sequence sequence = component9.getSequence();
             String code = sequence.getCode().getCode();
-//            logger.debug(code);
-            XmlObject value = sequence.getValue();
-            if (code.equals(Constants.codeTA)) {
+            
+            Object value = sequence.getValue();
+            if (code.equals(HL7_Constants.CODE_TIME_ABSOLUTE)) {
                 if (value instanceof GLISTTS) {
                     GLISTTS g = (GLISTTS) value;
                     this.timeStart = g.getHead().getValue();
-//                    logger.debug("time starts at " + timeStart);
+
                     // get increment
-                    this.timeIncrement = (BigDecimal) g.getIncrement()
-                            .getValue();
+                    this.timeIncrement = new BigDecimal(g.getIncrement().getValue());
                     this.timeUnit = g.getIncrement().getUnit();
 
-//                    logger.debug(this.timeIncrement.toString() + this.timeUnit);
                 } else {
                     // throw exception?
                 }
-            } else if (code.equals(Constants.codeRA)) {
+            } else if (code.equals(HL7_Constants.CODE_TIME_RELATIVE)) {
                 if (value instanceof GLISTPQ) {
                     GLISTPQ g = (GLISTPQ) value;
                     this.timeStart = g.getHead().getValue().toString();
-//                    logger.debug("time starts at " + timeStart);
+//                  
                     // get increment
-                    this.timeIncrement = (BigDecimal) g.getIncrement()
-                            .getValue();
+                    this.timeIncrement = new BigDecimal(g.getIncrement().getValue());
                     this.timeUnit = g.getIncrement().getUnit();
 
-//                    logger.debug(this.timeIncrement.toString() + this.timeUnit);
                 } else {
                     // throw exception?
                 }
             } else {
                 leadIndex++;
-                this.leadName[leadIndex] = code;
+                this.leadName[leadIndex] = code.replace(HL7_Constants.CODE_LEAD_PREFIX, "");
                 if (value instanceof SLISTPQ) {
                     SLISTPQ s = (SLISTPQ) value;
                     PQ origin = s.getOrigin();
-                    this.leadOriginValue[leadIndex] = (BigDecimal) origin
-                            .getValue();
+                    this.leadOriginValue[leadIndex] = new BigDecimal(origin.getValue());
                     this.leadOriginUnit[leadIndex] = origin.getUnit();
-//                    logger.debug(code + ": orgin at "
-//                            + leadOriginValue[leadIndex]
-//                            + leadOriginUnit[leadIndex]);
 
                     PQ scale = s.getScale();
-                    this.leadScaleValue[leadIndex] = (BigDecimal) scale
-                            .getValue();
+                    this.leadScaleValue[leadIndex] = new BigDecimal(scale.getValue());
                     this.leadScaleUnit[leadIndex] = scale.getUnit();
-//                    logger.debug(code + ": scale is "
-//                            + leadScaleValue[leadIndex]
-//                            + leadScaleUnit[leadIndex]);
-                    // digits
-                    List digits = s.getDigits();
 
-                    //logger.debug(s.getDigits().getClass().getName());
+                    // digits
+                    List<BigInteger> digits = s.getDigits();
+
                     this.leadDigits[leadIndex] = digits;
                     if (!isSet) {
                         this.numberOfPoints = digits.size();
@@ -548,4 +422,21 @@ public class EcgLeadData {
     public int getPageCount() {
         return pageCount;
     }
+    
+    public int getNumberOfPoints() {
+		return numberOfPoints;
+	}
+    public String getTimeUnit() {
+		return timeUnit;
+	}
+    public double getTimeIncrement() {
+		return timeIncrement.doubleValue();
+	}
+    public String getLeadScaleUnit(int lead) {
+		return leadScaleUnit[lead];
+	}
+    public double getLeadScaleValue(int lead) {
+		return leadScaleValue[lead].doubleValue();
+	}
+
 }
