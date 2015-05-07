@@ -1,154 +1,146 @@
 package edu.jhu.icm.ecgFormatConverter.rdt;
-// package nodeDataService;
+/*
+Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
-import java.io.BufferedInputStream;
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+* @author Michael Shipway, Andre Vilardo, Chris Jurado
+*/
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
-import edu.jhu.icm.ecgFormatConverter.WrapperLoader;
-import edu.jhu.icm.ecgFormatConverter.WrapperWriter;
+import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 
-public class RDTParser implements WrapperWriter, WrapperLoader{
+public class RDTParser {
 
 	private File rdtFile;
+	private InputStream inputStream;
 	private int channels, samplingRate;
 	private int counts;
 	private int[][] data; //[channel][index] or [column][row], changed from double, since the largest WFDB resolution is 16 bits.
 	private static final ByteOrder BYTEORDER = ByteOrder.LITTLE_ENDIAN;
 	private static final int HEADERBYTES = 4;
 	private static final int SHORTBYTES = 2;
-	private static final boolean verbose = true;
 	private int aduGain = 200;
 	private List<String> leadNames;
+	private long fileSize;
 
+	public RDTParser(){
+		this.inputStream = null;
+		this.rdtFile = null;
+	}
+	
 	public RDTParser(File rdtFile) {
+		this.inputStream = null;
 		this.rdtFile = rdtFile;
 	}
+	
+	public RDTParser(InputStream inputStream) {
+		this.rdtFile = null;
+		this.inputStream = inputStream;
+	}
 
+	public void parse() throws ECGConverterException, IOException{
+		if(inputStream != null){
+			parseInputStream();
+		} else if(rdtFile != null) {
+			parseFile();
+		} else {
+			throw new ECGConverterException("RDT Parser has nothing to parse.");
+		}
+	}
+	
+	private void parseFile() throws ECGConverterException, IOException{
+
+		this.fileSize = rdtFile.length();
+		if (fileSize > Integer.MAX_VALUE) {
+			throw new ECGConverterException("file size exceeding maximum int value.");
+		}
+
+		try {
+			this.inputStream = new FileInputStream(rdtFile);
+		} catch (FileNotFoundException e) {
+			throw new ECGConverterException("RDT source file not found.\n" + e.getMessage());
+		}	
+		parseInputStream();
+	}
 	
 	/** Opens the File object which was passed into the constructor, 
 	 *  validate it, parse out the header data, and then parse the 
 	 *  ECG data, saving the results in private variables.
 	 * 
 	 * @return - success/fail
+	 * @throws IOException 
+	 * @throws ECGConverterException 
 	 */
-	public boolean parse() {
-		// validate the file 
-		if (!rdtFile.exists()) {
-			if (verbose) {
-				System.err.println(this.rdtFile.getName() + " does not exist.");
-			}
-			return false;
-		}
+	private void parseInputStream() throws ECGConverterException, IOException {
 
-		long fileSize = rdtFile.length();
-		if (fileSize > Integer.MAX_VALUE) {
-			System.err.println("file size exceeding maximum int value.");
-			return false;
-		}
-		FileInputStream rdtFis;
-		try {
-			rdtFis = new FileInputStream(rdtFile);
-		} catch (FileNotFoundException e) {
-			rdtFis = null;
-			System.err.println(e.getMessage());
-			return false;
-		}
-
-		BufferedInputStream rdtBis = new BufferedInputStream(rdtFis);
 		// 	parse the file's header for the short values "channels" and "samplingRate"
 		byte[] header = new byte[HEADERBYTES];
 		try {
-			int result = rdtBis.read(header);
+			int result = inputStream.read(header);
 			if (result != HEADERBYTES) {
-				System.err.println("error occured while reading header.");
-				rdtBis.close();
-				return false;
+				throw new ECGConverterException ("An error occured while reading header.");
 			}
 			ByteBuffer bbHead = ByteBuffer.wrap(header);
 			bbHead.order(BYTEORDER);
 			this.channels = bbHead.getShort();
 			this.samplingRate = bbHead.getShort();
-		} catch (IOException e) {
-			if (verbose) {
-				System.err.println(e.getMessage());
+			
+			// Parse ECG data
+			final int REALBUFFERSIZE = (int) fileSize - HEADERBYTES;
+			if (REALBUFFERSIZE % (channels * SHORTBYTES) != 0) {
+				throw new ECGConverterException("RDT file is not aligned.");
 			}
-			try {
-				rdtBis.close();
-			} catch (IOException e1) {
-			}
-			return false;
-		}
-		
-		// Parse ECG data
-		final int REALBUFFERSIZE = (int) fileSize - HEADERBYTES;
-		if (REALBUFFERSIZE % (channels * SHORTBYTES) != 0) {
-			System.err.println("rdt file is not aligned.");
-			try {
-				rdtBis.close();
-			} catch (IOException e1) {
-			}
-			return false;
-		}
-
-		this.counts = REALBUFFERSIZE / (channels * SHORTBYTES);
-		this.data = new int[channels][counts];
-		if (verbose) {
-			System.out.println("'channels' is " + channels + " 'count' is "
-					+ this.counts);
-		}
-		byte[] body = new byte[REALBUFFERSIZE];
-		boolean ret = false;
-		try {
-			int length = rdtBis.read(body);
+	
+			this.counts = REALBUFFERSIZE / (channels * SHORTBYTES);
+			this.data = new int[channels][counts];
+			byte[] body = new byte[REALBUFFERSIZE];
+			
+			int length = inputStream.read(body);
 			if (length != REALBUFFERSIZE) {
-				System.err.println("error while reading data into buffer");
-				try {
-					rdtBis.close();
-					rdtFis.close();
-				} catch (IOException e2) {
-				}
-				return false;
+				throw new ECGConverterException("An error occurred while reading data into buffer");
 			}
 
 			ByteBuffer bbBody = ByteBuffer.wrap(body);
 			bbBody.order(BYTEORDER);
-			if (verbose) {
-				System.out.println("First three rows of (RDT) values:");
-			}
 			for (int index = 0; index < this.counts; index++) {
 				for (int channel = 0; channel < this.channels; channel++) {
 					short value = bbBody.getShort();
-					if ((index < 3) & verbose) {
-						System.out.print(value + " ");
-					}
 					this.data[channel][index] = value;
 				}
-				if ((index < 3) & verbose) {
-					System.out.println();
-				}
 			}
-			ret = true;
-		} catch (IOException e1) {
 
+		} catch (IOException e) {
+			throw new ECGConverterException(e.getMessage());
 		} finally {
-			try {
-				rdtBis.close();
-				rdtFis.close();
-			} catch (IOException e2) {
-			}
+			inputStream.close();
 		}
-		return ret;
 	}
 
-	public int writeRDT() {
+	public int writeRDTtoFile() {
 		FileOutputStream fos;
 		DataOutputStream dos;
 		int s=0;
@@ -163,19 +155,10 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 			w16(samplingRate, dos);
 			
 			// ********* samples 
-			if (verbose) {
-				System.out.println("First three rows of values written:");
-			}
 			for (s = 0; s < counts; s++) {
 				for(int c = 0; c < channels;c++) {
 					w16(data[c][s],dos);
-					if ((s < 3) & verbose) {
-						System.out.print(data[c][s] + " ");
-					}
 				}					
-				if ((s < 3) & verbose) {
-					System.out.println();
-				}
 			}
 			dos.flush();
 			dos.close();
@@ -184,18 +167,45 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 		}
 		return s;
 	}
-//	
+	
+	public InputStream writeRDTtoInputStream() throws IOException {
+		PipedInputStream inputStream = new PipedInputStream();
+		OutputStream outputStream = new PipedOutputStream(inputStream);//BADBADBAD TODO: Multi-thread
+		
+		int s=0;
+
+		try {
+
+			// Header 4 bytes [sample frequency, Hz][# of channels]
+			w16(channels,outputStream);
+			w16(samplingRate, outputStream);
+			
+			// ********* samples 
+			for (s = 0; s < counts; s++) {
+				for(int c = 0; c < channels;c++) {
+					w16(data[c][s],outputStream);
+				}					
+			}
+			outputStream.flush();
+			outputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return inputStream;
+	}
+
+	
 	/**
 	 * write only the least significant byte of the int to the output stream.
 	 * 
 	 * @param outByte
 	 * @param og
 	 */
-	public void w8(int outWord, DataOutputStream dos) {
+	private void w8(int outWord, OutputStream dos) {
 		try {
-			dos.writeByte(outWord);
+			dos.write(outWord);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -207,7 +217,7 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 	 * @param outWord
 	 * @param og - WFDB_ogdata
 	 */
-	public void w16(int outWord, DataOutputStream dos){
+	private void w16(int outWord, OutputStream dos){
 		try {
 			int l, h;
 
@@ -228,7 +238,7 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 	 * @param outWord  - one sample from one signal(channel), 12 bits
 	 * @param og
 	 */
-	public void w61(int outWord, DataOutputStream dos){
+	private void w61(int outWord, OutputStream dos){
 		try {
 			int l, h;
 
@@ -240,23 +250,6 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public void viewData(int count) {
-		if (this.data != null) {
-			for (int index = 0; index < count; index++) {
-				String line = "";
-				for (int channel = 0; channel < this.channels; channel++) {
-					line += this.data[channel][index] + ", ";
-				}
-				System.out.println(line);
-			}
-		}
-	}
-
-	public void viewHeader() {
-		System.out.println("(Header) # of channels is " + this.channels
-				+ "; sampling rate is " + this.samplingRate + "Hz");
 	}
 
 	public int[][] getData() {
@@ -283,38 +276,27 @@ public class RDTParser implements WrapperWriter, WrapperLoader{
 		return aduGain;
 	}
 
-	@Override
 	public void setSamplesPerChannel(int samplesPerChannel) {
 		counts = samplesPerChannel;
 	}
 
-	@Override
 	public void setSamplingRate(float frequency) {
 		samplingRate = Float.valueOf(frequency).intValue();
 	}
 
-
-	@Override
 	public float getSamplingRate() {
 		return Integer.valueOf(samplingRate).floatValue();
 	}
 
-
-	@Override
 	public int getSamplesPerChannel() {
 		return counts;
 	}
 
-
-	@Override
 	public int getNumberOfPoints() {
 		return counts * channels;
 	}
 
-
-	@Override
 	public List<String> getLeadNames() {
 		return leadNames;
 	}
-	
-};
+}

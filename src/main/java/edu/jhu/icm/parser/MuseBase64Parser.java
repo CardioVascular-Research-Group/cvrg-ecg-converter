@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -56,11 +59,7 @@ public class MuseBase64Parser {
 		return aduGain;
 	}
 	
-	public void parse(String fileName) throws FileNotFoundException, IOException, JDOMException {
-		File xmlFile = new File(fileName);
-		
-		BufferedReader xmlBuf = new BufferedReader(new FileReader(xmlFile));
-		
+	public void parse(BufferedReader xmlBuf) throws IOException, JDOMException{
 		String oneLine = xmlBuf.readLine();
 		while(oneLine != null) {
 			// Since there were parsing problems when using a DTD instead of schema (mainly, we don't have the DTD and no online location was given),
@@ -74,8 +73,18 @@ public class MuseBase64Parser {
 		xmlBuf.close();
 		
 		this.retrieveWaveformData();
-		this.decodeWaveformData();
-		
+		this.decodeWaveformData();	
+	}
+	
+	public void parse(InputStream inputStream) throws IOException, JDOMException{
+		BufferedReader xmlBuf = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+		parse(xmlBuf);
+	}
+	
+	public void parse(String fileName) throws FileNotFoundException, IOException, JDOMException {
+		File xmlFile = new File(fileName);	
+		BufferedReader xmlBuf = new BufferedReader(new FileReader(xmlFile));
+		parse(xmlBuf);
 	}
 	
 	private void retrieveWaveformData() throws JDOMException {

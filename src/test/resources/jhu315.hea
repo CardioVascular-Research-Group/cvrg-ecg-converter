@@ -1,0 +1,4 @@
+jhu315 3 1000.0 319096
+jhu315.dat 16 200.0 12 0 -66 -26350 0 ECG from a file in another format jhu315, column 0 
+jhu315.dat 16 200.0 12 0 -73 -5791 0 ECG from a file in another format jhu315, column 1 
+jhu315.dat 16 200.0 12 0 -1232 -9298 0 ECG from a file in another format jhu315, column 2 
