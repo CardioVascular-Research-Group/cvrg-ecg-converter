@@ -27,7 +27,7 @@ public class ECGFile {
 	public int samplesPerChannel = 0 ; // rows read by LoadXXX methods
 	public float samplingRate = 0; // Hz read by LoadXXX methods
 	public String leadNames;
-	public double scalingFactor = 0;
+	public double scalingFactor = 1;
 	public List<String> leadNamesList = new ArrayList<String>();
 	public int sampleOffset = 0;
 	

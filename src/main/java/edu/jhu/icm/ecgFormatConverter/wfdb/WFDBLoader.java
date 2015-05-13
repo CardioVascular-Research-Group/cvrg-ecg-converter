@@ -1,5 +1,22 @@
 package edu.jhu.icm.ecgFormatConverter.wfdb;
+/*
+Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+* @author Michael Shipway, Andre Vilardo, Chris Jurado
+*/
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -12,18 +29,13 @@ import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class WFDBLoader extends ECGFileLoader{
 	
-	private String recordName = "DEFAULT";
+	private String subjectId = "DEFAULT";
 	private InputStream headerStream = null;
 	
 	public WFDBLoader(){}
 
-	public WFDBLoader(String fullFilePath) throws ECGConverterException, IOException{
-		System.out.println("Let's get a record name from file " + fullFilePath);
-		this.recordName = WFDBUtilities.getRecordName(fullFilePath);
-	}
-
-	public void setRecordName(String recordName) {
-		this.recordName = recordName;
+	public void setRecordName(String subjectId) {
+		this.subjectId = subjectId;
 	}
 
 	public void setHeaderStream(InputStream headerStream) {
@@ -31,10 +43,9 @@ public class WFDBLoader extends ECGFileLoader{
 	}
 	
 	@Override
-	public ECGFile load(InputStream inputStream) throws IOException, JAXBException, ECGConverterException {
+	public ECGFile load(InputStream dataStream) throws IOException, JAXBException, ECGConverterException {
 		if(this.headerStream != null){
-			WFDBWrapper wfdbWrap = new WFDBWrapper(headerStream, inputStream);
-			System.out.println("IS Wrapper Created.");
+			WFDBWrapper wfdbWrap = new WFDBWrapper(headerStream, dataStream, subjectId);
 			return load(wfdbWrap);
 		} else{
 			throw new ECGConverterException("Header Filestream not set.");
@@ -44,15 +55,13 @@ public class WFDBLoader extends ECGFileLoader{
 	@Override
 	protected ECGFile load(ECGFormatWrapper wrapper) throws ECGConverterException, IOException {
 		WFDBWrapper wfdbWrap = (WFDBWrapper)wrapper;
-		System.out.println("FormatWrapper Wrapper Created.");
 		ecgFile = wfdbWrap.parse();
 		return ecgFile;
 	}
 
 	@Override
-	public ECGFile load(String fullFilePath) throws IOException, JAXBException,	ECGConverterException {
-		WFDBWrapper wfdbWrap = new WFDBWrapper(fullFilePath);
-		System.out.println("File Wrapper Created.");
+	public ECGFile load(String subjectId) throws IOException, JAXBException,	ECGConverterException {
+		WFDBWrapper wfdbWrap = new WFDBWrapper(subjectId);
 		return load(wfdbWrap);	
 	}
 }

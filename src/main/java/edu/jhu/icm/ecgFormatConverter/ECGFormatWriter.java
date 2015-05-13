@@ -1,12 +1,5 @@
 package edu.jhu.icm.ecgFormatConverter;
 
-import java.io.File;
-
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.hl7.HL7AecgWriter;
-import edu.jhu.icm.ecgFormatConverter.rdt.RDTParser;
-import edu.jhu.icm.ecgFormatConverter.rdt.RDTWriter;
-import edu.jhu.icm.enums.DataFileFormat;
 
 public class ECGFormatWriter {
 

@@ -31,16 +31,12 @@ import edu.jhu.icm.ecgFormatConverter.philips.Philips104Loader;
 import edu.jhu.icm.ecgFormatConverter.rdt.RDTLoader;
 import edu.jhu.icm.ecgFormatConverter.schiller.SchillerLoader;
 import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBLoader;
-import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBUtilities;
 import edu.jhu.icm.enums.DataFileFormat;
 
 public class ECGFormatReader {
-	
-	private String fullFilePath;
-		
+
 	//Non-WFDB formats
-	public ECGFile read(DataFileFormat inputFormat, String fileName, String inputPath, 
-			String recordName) throws Exception {
+	public ECGFile read(DataFileFormat inputFormat, String fileName, String inputPath, String recordName) throws Exception {
 		ECGFileLoader loader = createLoader(inputFormat);
 		return loader.load(inputPath + fileName);
 	}
@@ -53,17 +49,15 @@ public class ECGFormatReader {
 	}
 	
 	//WFDB format
-	public ECGFile read(DataFileFormat inputFormat, String fullFilePath) 
+	public ECGFile read(DataFileFormat inputFormat, String subjectId) 
 			throws ECGConverterException, IOException, JAXBException {
-		System.out.println("let's read the file at " + fullFilePath);
-		this.fullFilePath = fullFilePath;
 		ECGFileLoader loader = createLoader(inputFormat);
-		System.out.println("Loader Created.");
-		return loader.load(fullFilePath);
+		return loader.load(subjectId);
 	}
 	
+
 	//WFDB format
-	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream, InputStream headerStream, String recordName) 
+	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream, InputStream headerStream, String subjectId) 
 			throws ECGConverterException, IOException, JAXBException {
 		WFDBLoader loader = null;
 		switch(inputFormat) {
@@ -73,10 +67,9 @@ public class ECGFormatReader {
 			case WFDB_61:				//fallthrough
 			case WFDB_212: 				loader = createWFDBLoader();	break;
 		}
-		System.out.println("IS Loader Created.");
 		
 		loader.setHeaderStream(headerStream);
-		loader.setRecordName(recordName);
+		loader.setRecordName(subjectId);
 		return loader.load(dataStream);
 	}
 	
@@ -89,7 +82,7 @@ public class ECGFormatReader {
 				case WFDB:					//fallthrough
 				case WFDB_16:				//fallthrough
 				case WFDB_61:				//fallthrough
-				case WFDB_212: 				loader = createWFDBLoader(fullFilePath);	
+				case WFDB_212: 				loader = createWFDBLoader();	
 																					break;
 				case GEMUSE:				loader = new MuseTXTLoader();			break;
 				case MUSEXML:				loader = new MuseXMLLoader();			break;
@@ -107,9 +100,4 @@ public class ECGFormatReader {
 	private WFDBLoader createWFDBLoader() throws ECGConverterException, IOException{
 		return new WFDBLoader();
 	}
-
-	private WFDBLoader createWFDBLoader(String fullFilePath) throws ECGConverterException, IOException{
-		System.out.println("Creating WFDB Loader.");
-		return new WFDBLoader(fullFilePath);
-	}	
 }

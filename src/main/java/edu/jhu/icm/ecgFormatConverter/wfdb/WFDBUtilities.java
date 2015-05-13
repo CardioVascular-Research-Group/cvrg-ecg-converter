@@ -1,5 +1,22 @@
 package edu.jhu.icm.ecgFormatConverter.wfdb;
+/*
+Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+* @author Michael Shipway, Andre Vilardo, Chris Jurado
+*/
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,18 +26,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 
 public class WFDBUtilities {
 	
-	private static final String TEMP_FOLDER = "temp.folder.path";
+	public static final String TEMP_FOLDER = "temp.folder.path";
 
-	public static boolean executeCommand(BufferedReader stdError, BufferedReader stdInputBuffer, String sCommand, 
+	public static BufferedReader executeCommand(BufferedReader stdError, BufferedReader stdInputBuffer, String sCommand, 
 			String[] asEnvVar, String sWorkingDir) throws IOException, InterruptedException {
 
+		System.out.println("Command is " + sCommand);
 		if (asEnvVar == null) {
 			asEnvVar = new String[0];
 		}
@@ -59,55 +76,7 @@ public class WFDBUtilities {
 			InputStreamReader esr = new InputStreamReader(errs);
 			stdError = new BufferedReader(esr);
 		}
-
-		return true;
-	}
-	
-	public static String stdReturnHandler(BufferedReader stdInputBuffer, boolean withLineBreak) 
-			throws IOException{
-	    
-		StringBuilder sb = new StringBuilder();
-		String tempLine;
-
-	    while ((tempLine = stdInputBuffer.readLine()) != null) {
-	    	sb.append(tempLine);
-	    	if(withLineBreak){
-	    		sb.append('\n');
-	    	}
-	    }
-	    return sb.toString();
-	}
-	
-	public static int[][] stdReturnMethodHandler(BufferedReader stdInputBuffer) 
-			throws IOException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-
-		int[][] data = null;
-		String tempLine;
-		int lineNumber = 0;
-
-	    while ((tempLine = stdInputBuffer.readLine()) != null) {
-	    	data = processReturnLine(tempLine, lineNumber, data);
-	    	lineNumber ++;
-	    }
-	    return data;
-	}
-	
-	/** This function prints messages resulting from runtime problems to the system standard error
-	 * @return Boolean variable:  True if there are no errors, false if there are errors.
-	 * 
-	 * @throws IOException
-	 */	
-	public static boolean stdErrorHandler(BufferedReader stdError) throws IOException{
-		boolean bRet = true;
-		String error;
-
-	    // read any errors from the attempted command
-        while ((error = stdError.readLine()) != null) {
-        	if(error.length() > 0){
-				bRet = false;
-        	}
-        }
-		return bRet;
+		return stdInputBuffer;
 	}
 	
 	public static String getRecordName(String filePath) throws ECGConverterException, IOException{
@@ -120,35 +89,32 @@ public class WFDBUtilities {
 		String[] fileNameElements = fileName.split("\\.");
 		return fileNameElements[0];
 	}
-	
-	/** This writes the output of the execution to a file instead of standard output
-	 * 
-	 * @param outputFilename
-	 * @throws IOException
-	 */
-	protected void stdReturnHandler(BufferedReader stdInputBuffer,	String outputFilename) throws IOException {
-		String line;
 
-		// Create file
-		FileWriter fstream = new FileWriter(outputFilename);
-		BufferedWriter bwOut = new BufferedWriter(fstream);
-
-		while ((line = stdInputBuffer.readLine()) != null) {
-
-			bwOut.write(line);
-			bwOut.newLine();
-		}
-
-		bwOut.flush();
-		// Close the output stream
-		bwOut.close();
+	public static String createFile(InputStream inputStream, String path) throws IOException{
+		File file = new File(path);
+		byte[] buffer = new byte[inputStream.available()];
+		inputStream.read(buffer);
+		OutputStream outputStream = new FileOutputStream(file);
+		outputStream.write(buffer);
+		inputStream.close();
+		outputStream.close();
+		return file.getAbsolutePath();
 	}
 	
-	/** This writes the output of the execution to a file instead of standard output
-	 * 
-	 * @param outputFilename
-	 * @throws IOException
-	 */
+	public static String createTempFiles(InputStream headerStream, InputStream dataStream, String subjectId) throws IOException{
+		
+		String path = getProperties().getProperty(TEMP_FOLDER);
+		createFile(headerStream, path + subjectId + ".hea");
+		return createFile(dataStream, path + subjectId + ".dat");
+	}
+	
+	public static Properties getProperties() throws IOException{
+		Properties props = new Properties();
+		InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("converter.properties");
+		props.load(resourceStream);
+		return props;
+	}
+	
 	protected void stdCSVReturnHandler(BufferedReader stdInputBuffer, String outputFilename, String[] headers) throws IOException {
 		String line;
 
@@ -177,68 +143,6 @@ public class WFDBUtilities {
 			bwOut.newLine();
 		}
 		bwOut.flush();
-		// Close the output stream
 		bwOut.close();
-	}
-	
-	protected static int[][] processReturnLine(String line, int lineNum, int[][] data){
-		String[] aSigNames;
-		int signalCount = 0;
-		String[] signalNames;
-		if(lineNum == 0){
-    		aSigNames = line.split(",");
-   			signalCount = (aSigNames.length-1);
-    		signalNames = new String[signalCount];
-    		for(int sig=1;sig <= signalCount; sig++){ // zeroth column is time, not a signal
-    			signalNames[sig-1] = aSigNames[sig];// column names to be used later to verify the order.
-    		}			    	  
-    	}else if (lineNum > 1){
-		    // data.
-    		String[] aSample = line.split(",");
-   			signalCount = (aSample.length-1);
-			for(int sig=1;sig <= signalCount;sig++){ // zeroth column is time, not a signal
-				float fSamp;
-				try{ // Check if value is a not a number, e.g. "-" or "na", substitute zero so rdsamp won't break; Mike Shipway (7/21/2014)
-					fSamp  = Float.parseFloat(aSample[sig]); // assumes unit is float millivolts.
-				}catch(NumberFormatException nfe){
-					fSamp = 0;
-				}
-					
-				data[sig-1][lineNum-2] = (int)(fSamp*1000);// convert float millivolts to integer microvolts.
-			}		    	  
-		}	
-		return data;
-    }
-	
-	public static String createTempFiles(InputStream dataStream, InputStream headerStream, String subjectId) throws IOException{
-
-		String path = getProperties().getProperty(TEMP_FOLDER);
-		createFile(headerStream, path + subjectId + ".hea");
-		return createFile(dataStream, path + subjectId + ".dat");
-	}
-	
-	public static String createFile(InputStream inputStream, String path) throws IOException{
-		File file = new File(path);
-		byte[] buffer = new byte[inputStream.available()];
-		inputStream.read(buffer);
-		OutputStream outputStream = new FileOutputStream(file);
-		outputStream.write(buffer);
-		inputStream.close();
-		outputStream.close();
-		return file.getAbsolutePath();
-	}
-	
-	private static Properties getProperties() throws IOException{
-		Properties props = new Properties();
-		try(InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties")) {
-		    props.load(resourceStream);
-		}
-		return props;
-	}
-	
-	public static String getDirectory(String fullFilePath){
-		String[] fullPath = fullFilePath.split(File.separator);
-		int endIndex = fullFilePath.length() - fullPath[fullPath.length -1].length();
-		return fullFilePath.substring(0, endIndex);
 	}
 }

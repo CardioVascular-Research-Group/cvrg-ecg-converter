@@ -7,14 +7,12 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFileWriter;
 
 public class RDTWriter extends ECGFileWriter{
 	
 	private ECGFile ecgFile;
-	private InputStream inputStream;
 	private OutputStream outStream;
 	/**
 	 * writes the data array out in RDT format
