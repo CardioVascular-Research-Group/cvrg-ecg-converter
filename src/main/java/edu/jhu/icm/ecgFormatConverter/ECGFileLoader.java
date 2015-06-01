@@ -33,13 +33,13 @@ public abstract class ECGFileLoader {
 	protected ECGFile ecgFile = new ECGFile();
 	public DataFileFormat inputFormat;
 	
-	public abstract ECGFile load(InputStream inputStream) throws IOException, JAXBException, ECGConverterException;
+	public abstract ECGFile load(InputStream inputStream) throws JAXBException, ECGConverterException;
 	
-	public abstract ECGFile load(String filePath) throws IOException, JAXBException, ECGConverterException;
+	public abstract ECGFile load(String filePath) throws JAXBException, ECGConverterException;
 	
-	protected abstract ECGFile load(ECGFormatWrapper wrapper) throws ECGConverterException, IOException;
+	protected abstract ECGFile load(ECGFormatWrapper wrapper) throws ECGConverterException;
 	
-	protected void setLeadNames(List<String> leadNames) throws ECGConverterException, IOException {
+	protected void setLeadNames(List<String> leadNames) throws ECGConverterException{
 		String leadNamesOut = null;
 		
 		if(leadNames != null){
@@ -55,7 +55,11 @@ public abstract class ECGFileLoader {
 				}
 			}catch (Exception e){
 				leadNamesOK = false;
-				throw new ECGConverterException("Lead not found: " + lName);
+				try {
+					throw new ECGConverterException("Lead not found: " + lName);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 			
 			if(!leadNamesOK){

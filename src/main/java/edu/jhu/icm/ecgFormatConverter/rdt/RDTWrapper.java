@@ -40,13 +40,18 @@ public class RDTWrapper extends ECGFormatWrapper{
 	}
 
 	@Override
-	public ECGFile parse() throws ECGConverterException, IOException {
-		if(inputStream != null){
-			parseInputStream();
-		} else if(filePath != null) {
-			parseFile();
-		} else {
-			throw new ECGConverterException("RDT Parser has nothing to parse.");
+	public ECGFile parse() throws ECGConverterException {
+		try {
+			if (inputStream != null) {
+				parseInputStream();
+			} else if (filePath != null) {
+				parseFile();
+			} else {
+				throw new ECGConverterException("RDT Parser has nothing to parse.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
 		}
 		return ecgFile;
 	}
@@ -66,9 +71,15 @@ public class RDTWrapper extends ECGFormatWrapper{
 		parseInputStream();
 	}
 	
-	private void parseInputStream() throws ECGConverterException, IOException {
+	private void parseInputStream() throws ECGConverterException{
 		
-		int fileSize = inputStream.available();
+		int fileSize = 0;
+		try {
+			fileSize = inputStream.available();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 
 		// 	parse the file's header for the short values "channels" and "samplingRate"
 		byte[] header = new byte[HEADERBYTES];
@@ -108,9 +119,13 @@ public class RDTWrapper extends ECGFormatWrapper{
 			}
 
 		} catch (IOException e) {
-			throw new ECGConverterException(e.getMessage());
+			e.printStackTrace();
 		} finally {
-			inputStream.close();
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
-import edu.jhu.icm.parser.MuseBase64Parser;
+
 
 public class MuseXMLWrapper extends ECGFormatWrapper{
 

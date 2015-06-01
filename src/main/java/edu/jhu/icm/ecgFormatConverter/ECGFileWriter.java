@@ -7,8 +7,6 @@ import java.io.InputStream;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 
 public abstract class ECGFileWriter{
-
-	protected String sep = File.separator;
 	
 	public abstract File writeToFile(String outputPath, String recordName, ECGFile ecgFile) throws ECGConverterException, IOException;
 	

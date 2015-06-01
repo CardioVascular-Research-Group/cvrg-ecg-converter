@@ -60,7 +60,7 @@ public class WFDBLoader extends ECGFileLoader{
 	}
 
 	@Override
-	public ECGFile load(String subjectId) throws IOException, JAXBException,	ECGConverterException {
+	public ECGFile load(String subjectId) throws IOException, JAXBException, ECGConverterException {
 		WFDBWrapper wfdbWrap = new WFDBWrapper(subjectId);
 		return load(wfdbWrap);	
 	}

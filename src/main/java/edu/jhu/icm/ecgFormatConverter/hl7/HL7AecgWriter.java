@@ -26,9 +26,6 @@ import org.apache.xmlbeans.XmlSimpleList;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFileWriter;
-import edu.jhu.icm.parser.Constants;
-import edu.jhu.icm.parser.PrimitiveIntArrayList;
-import edu.jhu.icm.parser.Writer;
 
 public class HL7AecgWriter extends ECGFileWriter{
 	

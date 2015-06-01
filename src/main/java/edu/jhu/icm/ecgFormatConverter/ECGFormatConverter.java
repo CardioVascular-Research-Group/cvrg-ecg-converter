@@ -1,7 +1,12 @@
 package edu.jhu.icm.ecgFormatConverter;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
+import javax.xml.bind.JAXBException;
+
+import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.enums.DataFileFormat;
 
 
@@ -11,9 +16,27 @@ import edu.jhu.icm.enums.DataFileFormat;
  * @author Michael Shipway, Chris Jurado
  *
  */
-public class ECGformatConverter { 
+public class ECGFormatConverter { 
 	
-	public File convertFileToFile(File inputFile, DataFileFormat inputFormat, DataFileFormat outputFormat){
+	private final String TEMP_FOLDER = "temp.folder.path";
+	
+	public static File convertWFDBFilesToFile(){return null;}
+	
+	public static InputStream convertWFDBFileToInputStream(){return null;}
+	
+	public static File convertWFDBInputStreamsToFile(){return null;}
+	
+	public static InputStream convertWFDBInputStreamsToInputStream(){return null;}
+	
+	public static ArrayList<File> convertFileToWFDBFiles(){return null;}
+	
+	public static ArrayList<InputStream> convertFileToWFDBInputStreams(){return null;}
+	
+	public static ArrayList<File> convertInputStreamToWFDBFiles(){return null;}
+	
+	public static ArrayList<InputStream> convertInputStreamToWFDBInputStreams(){return null;}
+	
+	public static File convertFileToFile(File inputFile, DataFileFormat inputFormat, DataFileFormat outputFormat){
 		return null;
 	}
 	
@@ -25,9 +48,41 @@ public class ECGformatConverter {
 		return null;
 	}
 	
-	public InputStream convertFileToInputStream(File inputFile, DataFileFormat inputFormat, DataFileFormat outputFormat){
+	public static InputStream convertFileToInputStream(File inputFile, DataFileFormat inputFormat, DataFileFormat outputFormat){
 		return null;
 	}
+	
+    private void writeDestinationFile(DataFileFormat format, ECGFile ecgFile, String fileName){
+
+    	ECGFormatWriter writer = new ECGFormatWriter();
+    	try {
+			writer.writeToFile(format, TEMP_FOLDER, fileName, ecgFile);
+		} catch (ECGConverterException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+	
+    private ECGFile readSourceFile(DataFileFormat format, String filePath){
+    	ECGFile ecgFile = null;
+    	try {
+			ECGFormatReader reader = new ECGFormatReader();
+
+			File file = new File(getClass().getResource(filePath).getFile());
+
+			if(file.exists()){
+				ecgFile = reader.read(format, file.getAbsolutePath());
+			} 
+    	}catch (ECGConverterException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		} catch (JAXBException e) {
+			System.out.println(e.getMessage());
+		}
+    	return ecgFile;
+    }
 	
 	
 //	private int data[][]; // common, shared work space populated by LoadXXX, used by WriteXXX methods

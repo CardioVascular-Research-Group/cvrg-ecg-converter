@@ -29,13 +29,6 @@ public class MuseXMLLoader extends ECGFileLoader{
 
 		MuseXMLWrapper museXMLWrap = (MuseXMLWrapper)wrapper;
 		ecgFile = museXMLWrap.parse();
-//		ecgFile.samplingRate = museXMLWrap.getSamplingRate();
-//		ecgFile.samplesPerChannel = museXMLWrap.getSamplesPerChannel();
-//		ecgFile.channels = museXMLWrap.getChannels();
-//		ecgFile.data = museXMLWrap.getData();
-//		ecgFile.aduGain = museXMLWrap.getAduGain();
-//		ecgFile.numberOfPoints = museXMLWrap.getNumberOfPoints();
-//		ecgFile.leadNamesList = museXMLWrap.getLeadNames();
 		return ecgFile;
 	}
 }

@@ -1,7 +1,3 @@
-/*
- * Created on Apr 5, 2006
- *
- */
 package edu.jhu.icm.ecgFormatConverter.hl7;
 
 import hl7OrgV3.AnnotatedECGDocument;
@@ -22,6 +18,10 @@ import org.apache.xmlbeans.XmlException;
  * Reads aEcg xml file; creates png image
  * 
  * @author cyang
+ */
+/*
+ * Created on Apr 5, 2006
+ *
  */
 @Deprecated
 public class Reader {

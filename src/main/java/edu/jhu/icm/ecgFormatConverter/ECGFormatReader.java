@@ -42,15 +42,13 @@ public class ECGFormatReader {
 	}
 	
 	//Non-WFDB formats
-	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream) 
-			throws ECGConverterException, IOException, JAXBException {
+	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream) throws ECGConverterException, IOException, JAXBException {
 		ECGFileLoader loader = createLoader(inputFormat);
 		return loader.load(dataStream);
 	}
 	
 	//WFDB format
-	public ECGFile read(DataFileFormat inputFormat, String subjectId) 
-			throws ECGConverterException, IOException, JAXBException {
+	public ECGFile read(DataFileFormat inputFormat, String subjectId) throws ECGConverterException, IOException, JAXBException {
 		ECGFileLoader loader = createLoader(inputFormat);
 		return loader.load(subjectId);
 	}

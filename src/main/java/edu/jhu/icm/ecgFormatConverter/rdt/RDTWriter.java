@@ -20,16 +20,15 @@ public class RDTWriter extends ECGFileWriter{
 	 * @return - rowsWritten
 	 */
 	@Override
-	public File writeToFile(String outputPath, String recordName, ECGFile ecgFile) {
-		String fileName = recordName + ".rdt";
-		File rdtFile = new File(outputPath + sep + fileName);
-		RDTParser rdtPar = new RDTParser();
+	public File writeToFile(String outputPath, String subjectId, ECGFile ecgFile) {
+		String fileName = subjectId + ".rdt";
+		File rdtFile = new File(outputPath + File.separator + fileName);
+		RDTParser rdtPar = new RDTParser(rdtFile);
 		rdtPar.setChannels(ecgFile.channels);
 		rdtPar.setSamplesPerChannel(ecgFile.samplesPerChannel);
 		rdtPar.setSamplingRate(ecgFile.samplingRate);
 		rdtPar.setData(ecgFile.data);	
 		rdtPar.writeRDTtoFile();
-		
 		return rdtFile;
 	}
 

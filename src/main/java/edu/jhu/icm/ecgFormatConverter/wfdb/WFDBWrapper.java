@@ -43,9 +43,12 @@ public class WFDBWrapper extends ECGFormatWrapper{
 	private BufferedReader stdError = null;
 	private InputStream headerStream;
 	
+	private static final String TEMP_FOLDER_PATH = "temp.folder.path";
 	private static final String WFDB_FILE_PATH = "wfdb.file.path";
 	
 	public WFDBWrapper(InputStream headerStream, InputStream dataStream, String subjectId) throws ECGConverterException, IOException, JAXBException{
+		Properties properties = WFDBUtilities.getProperties();
+		sourceFilePath = properties.getProperty(TEMP_FOLDER_PATH);
 		ecgFile = new ECGFile();
 		this.headerStream = headerStream;
 		this.subjectId = subjectId;
@@ -53,16 +56,16 @@ public class WFDBWrapper extends ECGFormatWrapper{
 	}
 	
 	public WFDBWrapper(String subjectId) throws ECGConverterException, IOException, JAXBException{
+		Properties properties = WFDBUtilities.getProperties();
+		sourceFilePath = properties.getProperty(WFDB_FILE_PATH);
 		ecgFile = new ECGFile();
 		this.subjectId = subjectId;
 		init(subjectId);
 	}
 	
 	@Override
-	protected void init(String fullFilePath) throws ECGConverterException, IOException, JAXBException {
+	protected void init(String subjectId) throws ECGConverterException, IOException, JAXBException {
 		init();
-		Properties properties = WFDBUtilities.getProperties();
-		sourceFilePath = properties.getProperty(WFDB_FILE_PATH);
 	}
 
 	@Override
@@ -78,7 +81,6 @@ public class WFDBWrapper extends ECGFormatWrapper{
 		pr.put("java.library.path", "/usr/lib");
 		System.setProperties(pr);
 		this.leadNames = new ArrayList<String>();
-
 	}
 
 	private int getSignalCount() throws IOException, InterruptedException {
@@ -141,6 +143,7 @@ public class WFDBWrapper extends ECGFormatWrapper{
 			e.printStackTrace();
 			throw new ECGConverterException(e.getStackTrace().toString());
 		} 
+		WFDBUtilities.clearTempFolder();
 		return ecgFile;
 	}
 

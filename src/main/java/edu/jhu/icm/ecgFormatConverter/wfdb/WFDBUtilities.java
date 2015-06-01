@@ -33,11 +33,26 @@ import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 public class WFDBUtilities {
 	
 	public static final String TEMP_FOLDER = "temp.folder.path";
+	
+    public static void clearTempFolder(){
+		Properties properties;
+		try {
+			properties = WFDBUtilities.getProperties();
+			String tempFilePath = properties.getProperty(TEMP_FOLDER);
+			File folder = new File(tempFilePath);
+			if(folder.isDirectory()){
+				for(File file : folder.listFiles()){
+					file.delete();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
 
 	public static BufferedReader executeCommand(BufferedReader stdError, BufferedReader stdInputBuffer, String sCommand, 
 			String[] asEnvVar, String sWorkingDir) throws IOException, InterruptedException {
 
-		System.out.println("Command is " + sCommand);
 		if (asEnvVar == null) {
 			asEnvVar = new String[0];
 		}
@@ -102,7 +117,6 @@ public class WFDBUtilities {
 	}
 	
 	public static String createTempFiles(InputStream headerStream, InputStream dataStream, String subjectId) throws IOException{
-		
 		String path = getProperties().getProperty(TEMP_FOLDER);
 		createFile(headerStream, path + subjectId + ".hea");
 		return createFile(dataStream, path + subjectId + ".dat");
