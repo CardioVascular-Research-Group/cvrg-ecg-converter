@@ -15,14 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
-* @author Chris Jurado
+* @author David Hopkins, Chris Jurado
 */
-import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBException;
-
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
@@ -32,19 +28,19 @@ public class SchillerLoader extends ECGFileLoader{
 	private Object comXiriuzSemaXmlSchillerEDI;
 
 	@Override
-	public ECGFile load(String filePath) throws IOException, JAXBException, ECGConverterException {
+	public ECGFile load(String filePath) {
 		SchillerWrapper schillerWrap = new SchillerWrapper(filePath);
 		return load(schillerWrap);	
 	}
 	
 	@Override
-	public ECGFile load(InputStream inputStream) throws IOException, JAXBException, ECGConverterException {
+	public ECGFile load(InputStream inputStream) {
 		SchillerWrapper schillerWrap = new SchillerWrapper(inputStream);
 		return load(schillerWrap);
 	}
 	
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapperLoader) throws ECGConverterException, IOException {
+	protected ECGFile load(ECGFormatWrapper wrapperLoader) {
 		SchillerWrapper schillerWrapper = (SchillerWrapper)wrapperLoader;
 		ecgFile = schillerWrapper.parse();
 		return ecgFile;

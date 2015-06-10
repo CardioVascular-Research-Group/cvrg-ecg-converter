@@ -40,30 +40,45 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 	private Restingecgdata philipsECG;
 	private DecodedLead[] leadData;
 	
-	public Philips104Wrapper(String filePath) throws IOException, JAXBException{
+	public Philips104Wrapper(String filePath){
 		ecgFile = new ECGFile();
 		init(filePath);
 	}
 	
-	public Philips104Wrapper(InputStream inputStream) throws IOException, JAXBException{
+	public Philips104Wrapper(InputStream inputStream){
 		ecgFile = new ECGFile();
 		init(inputStream);
 	}
 
-	protected void init(String filePath) throws IOException, JAXBException {
+	protected void init(String filePath) {
 		File inputFile = new File(filePath);
-		PreprocessReturn ret = SierraEcgFiles.preprocess(inputFile);
-		philipsECG = ret.getRestingEcgData();
-		leadData = ret.getDecodedLeads();
+		PreprocessReturn ret;
+		try {
+			ret = SierraEcgFiles.preprocess(inputFile);
+			philipsECG = ret.getRestingEcgData();
+			leadData = ret.getDecodedLeads();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	protected void init(InputStream inputStream) throws IOException, JAXBException {
-		PreprocessReturn ret = SierraEcgFiles.preprocess(inputStream);
-		philipsECG = ret.getRestingEcgData();
-		leadData = ret.getDecodedLeads();
+	protected void init(InputStream inputStream) {
+		PreprocessReturn ret;
+		try {
+			ret = SierraEcgFiles.preprocess(inputStream);
+			philipsECG = ret.getRestingEcgData();
+			leadData = ret.getDecodedLeads();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
-	public ECGFile parse() throws ECGConverterException, IOException {
+	public ECGFile parse() {
 		if(philipsECG != null) {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
 			
@@ -80,10 +95,14 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 			int allocatedChannels = signalMetaData.getNumberchannelsallocated().intValue(); // Method returns a BigInteger, so a conversion to int is required.
 			int validChannels = signalMetaData.getNumberchannelsvalid().intValue();
 			
-			if(allocatedChannels != validChannels){
-				throw new ECGConverterException("Valid/Allocated Channels do not match.");
-			} else {
-				ecgFile.channels = allocatedChannels;
+			try {
+				if (allocatedChannels != validChannels) {
+					throw new ECGConverterException("Valid/Allocated Channels do not match.");
+				} else {
+					ecgFile.channels = allocatedChannels;
+				}
+			} catch (ECGConverterException e) {
+				e.printStackTrace();
 			}
 			
 			int previousSample = leadData[0].size();

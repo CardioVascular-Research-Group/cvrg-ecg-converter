@@ -38,19 +38,19 @@ public class HL7AecgWrapper extends ECGFormatWrapper{
 
 	private List<PORTMT020001Component9> components;
 	
-	public HL7AecgWrapper(String filename) throws ECGConverterException, IOException, JAXBException{
+	public HL7AecgWrapper(String filename){
 		ecgFile = new ECGFile();
 		init(filename);
 	}
 	
-	public HL7AecgWrapper(InputStream inputStream) throws ECGConverterException, IOException, JAXBException{
+	public HL7AecgWrapper(InputStream inputStream){
 		ecgFile = new ECGFile();
 		init(inputStream);
 	}
 
-	protected void init(String filename) throws ECGConverterException, IOException, JAXBException{
+	protected void init(String filename){
 		File hl7File = new File(filename);
-		
+		try{
 		if (!hl7File.exists()) {
 			throw new ECGConverterException(hl7File.getName() + " does not exist.");
 		}
@@ -58,14 +58,27 @@ public class HL7AecgWrapper extends ECGFormatWrapper{
 		if (hl7File.length() > Long.MAX_VALUE) {
 			throw new ECGConverterException(hl7File.getName() + " file size exceeding maximum long value.");
 		}
-		
 		HL7PreprocessReturn ret = Hl7Ecg.preprocess(hl7File);
 		components = ret.getComponents();
+		}catch(ECGConverterException e){
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	protected void init(InputStream inputStream) throws ECGConverterException, IOException, JAXBException{
-		HL7PreprocessReturn ret = Hl7Ecg.preprocess(inputStream);
-		components = ret.getComponents();
+	protected void init(InputStream inputStream){
+		HL7PreprocessReturn ret;
+		try {
+			ret = Hl7Ecg.preprocess(inputStream);
+			components = ret.getComponents();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

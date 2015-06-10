@@ -1,5 +1,22 @@
 package edu.jhu.icm.ecgFormatConverter.rdt;
+/*
+Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+* @author Chris Jurado, Mike Shipway
+*/
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,39 +57,32 @@ public class RDTWrapper extends ECGFormatWrapper{
 	}
 
 	@Override
-	public ECGFile parse() throws ECGConverterException {
-		try {
-			if (inputStream != null) {
-				parseInputStream();
-			} else if (filePath != null) {
-				parseFile();
-			} else {
-				throw new ECGConverterException("RDT Parser has nothing to parse.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public ECGFile parse(){
+		if (inputStream != null) {
+			parseInputStream();
+		} else if (filePath != null) {
+			parseFile();
+		} 
 		return ecgFile;
 	}
 
-	private void parseFile() throws ECGConverterException, IOException{
-
-		int fileSize = filePath.length();
-		if (fileSize > Integer.MAX_VALUE) {
-			throw new ECGConverterException("file size exceeding maximum int value.");
-		}
+	private void parseFile(){
 
 		try {
+			int fileSize = filePath.length();
+			if (fileSize > Integer.MAX_VALUE) {
+				throw new ECGConverterException("file size exceeding maximum int value.");
+			}
 			this.inputStream = new FileInputStream(filePath);
+			parseInputStream();
 		} catch (FileNotFoundException e) {
-			throw new ECGConverterException("RDT source file not found.\n" + e.getMessage());
+			e.printStackTrace();
+		} catch (ECGConverterException e) {
+			e.printStackTrace();
 		}	
-		parseInputStream();
 	}
 	
-	private void parseInputStream() throws ECGConverterException{
-		
+	private void parseInputStream(){
 		int fileSize = 0;
 		try {
 			fileSize = inputStream.available();
@@ -119,6 +129,8 @@ public class RDTWrapper extends ECGFormatWrapper{
 			}
 
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ECGConverterException e) {
 			e.printStackTrace();
 		} finally {
 			try {

@@ -17,10 +17,7 @@ limitations under the License.
 /**
 * @author Michael Shipway, Andre Vilardo, Chris Jurado
 */
-import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.bind.JAXBException;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
@@ -43,25 +40,33 @@ public class WFDBLoader extends ECGFileLoader{
 	}
 	
 	@Override
-	public ECGFile load(InputStream dataStream) throws IOException, JAXBException, ECGConverterException {
-		if(this.headerStream != null){
-			WFDBWrapper wfdbWrap = new WFDBWrapper(headerStream, dataStream, subjectId);
-			return load(wfdbWrap);
-		} else{
-			throw new ECGConverterException("Header Filestream not set.");
+	public ECGFile load(InputStream dataStream) {
+		try {
+			if (this.headerStream != null) {
+				WFDBWrapper wfdbWrap;
+				wfdbWrap = new WFDBWrapper(headerStream, dataStream, subjectId);
+				return load(wfdbWrap);
+
+			} else {
+				throw new ECGConverterException("Header Filestream not set.");
+			}
+		} catch (ECGConverterException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapper) throws ECGConverterException, IOException {
+	protected ECGFile load(ECGFormatWrapper wrapper) {
 		WFDBWrapper wfdbWrap = (WFDBWrapper)wrapper;
 		ecgFile = wfdbWrap.parse();
 		return ecgFile;
 	}
 
 	@Override
-	public ECGFile load(String subjectId) throws IOException, JAXBException, ECGConverterException {
-		WFDBWrapper wfdbWrap = new WFDBWrapper(subjectId);
+	public ECGFile load(String subjectId) {
+		WFDBWrapper wfdbWrap = null;
+		wfdbWrap = new WFDBWrapper(subjectId);
 		return load(wfdbWrap);	
 	}
 }

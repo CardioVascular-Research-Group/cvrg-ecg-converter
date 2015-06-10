@@ -17,11 +17,9 @@ limitations under the License.
 /**
 * @author Andre Vilardo, Chris Jurado
 */
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
@@ -60,7 +58,7 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 	}
 		
 	@Override
-	public ECGFile parse() throws IOException, ECGConverterException {
+	public ECGFile parse() {
 		
 		try {
 			if(inputStream != null){
@@ -76,14 +74,8 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 			int previousSample = singleLead.length;
 
 			for(int i=0; i < leadData.size(); i++) {
-				int currentSample = leadData.get(i).length;
-				
-				if(currentSample == previousSample) {
-					ecgFile.samplesPerChannel = currentSample;
-				}
-				else {
-					ecgFile.samplesPerChannel = 0;
-				}
+				int currentSample = leadData.get(i).length;			
+				ecgFile.samplesPerChannel = (currentSample == previousSample) ? currentSample : 0;
 			}
 
 			ecgFile.data = new int[ecgFile.channels][ecgFile.samplesPerChannel];

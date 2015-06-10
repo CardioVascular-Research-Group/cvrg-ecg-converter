@@ -39,27 +39,41 @@ public class Philips103Wrapper extends ECGFormatWrapper{
 	private Restingecgdata philipsECG;
 	private DecodedLead[] leadData;
 	
-	public Philips103Wrapper(String filePath) throws IOException, JAXBException{
+	public Philips103Wrapper(String filePath){
 		ecgFile = new ECGFile();
 		init(filePath);
 	}
 	
-	public Philips103Wrapper(InputStream inputStream) throws IOException, JAXBException{
+	public Philips103Wrapper(InputStream inputStream){
 		ecgFile = new ECGFile();
 		init(inputStream);
 	}
 
-	protected void init(String filePath) throws IOException, JAXBException {
+	protected void init(String filePath) {
 		File inputFile = new File(filePath);
-		PreprocessReturn ret = SierraEcgFiles.preprocess(inputFile);
-		philipsECG = ret.getRestingEcgData();
-		leadData = ret.getDecodedLeads();
+		PreprocessReturn ret;
+		try {
+			ret = SierraEcgFiles.preprocess(inputFile);
+			philipsECG = ret.getRestingEcgData();
+			leadData = ret.getDecodedLeads();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	protected void init(InputStream inputStream) throws IOException, JAXBException {
-		PreprocessReturn ret = SierraEcgFiles.preprocess(inputStream);
-		philipsECG = ret.getRestingEcgData();
-		leadData = ret.getDecodedLeads();
+	protected void init(InputStream inputStream) {
+		PreprocessReturn ret;
+		try {
+			ret = SierraEcgFiles.preprocess(inputStream);
+			philipsECG = ret.getRestingEcgData();
+			leadData = ret.getDecodedLeads();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public ECGFile parse() {
@@ -76,15 +90,9 @@ public class Philips103Wrapper extends ECGFormatWrapper{
 			ecgFile.channels = Integer.valueOf(signalMetaData.getNumberchannelsvalid());
 			int previousSample = leadData[0].size();
 			ecgFile.scalingFactor = 1;
-//			ecgFile.numberOfPoints = previousSample * ecgFile.channels;
 			for(int i=0; i < leadData.length; i++) {
 				int currentSample = leadData[i].size();
-				if(currentSample == previousSample) {
-					ecgFile.samplesPerChannel = currentSample;
-				}
-				else {
-					ecgFile.samplesPerChannel = 0;
-				}
+				ecgFile.samplesPerChannel = (currentSample == previousSample) ? currentSample : 0;
 			}
 
 			ecgFile.data = new int[ecgFile.channels][ecgFile.samplesPerChannel];

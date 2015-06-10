@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
-* @author Dave Hopkins, Andre Vilardo, Chris Jurado
+* @author David Hopkins, Andre Vilardo, Chris Jurado
 */
 import java.io.File;
 import java.io.IOException;
@@ -27,32 +27,45 @@ import org.cvrgrid.schiller.DecodedLead;
 import org.cvrgrid.schiller.PreprocessReturn;
 import org.cvrgrid.schiller.SchillerEcgFiles;
 
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class SchillerWrapper extends ECGFormatWrapper{
 	private DecodedLead[] leadData;
 	
-	public SchillerWrapper(String filePath) throws IOException, JAXBException{
+	public SchillerWrapper(String filePath){
 		ecgFile = new ECGFile();
 		init(filePath);
 	}
 	
-	public SchillerWrapper(InputStream inputStream) throws IOException, JAXBException{
+	public SchillerWrapper(InputStream inputStream){
 		ecgFile = new ECGFile();
 		init(inputStream);
 	}
 
-	protected void init(String filePath) throws IOException, JAXBException {
+	protected void init(String filePath) {
 		File inputFile = new File(filePath);
-		PreprocessReturn ret = SchillerEcgFiles.preprocess(inputFile);
-		init(ret);
+		PreprocessReturn ret;
+		try {
+			ret = SchillerEcgFiles.preprocess(inputFile);
+			init(ret);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	protected void init(InputStream inputStream) throws IOException, JAXBException {
-		PreprocessReturn ret = SchillerEcgFiles.preprocess(inputStream);
-		init(ret);
+	protected void init(InputStream inputStream) {
+		PreprocessReturn ret;
+		try {
+			ret = SchillerEcgFiles.preprocess(inputStream);
+			init(ret);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void init(PreprocessReturn ret){
@@ -62,19 +75,14 @@ public class SchillerWrapper extends ECGFormatWrapper{
 		ecgFile.scalingFactor = 1;
 	}
 	
-	public ECGFile parse() throws ECGConverterException, IOException {
+	public ECGFile parse() {
 
-		ecgFile.channels = leadData.length;
-			
+		ecgFile.channels = leadData.length;	
 		int previousSample = leadData[0].size();
 
 		for(int i=0; i < ecgFile.channels; i++) {
 			int currentSample = leadData[i].size();
-			if(currentSample == previousSample) {
-				ecgFile.samplesPerChannel = currentSample;
-			} else {
-				ecgFile.samplesPerChannel = 0;
-			}
+			ecgFile.samplesPerChannel = (currentSample == previousSample) ? currentSample : 0;
 		}
 		ecgFile.data = new int[ecgFile.channels][ecgFile.samplesPerChannel];
 			

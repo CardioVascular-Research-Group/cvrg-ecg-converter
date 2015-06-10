@@ -19,115 +19,122 @@ limitations under the License.
 */
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.bind.JAXBException;
-
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 
 public class WFDBWrapper extends ECGFormatWrapper{
 
 	private String subjectId, sourceFilePath;
-
 	private List<String> leadNames;
-
 	private BufferedReader stdInputBuffer = null;
 	private BufferedReader stdError = null;
 	private InputStream headerStream;
-	
-	private static final String TEMP_FOLDER_PATH = "temp.folder.path";
-	private static final String WFDB_FILE_PATH = "wfdb.file.path";
-	
-	public WFDBWrapper(InputStream headerStream, InputStream dataStream, String subjectId) throws ECGConverterException, IOException, JAXBException{
-		Properties properties = WFDBUtilities.getProperties();
-		sourceFilePath = properties.getProperty(TEMP_FOLDER_PATH);
+
+	public WFDBWrapper(InputStream headerStream, InputStream dataStream, String subjectId){
+		sourceFilePath = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 		ecgFile = new ECGFile();
 		this.headerStream = headerStream;
 		this.subjectId = subjectId;
 		init(dataStream);
 	}
 	
-	public WFDBWrapper(String subjectId) throws ECGConverterException, IOException, JAXBException{
-		Properties properties = WFDBUtilities.getProperties();
-		sourceFilePath = properties.getProperty(WFDB_FILE_PATH);
+	public WFDBWrapper(String subjectId){
+		sourceFilePath = ConverterUtility.getProperty(ConverterUtility.WFDB_FILE_PATH);
 		ecgFile = new ECGFile();
 		this.subjectId = subjectId;
 		init(subjectId);
 	}
 	
 	@Override
-	protected void init(String subjectId) throws ECGConverterException, IOException, JAXBException {
+	protected void init(String subjectId) {
 		init();
 	}
 
 	@Override
-	protected void init(InputStream inputStream) throws ECGConverterException, IOException, JAXBException {
+	protected void init(InputStream inputStream) {
 		init();
 		WFDBUtilities.createTempFiles(headerStream, inputStream, this.subjectId);
-		Properties properties = WFDBUtilities.getProperties();
-		this.sourceFilePath = properties.getProperty(WFDBUtilities.TEMP_FOLDER);
+		this.sourceFilePath = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 	}
 	
-	private void init() throws IOException{
+	private void init(){
 		Properties pr = System.getProperties();
 		pr.put("java.library.path", "/usr/lib");
 		System.setProperties(pr);
 		this.leadNames = new ArrayList<String>();
 	}
 
-	private int getSignalCount() throws IOException, InterruptedException {
+	private int getSignalCount() {
 		int count = 0;
-		File headerFile = new File(sourceFilePath + File.separator + subjectId + ".hea");
+		File headerFile = null;
+		try {
+			headerFile = new File(sourceFilePath + subjectId + ".hea");
 
-		if (!headerFile.exists()) {
-			return -1; // unable to read header file
+			if (!headerFile.exists()) {// unable to read header file
+				throw new ECGConverterException("Missing WFDB header file.");
+			}
+		} catch (ECGConverterException e) {
+			e.printStackTrace();
 		}
 
-		BufferedReader reader = new BufferedReader(new FileReader(headerFile));
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(headerFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		int lineCount = 0;
 		String line = null;
-		while ((line = reader.readLine()) != null) {
-			if (!line.startsWith("#")) {
-				if (line.length() > 0) { // first non-comment line is the record line.
-					if (lineCount == 0) {
-						count = parseHeaderRecordLine(line);
-						if (count == -1) {
-							reader.close();
-							return -2; // incorrect header file format
+
+		try {
+			while ((line = reader.readLine()) != null) {
+				if (!line.startsWith("#")) {
+					if (line.length() > 0) { // first non-comment line is the
+												// record line.
+						if (lineCount == 0) {
+							count = parseHeaderRecordLine(line);
+							if (count == -1) {
+								reader.close();
+								return -2; // incorrect header file format
+							}
+							break;
 						}
-						break;
+						lineCount++;
 					}
-					lineCount++;
 				}
 			}
-		}
-		reader.close();
-		String command = "signame -r " + this.subjectId;
-		WFDBUtilities.executeCommand(stdError, stdInputBuffer, command, null, sourceFilePath);
-		String signameRet = stdReturnHandler(true);
+			reader.close();
+			String command = "signame -r " + this.subjectId;
+			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command,	null, sourceFilePath);
+			String signameRet = stdReturnHandler(true);
 
-		if (signameRet != null) {
-			String[] signames = signameRet.split("\n");
-			for (String name : signames) {
-				leadNames.add(name.toUpperCase());
+			if (signameRet != null) {
+				String[] signames = signameRet.split("\n");
+				for (String name : signames) {
+					leadNames.add(name.toUpperCase());
+				}
 			}
-		}
 
-		reader.close();
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return count;
 	}
 
 	@Override
-	public ECGFile parse() throws IOException, ECGConverterException {
+	public ECGFile parse() {
 
 		String command = "sampfreq -H " + this.subjectId;
 		try {
@@ -139,9 +146,10 @@ public class WFDBWrapper extends ECGFormatWrapper{
 			command = "rdsamp -r " + this.subjectId + " -c -p -v -H";
 			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command, null, sourceFilePath);
 			stdReturnMethodHandler(stdInputBuffer);
-		} catch (Exception e) {
+		} catch (SecurityException e) {
 			e.printStackTrace();
-			throw new ECGConverterException(e.getStackTrace().toString());
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
 		} 
 		WFDBUtilities.clearTempFolder();
 		return ecgFile;
@@ -153,18 +161,22 @@ public class WFDBWrapper extends ECGFormatWrapper{
 		String[] fields = recordLine.split("[ \\t\\n\\f\\r]");
 		int fieldCount = fields.length;
 
-		if(fieldCount >=2)
-		{
-			ecgFile.channels = Integer.parseInt(fields[1]);
-			if(fieldCount>2) {
-				sub2 = fields[2].split("[/()]");
-				ecgFile.samplingRate = Float.parseFloat(sub2[0]);
+		try {
+			if (fieldCount >= 2) {
+				ecgFile.channels = Integer.parseInt(fields[1]);
+				if (fieldCount > 2) {
+					sub2 = fields[2].split("[/()]");
+					ecgFile.samplingRate = Float.parseFloat(sub2[0]);
+				}
+				if (fieldCount > 3) { // "& sampleFrequency exists" is implied.
+					ecgFile.samplesPerChannel = Integer.parseInt(fields[3]);
+				}
+				return ecgFile.channels;
+			} else {
+				throw new ECGConverterException("Channel count is less than 2.");
 			}
-			if(fieldCount>3) { // "& sampleFrequency exists" is implied.
-				ecgFile.samplesPerChannel = Integer.parseInt(fields[3]);
-			}
-			return ecgFile.channels;
-		}else {
+		} catch (ECGConverterException e) {
+			e.printStackTrace();
 			return -1;
 		}
 	}
@@ -180,7 +192,8 @@ public class WFDBWrapper extends ECGFormatWrapper{
     		for(int sig=1;sig <= signalCount; sig++){ // zeroth column is time, not a signal
     			signalNames[sig-1] = aSigNames[sig];// column names to be used later to verify the order.
     		}			    	  
-    	}else if (lineNum > 1){
+    	}
+		else if (lineNum > 1){
 		    // data.
     		String[] aSample = line.split(",");
    			signalCount = (aSample.length-1);
@@ -197,29 +210,35 @@ public class WFDBWrapper extends ECGFormatWrapper{
 		}	
     }
 	
-	private String stdReturnHandler(boolean withLineBreak) throws IOException{
+	private String stdReturnHandler(boolean withLineBreak){
 	    
 		StringBuilder sb = new StringBuilder();
 		String tempLine;
 
-	    while ((tempLine = stdInputBuffer.readLine()) != null) {
-	    	sb.append(tempLine);
-	    	if(withLineBreak){
-	    		sb.append('\n');
-	    	}
-	    }
+	    try {
+			while ((tempLine = stdInputBuffer.readLine()) != null) {
+				sb.append(tempLine);
+				if(withLineBreak){
+					sb.append('\n');
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	    return sb.toString();
 	}
 	
-	public void stdReturnMethodHandler(BufferedReader stdInputBuffer) 
-			throws IOException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-
+	public void stdReturnMethodHandler(BufferedReader stdInputBuffer){
 		String tempLine;
 		int lineNumber = 0;
 
-	    while ((tempLine = stdInputBuffer.readLine()) != null) {
-	    	processReturnLine(tempLine, lineNumber);
-	    	lineNumber ++;
-	    }
+	    try {
+			while ((tempLine = stdInputBuffer.readLine()) != null) {
+				processReturnLine(tempLine, lineNumber);
+				lineNumber ++;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

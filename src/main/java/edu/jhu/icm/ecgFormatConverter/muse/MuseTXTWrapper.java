@@ -58,39 +58,39 @@ public class MuseTXTWrapper extends ECGFormatWrapper{
 	}
 
 	@Override
-	public ECGFile parse() throws ECGConverterException, IOException {
+	public ECGFile parse() {
 		validate();
 		parseHeader();
 		parseECGdata();
 		return ecgFile;
 	}
 
-	private void validate() throws ECGConverterException, IOException {
+	private void validate() {
+		try {
+			if (geMuseFile != null) {
+				if (!geMuseFile.exists()) {
+					throw new ECGConverterException("Muse data file does not exist.");
+				}
 
-//		if(this.geMuseFis != null && geMuseFile == null){
-//			throw new ECGConverterException("Muse data does not exist.");
-//		}
-		
-		if(geMuseFile != null){
-			if (!geMuseFile.exists()) {
-				throw new ECGConverterException("Muse data file does not exist.");
+				long fileSize = geMuseFile.length();
+				if (fileSize > Integer.MAX_VALUE) {
+					throw new ECGConverterException("file size exceeding maximum int value.");
+				}
+
+				try {
+					geMuseFis = new FileInputStream(geMuseFile);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					throw new ECGConverterException(e.getStackTrace()
+							.toString());
+				}
 			}
-			
-			long fileSize = geMuseFile.length();
-			if (fileSize > Integer.MAX_VALUE) {
-				throw new ECGConverterException("file size exceeding maximum int value.");
-			}
-			
-			try {
-				geMuseFis = new FileInputStream(geMuseFile);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				throw new ECGConverterException(e.getStackTrace().toString());
-			}
+		} catch (ECGConverterException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private void parseHeader() throws ECGConverterException, IOException {
+	private void parseHeader(){
 
 		try{
 		    geMuseDis = new DataInputStream(geMuseFis);
@@ -112,18 +112,17 @@ public class MuseTXTWrapper extends ECGFormatWrapper{
 
 		}catch (IOException e){
 			e.printStackTrace();
-			throw new ECGConverterException(e.getStackTrace().toString());
 		}
 	}
 
-	private void parseECGdata() throws ECGConverterException, IOException {
+	private void parseECGdata(){
 		try{
 			int s = 0;
 		    String strLine;
 		    String[] numbers;
 		    while ((strLine = bufferedReader.readLine()) != null){
 		    	strLine = strLine.trim();
-		    	if(strLine.length()>0){
+		    	if(strLine.length() > 0){
 		    		numbers = strLine.split("\\s");
 					for (int c = 0; c < ecgFile.channels; c++){
 						short value = Short.parseShort(numbers[c]);
@@ -134,10 +133,13 @@ public class MuseTXTWrapper extends ECGFormatWrapper{
 		    }
 		}catch (Exception e){
 			e.printStackTrace();
-			throw new ECGConverterException("Error: " + e.getStackTrace().toString());
 		}finally {
-			geMuseDis.close();
-			geMuseFis.close();
+			try {
+				geMuseDis.close();
+				geMuseFis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}	
 	}
 }

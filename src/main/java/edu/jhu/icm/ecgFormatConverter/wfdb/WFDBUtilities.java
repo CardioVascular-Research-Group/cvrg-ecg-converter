@@ -26,42 +26,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Properties;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
+import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 
 public class WFDBUtilities {
 	
-	public static final String TEMP_FOLDER = "temp.folder.path";
-	
     public static void clearTempFolder(){
-		Properties properties;
-		try {
-			properties = WFDBUtilities.getProperties();
-			String tempFilePath = properties.getProperty(TEMP_FOLDER);
-			File folder = new File(tempFilePath);
-			if(folder.isDirectory()){
-				for(File file : folder.listFiles()){
-					file.delete();
-				}
+		String tempFilePath = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
+		File folder = new File(tempFilePath);
+		if(folder.isDirectory()){
+			for(File file : folder.listFiles()){
+				file.delete();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
     }
 
 	public static BufferedReader executeCommand(BufferedReader stdError, BufferedReader stdInputBuffer, String sCommand, 
-			String[] asEnvVar, String sWorkingDir) throws IOException, InterruptedException {
+			String[] asEnvVar, String sWorkingDir){
 
 		if (asEnvVar == null) {
 			asEnvVar = new String[0];
 		}
 
-		File fWorkingDir = new File(sWorkingDir); // converts the dir name to
-													// File for exec command.
+		File fWorkingDir = new File(sWorkingDir); // converts the dir name to File for exec command.
+
 		Runtime rt = Runtime.getRuntime();
 		String[] commandArray = sCommand.split("\\|");
+		try{
 		if (commandArray.length == 1) {
+
 			Process process = rt.exec(sCommand, asEnvVar, fWorkingDir);
 			InputStream is = process.getInputStream(); // The input stream for
 														// this method comes
@@ -72,13 +66,12 @@ public class WFDBUtilities {
 			InputStream errs = process.getErrorStream();
 			InputStreamReader esr = new InputStreamReader(errs);
 			stdError = new BufferedReader(esr);
-		} else {
-
+		} 
+		else {
 			Process[] processArray = new Process[commandArray.length];
 			// Start processes: ps ax | grep rbe | grep JavaVM
 			for (int i = 0; i < commandArray.length; i++) {
-				processArray[i] = rt.exec(commandArray[i].trim(), asEnvVar,
-						fWorkingDir);
+				processArray[i] = rt.exec(commandArray[i].trim(), asEnvVar,	fWorkingDir);
 			}
 			// Start piping
 			java.io.InputStream in = Piper.pipe(processArray);
@@ -86,77 +79,92 @@ public class WFDBUtilities {
 			// Show output of last process
 			InputStreamReader isr = new InputStreamReader(in);
 			stdInputBuffer = new BufferedReader(isr);
-			InputStream errs = processArray[processArray.length - 1]
-					.getErrorStream();
+			InputStream errs = processArray[processArray.length - 1].getErrorStream();
 			InputStreamReader esr = new InputStreamReader(errs);
 			stdError = new BufferedReader(esr);
+		}
+		}catch(IOException e){
+			e.printStackTrace();
 		}
 		return stdInputBuffer;
 	}
 	
-	public static String getRecordName(String filePath) throws ECGConverterException, IOException{
+	public static String getRecordName(String filePath){
 		String[] filePathElements = filePath.split(File.separator);
-		int size = filePathElements.length;
-		if(size == 0){
-			throw new ECGConverterException("Invalid File Path for WFDB Read.");
+		int size = 0;
+		try {
+			size = filePathElements.length;
+			if (size == 0) {
+				throw new ECGConverterException("Invalid File Path for WFDB Read.");
+			}
+		} catch (ECGConverterException e) {
+			e.printStackTrace();
 		}
 		String fileName = filePathElements[size - 1];
 		String[] fileNameElements = fileName.split("\\.");
 		return fileNameElements[0];
 	}
 
-	public static String createFile(InputStream inputStream, String path) throws IOException{
+	public static String createFile(InputStream inputStream, String path) {
 		File file = new File(path);
-		byte[] buffer = new byte[inputStream.available()];
-		inputStream.read(buffer);
-		OutputStream outputStream = new FileOutputStream(file);
-		outputStream.write(buffer);
-		inputStream.close();
-		outputStream.close();
+		try {
+			byte[] buffer = new byte[inputStream.available()];
+			inputStream.read(buffer);
+			OutputStream outputStream = new FileOutputStream(file);
+			outputStream.write(buffer);
+			inputStream.close();
+			outputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return file.getAbsolutePath();
 	}
 	
-	public static String createTempFiles(InputStream headerStream, InputStream dataStream, String subjectId) throws IOException{
-		String path = getProperties().getProperty(TEMP_FOLDER);
+	public static String createTempFiles(InputStream headerStream, InputStream dataStream, String subjectId){
+		String path = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 		createFile(headerStream, path + subjectId + ".hea");
 		return createFile(dataStream, path + subjectId + ".dat");
 	}
-	
-	public static Properties getProperties() throws IOException{
-		Properties props = new Properties();
-		InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("converter.properties");
-		props.load(resourceStream);
-		return props;
-	}
-	
-	protected void stdCSVReturnHandler(BufferedReader stdInputBuffer, String outputFilename, String[] headers) throws IOException {
+
+	protected void stdCSVReturnHandler(BufferedReader stdInputBuffer, String outputFilename, String[] headers) {
 		String line;
+		FileWriter fstream = null;
+		BufferedWriter bwOut = null;
 
-		// Create file
-		FileWriter fstream = new FileWriter(outputFilename);
-		BufferedWriter bwOut = new BufferedWriter(fstream);
+		try {
+			// Create file
+			fstream = new FileWriter(outputFilename);
+			bwOut = new BufferedWriter(fstream);
 
-		if (headers != null) {
-			String headerLine = "";
-			for (String string : headers) {
-				headerLine += (string + ',');
-			}
-			headerLine = headerLine.substring(0, headerLine.length() - 1);
-			bwOut.write(headerLine);
-			bwOut.newLine();
-		}
-
-		while ((line = stdInputBuffer.readLine()) != null) {
-
-			line = line.replaceAll("\\s+", ",").replaceAll("\\t", ", ");
-			if (line.charAt(0) == ',') {
-				line = line.substring(1, line.length());
+			if (headers != null) {
+				String headerLine = "";
+				for (String string : headers) {
+					headerLine += (string + ',');
+				}
+				headerLine = headerLine.substring(0, headerLine.length() - 1);
+				bwOut.write(headerLine);
+				bwOut.newLine();
 			}
 
-			bwOut.write(line);
-			bwOut.newLine();
+			while ((line = stdInputBuffer.readLine()) != null) {
+
+				line = line.replaceAll("\\s+", ",").replaceAll("\\t", ", ");
+				if (line.charAt(0) == ',') {
+					line = line.substring(1, line.length());
+				}
+
+				bwOut.write(line);
+				bwOut.newLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				bwOut.flush();
+				bwOut.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		bwOut.flush();
-		bwOut.close();
 	}
 }

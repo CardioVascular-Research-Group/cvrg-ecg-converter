@@ -17,14 +17,10 @@ limitations under the License.
 /**
 * @author Chris Jurado
 */
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.enums.DataFileFormat;
 import edu.jhu.icm.enums.LeadEnum;
 
@@ -33,19 +29,19 @@ public abstract class ECGFileLoader {
 	protected ECGFile ecgFile = new ECGFile();
 	public DataFileFormat inputFormat;
 	
-	public abstract ECGFile load(InputStream inputStream) throws JAXBException, ECGConverterException;
+	public abstract ECGFile load(InputStream inputStream);
 	
-	public abstract ECGFile load(String filePath) throws JAXBException, ECGConverterException;
+	public abstract ECGFile load(String filePath);
 	
-	protected abstract ECGFile load(ECGFormatWrapper wrapper) throws ECGConverterException;
+	protected abstract ECGFile load(ECGFormatWrapper wrapper);
 	
-	protected void setLeadNames(List<String> leadNames) throws ECGConverterException{
+	protected void setLeadNames(List<String> leadNames){
 		String leadNamesOut = null;
 		
 		if(leadNames != null){
 			boolean leadNamesOK = true;
 			String lName = null;
-			try{
+
 				for (Iterator<String> iterator = leadNames.iterator(); iterator.hasNext();) {
 					lName = iterator.next();
 					if(LeadEnum.valueOf(lName) == null){
@@ -53,14 +49,7 @@ public abstract class ECGFileLoader {
 						break;
 					}
 				}
-			}catch (Exception e){
-				leadNamesOK = false;
-				try {
-					throw new ECGConverterException("Lead not found: " + lName);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
+
 			
 			if(!leadNamesOK){
 				if(ecgFile.channels == 15){

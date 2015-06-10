@@ -1,10 +1,28 @@
 package edu.jhu.icm.ecgFormatConverter.wfdb;
 
+import java.io.IOException;
+import java.io.InputStream;
+/*
+Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+* @author Andre Vilardo, Chris Jurado
+*/
 public class Piper implements Runnable{
 
     private java.io.InputStream input;
-
     private java.io.OutputStream output;
 
     public Piper(java.io.InputStream input, java.io.OutputStream output) {
@@ -27,22 +45,21 @@ public class Piper implements Runnable{
                     output.write(b, 0, read);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+        	e.printStackTrace();
             // Something happened while reading or writing streams; pipe is broken
             throw new RuntimeException("Broken pipe", e);
         } finally {
             try {
                 input.close();
-            } catch (Exception e) {
-            }
-            try {
                 output.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
+            	e.printStackTrace();
             }
         }
     }
     
-    public static java.io.InputStream pipe(java.lang.Process... proc) throws java.lang.InterruptedException {
+    public static InputStream pipe(java.lang.Process... proc){
         // Start Piper between all processes
         java.lang.Process p1;
         java.lang.Process p2;
@@ -57,7 +74,11 @@ public class Piper implements Runnable{
         }
         java.lang.Process last = proc[proc.length - 1];
         // Wait for last process in chain; may throw InterruptedException
-        last.waitFor();
+        try {
+			last.waitFor();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
         // Return its InputStream
         return last.getInputStream();
     }

@@ -17,10 +17,7 @@ limitations under the License.
 /**
 * @author Chris Jurado
 */
-import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.bind.JAXBException;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.hl7.HL7AecgLoader;
@@ -35,35 +32,34 @@ import edu.jhu.icm.enums.DataFileFormat;
 
 public class ECGFormatReader {
 
-	//Non-WFDB formats
-	public ECGFile read(DataFileFormat inputFormat, String fileName, String inputPath, String recordName) throws Exception {
+	//All formats
+	public ECGFile read(DataFileFormat inputFormat, String fileName){
 		ECGFileLoader loader = createLoader(inputFormat);
-		return loader.load(inputPath + fileName);
+		return loader.load(fileName);
 	}
 	
 	//Non-WFDB formats
-	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream) throws ECGConverterException, IOException, JAXBException {
-		ECGFileLoader loader = createLoader(inputFormat);
-		return loader.load(dataStream);
+	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream){
+		ECGFileLoader loader = null;
+		ECGFile ecgFile = null;
+		loader = createLoader(inputFormat);
+		ecgFile = loader.load(dataStream);
+		return ecgFile;
 	}
-	
-	//WFDB format
-	public ECGFile read(DataFileFormat inputFormat, String subjectId) throws ECGConverterException, IOException, JAXBException {
-		ECGFileLoader loader = createLoader(inputFormat);
-		return loader.load(subjectId);
-	}
-	
 
 	//WFDB format
-	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream, InputStream headerStream, String subjectId) 
-			throws ECGConverterException, IOException, JAXBException {
+	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream, InputStream headerStream, String subjectId){
 		WFDBLoader loader = null;
-		switch(inputFormat) {
-			default:	throw new ECGConverterException("Unsupported Header File Format");	
-			case WFDB:					//fallthrough
-			case WFDB_16:				//fallthrough
-			case WFDB_61:				//fallthrough
-			case WFDB_212: 				loader = createWFDBLoader();	break;
+		try{
+			switch(inputFormat) {
+				default:	throw new ECGConverterException("Unsupported Header File Format");	
+				case WFDB:					//fallthrough
+				case WFDB_16:				//fallthrough
+				case WFDB_61:				//fallthrough
+				case WFDB_212: 				loader = createWFDBLoader();	break;
+			}
+		}catch(ECGConverterException e){
+			e.printStackTrace();
 		}
 		
 		loader.setHeaderStream(headerStream);
@@ -71,9 +67,9 @@ public class ECGFormatReader {
 		return loader.load(dataStream);
 	}
 	
-	private ECGFileLoader createLoader(DataFileFormat inputFormat) throws ECGConverterException, IOException{
+	private ECGFileLoader createLoader(DataFileFormat inputFormat){
 		ECGFileLoader loader = null;
-		try {
+		try{
 			switch(inputFormat) {
 				case RDT:					loader = new RDTLoader();				break;
 				case HL7:   				loader = new HL7AecgLoader();			break;
@@ -89,13 +85,13 @@ public class ECGFormatReader {
 				case SCHILLER:				loader = new SchillerLoader();			break;
 				default:					throw new ECGConverterException("Format not supported.");	
 			}
-		} catch (Exception e) {
-			throw new ECGConverterException(e.getStackTrace().toString());
+		}catch (ECGConverterException e){
+			e.printStackTrace();
 		}
 		return loader;
 	}
 	
-	private WFDBLoader createWFDBLoader() throws ECGConverterException, IOException{
+	private WFDBLoader createWFDBLoader(){
 		return new WFDBLoader();
 	}
 }

@@ -17,12 +17,8 @@ limitations under the License.
 /**
 * @author Chris Jurado
 */
-import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBException;
-
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
@@ -30,21 +26,21 @@ import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 public class HL7AecgLoader extends ECGFileLoader{
 
 	@Override
-	public ECGFile load(InputStream inputStream) throws IOException, JAXBException, ECGConverterException {
+	public ECGFile load(InputStream inputStream) {
 		HL7AecgWrapper hl7 = null;
 		hl7 = new HL7AecgWrapper(inputStream);
 		return load(hl7);
 	}
 
 	@Override
-	public ECGFile load(String filePath) throws IOException, JAXBException, ECGConverterException {
+	public ECGFile load(String filePath) {
 		HL7AecgWrapper hl7 = null;
 		hl7 = new HL7AecgWrapper(filePath);
 		return load(hl7);	
 	}
 
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapper) throws ECGConverterException, IOException {
+	protected ECGFile load(ECGFormatWrapper wrapper) {
 		HL7AecgWrapper hl7Wrapper = (HL7AecgWrapper) wrapper;
 		ecgFile = hl7Wrapper.parse();
 		return ecgFile;

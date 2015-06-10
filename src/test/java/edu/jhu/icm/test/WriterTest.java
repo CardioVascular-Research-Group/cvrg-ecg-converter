@@ -1,20 +1,16 @@
 package edu.jhu.icm.test;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.xml.bind.JAXBException;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatReader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWriter;
-import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBUtilities;
+import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 import edu.jhu.icm.enums.DataFileFormat;
 
 public class WriterTest extends TestCase{
@@ -30,162 +26,142 @@ public class WriterTest extends TestCase{
     {
         super(testName);
     }
-    
+        
     private boolean checkForFile(String filename){
+		String outputFolder = ConverterUtility.getProperty(TEMP_FOLDER);
+		File file = new File(outputFolder + filename);
+		if(file.exists()){
+			return true;
+		}
+    	return false;
+    }
+    
+    private boolean compareDataFiles(ECGFile firstFile, ECGFile secondFile){
 
-//		try {
-//			Properties properties = WFDBUtilities.getProperties();
-//			String outputFolder = properties.getProperty(TEMP_FOLDER);
-//	    	File directory = new File(outputFolder);
-//	    	for(File file : directory.listFiles()){
-//	    		if(file.getName().equals(filename)){
-//	    			return true;
-//	    		}
-//	    	}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//    	return false;
+    	if(firstFile.channels == secondFile.channels){System.out.println("Channels match.");}
+    	else{return false;}
+    	if(Arrays.deepEquals(firstFile.data, secondFile.data)){System.out.println("Data matches.");}
+    	else{return false;}
+    	if(firstFile.leadNames == secondFile.leadNames){System.out.println("leadNames match.");}
+    	else{return false;}
+    	if(firstFile.leadNamesList.equals(secondFile.leadNamesList)){System.out.println("leadNamesList match.");}
+    	else{return false;}
+    	if(firstFile.sampleOffset == secondFile.sampleOffset){System.out.println("sampleOffset match.");}
+    	else{return false;}
+    	if(firstFile.samplesPerChannel == secondFile.samplesPerChannel){System.out.println("samplesPerChannel match.");}
+    	else{return false;}
+    	if(firstFile.samplingRate == secondFile.samplingRate){System.out.println("samplingRate match.");}
+    	else{return false;}
+    	if(firstFile.scalingFactor == secondFile.scalingFactor){System.out.println("scalingFactor match.");}
+    	else{return false;}
     	return true;
     }
-    
-    private boolean compareDataFiles(String filename, ECGFile firstFile, ECGFile secondFile){
-    	if(!checkForFile(filename)){
-    		return false;
-    	}
-    	
-    	return (firstFile.channels == secondFile.channels 
-    			&& firstFile.data == secondFile.data
-    			&& firstFile.leadNames.equals(secondFile.leadNames)
-    			&& firstFile.leadNamesList.equals(secondFile.leadNamesList)
-    			&& firstFile.sampleOffset == secondFile.sampleOffset
-    			&& firstFile.samplesPerChannel == secondFile.samplesPerChannel
-    			&& firstFile.samplingRate == secondFile.samplingRate
-    			&& firstFile.scalingFactor == secondFile.scalingFactor);
-    }
-    
+
     private ECGFile loadFile(String fileName, DataFileFormat format){
     	ECGFile ecgFile = null;
-    	try {
-			ECGFormatReader reader = new ECGFormatReader();
-
-			File file = new File(getClass().getResource(fileName).getFile());
-
-			if(file.exists()){
-				ecgFile = reader.read(format, file.getAbsolutePath());
-			}
-		} catch (ECGConverterException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JAXBException e) {
-			e.printStackTrace();
+    	ECGFormatReader reader = new ECGFormatReader();
+    	File file = new File(getClass().getResource(fileName).getFile());
+		if(file.exists()){
+			ecgFile = reader.read(format, file.getAbsolutePath());
+		} else {
 		}
 		return ecgFile;
     }
     
     private ECGFile loadWFDBFiles(String headerFileName, String dataFileName, DataFileFormat format){
     	ECGFile ecgFile = null;
-    	try {
-			ECGFormatReader reader = new ECGFormatReader();
+    	ECGFormatReader reader = new ECGFormatReader();
 
-			File headerFile = new File(getClass().getResource(headerFileName).getFile());
-			File dataFile = new File(getClass().getResource(dataFileName).getFile());
+		File headerFile = new File(getClass().getResource(headerFileName).getFile());
+		File dataFile = new File(getClass().getResource(dataFileName).getFile());
 
-			if(headerFile.exists() && dataFile.exists()){
-				ecgFile = reader.read(format, headerFileName.split("\\.")[0]);
-				System.out.println("Files have been read");
-			}
-		} catch (ECGConverterException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JAXBException e) {
-			e.printStackTrace();
+		if(headerFile.exists() && dataFile.exists()){
+			ecgFile = reader.read(format, headerFileName.split("\\.")[0]);
 		}
 		return ecgFile;
     }
-
-    @Test
-    public void testWriteRDTFile(){
-    	ECGFile ecgFile = loadFile(RDT_INPUT_FILE_PATH, DataFileFormat.RDT);
-    	ECGFile newECGFile = null;
-    	File newFile;
+  
+    private boolean genericWriteFileTest(DataFileFormat format, String inputFilePath, String outputFileName, String subjectId){
+    	ECGFile ecgFile = null;
+    	ECGFormatReader reader = new ECGFormatReader();
+    	File file = new File(getClass().getResource(inputFilePath).getFile());
+    	ecgFile = reader.read(format, file.getAbsolutePath());
     	ECGFormatWriter writer = new ECGFormatWriter();
-    	try {
-			Properties properties = WFDBUtilities.getProperties();
-			String outputFolder = properties.getProperty(TEMP_FOLDER);
-			newFile = writer.writeToFile(DataFileFormat.RDT, outputFolder, "RDTTest", ecgFile);
-			System.out.println("Let's load the new one");
-			newECGFile = loadFile(outputFolder + File.separator + "RDTTest.rdt", DataFileFormat.RDT);
-			if(newECGFile == null){
-				System.out.println("Loading the new file failed.");
-			}
-		} catch (ECGConverterException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		String outputFolder = ConverterUtility.getProperty(TEMP_FOLDER);
+		writer.writeToFile(format, outputFolder, subjectId, ecgFile);
+		if(!checkForFile(outputFileName)){
+			return false;
 		}
-    	if(ecgFile == null || newECGFile == null){
-    		assertTrue(false);
-    	}
-    	assertTrue(compareDataFiles("RDTTest.rdt", ecgFile, newECGFile));
+		
+		ECGFormatReader newReader = new ECGFormatReader();
+		ECGFile newECGFile = newReader.read(format, file.getAbsolutePath());
+		return compareDataFiles(ecgFile, newECGFile);
     }
     
-//    @Test
-//    public void testWriteRDTInputStream(){
-//    	ECGFile ecgFile = loadFile(RDT_INPUT_FILE_PATH, DataFileFormat.RDT);
-//    	ECGFormatWriter writer = new ECGFormatWriter();
-//    	try {
-//			writer.writeToFile(DataFileFormat.RDT, TEMP_FOLDER, "RDTTest", ecgFile);
-//		} catch (ECGConverterException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//    	assertTrue(false);
-//    }
+    @Test
+    public void testWriteRDTFile(){
+    	assertTrue(genericWriteFileTest(DataFileFormat.RDT, RDT_INPUT_FILE_PATH, "RDTTest.rdt", "RDTTest"));
+    }
     
-//    @Test
-//    public void testWriteHL7AecgFile(){
-//    	ECGFile ecgFile = loadFile(HL7AECG_INPUT_FILE_PATH, DataFileFormat.HL7);
-//    	ECGFormatWriter writer = new ECGFormatWriter();
-//    	try {
-//			writer.write(DataFileFormat.HL7, TEMP_FOLDER, "HL7AecgTest", ecgFile, true);
-//		} catch (ECGConverterException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//    	assertTrue(checkForFile("HL7AecgTest.xml"));
-//    }
-//    
-//    @Test
-//    public void testWriteMuseTXTFile(){
-//    	ECGFile ecgFile = loadFile(MUSE_TXT_INPUT_FILE_PATH, DataFileFormat.GEMUSE);
-//    	ECGFormatWriter writer = new ECGFormatWriter();
-//    	try {
-//			writer.write(DataFileFormat.GEMUSE, TEMP_FOLDER, "MuseTXTTest", ecgFile, true);
-//		} catch (ECGConverterException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//    	assertTrue(checkForFile("MuseTXTTest.txt"));
-//    }
-//    
-//    @Test
-//    public void testWriteWFDBFile(){
-//    	ECGFile ecgFile = loadWFDBFiles(WFDB_HEADER_FILE_PATH, WFDB_DATA_FILE_PATH, DataFileFormat.WFDB);
-//    	ECGFormatWriter writer = new ECGFormatWriter();
-//    	try {
-//			writer.write(DataFileFormat.WFDB, TEMP_FOLDER, "WFDBTest", ecgFile, true);
-//		} catch (ECGConverterException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//    	assertTrue(checkForFile("WFDBTest.hea") && checkForFile("WFDBTest.dat"));
-//    }
+    @Test
+    public void testWriteRDTByteArray(){
+    	ECGFile ecgFile = loadFile(RDT_INPUT_FILE_PATH, DataFileFormat.RDT);
+    	ECGFormatWriter writer = new ECGFormatWriter();
+    	byte[] fileData = null;
+    	fileData = writer.writeToByteArray(DataFileFormat.RDT, ecgFile, "RDTTest");
+		if(fileData == null){
+			assertTrue(false);
+		}
+    	assertTrue(true);
+    }
+    
+    @Test
+    public void testWriteHL7AecgFile(){
+    	assertTrue(genericWriteFileTest(DataFileFormat.HL7, HL7AECG_INPUT_FILE_PATH, "HL7Test.xml", "HL7Test"));
+    }
+    
+    @Test
+    public void testWriteHL7AecgByteArray(){
+    	ECGFile ecgFile = loadFile(HL7AECG_INPUT_FILE_PATH, DataFileFormat.HL7);
+    	ECGFormatWriter writer = new ECGFormatWriter();
+    	byte[] fileData = null;
+    	fileData = writer.writeToByteArray(DataFileFormat.HL7, ecgFile, "HL7Test");
+		if(fileData == null){
+			assertTrue(false);
+		}
+    	assertTrue(true);
+    }
+    
+    @Test
+    public void testWriteMuseTXTFile(){
+    	assertTrue(genericWriteFileTest(DataFileFormat.GEMUSE, MUSE_TXT_INPUT_FILE_PATH, "MuseTXTTest.txt", "MuseTXTTest"));
+    }
+    
+    @Test
+    public void testWriteMuseTXTByteArray(){
+    	ECGFile ecgFile = loadFile(MUSE_TXT_INPUT_FILE_PATH, DataFileFormat.GEMUSE);
+    	ECGFormatWriter writer = new ECGFormatWriter();
+    	byte[] fileData = null;
+    	fileData = writer.writeToByteArray(DataFileFormat.GEMUSE, ecgFile, "GeMuseTest");
+		if(fileData == null){
+			assertTrue(false);
+		}
+    	assertTrue(true);
+    }
+    
+    @Test
+    public void testWriteWFDBFile(){
+    	ECGFile ecgFile = loadWFDBFiles(WFDB_HEADER_FILE_PATH, WFDB_DATA_FILE_PATH, DataFileFormat.WFDB);
+    	ECGFormatWriter writer = new ECGFormatWriter();
+		String outputFolder = ConverterUtility.getProperty(TEMP_FOLDER);
+    	writer.writeToFile(DataFileFormat.WFDB, outputFolder, "WFDBTest", ecgFile);
+    	try {
+			Thread.sleep(4000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    	boolean headerFile = checkForFile("WFDBTest.hea");
+    	boolean dataFile = checkForFile("WFDBTest.dat");
+    	assertTrue(headerFile && dataFile);
+    }
 }

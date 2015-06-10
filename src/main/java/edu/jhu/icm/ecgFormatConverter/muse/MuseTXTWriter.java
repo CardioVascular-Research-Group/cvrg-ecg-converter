@@ -1,63 +1,71 @@
 package edu.jhu.icm.ecgFormatConverter.muse;
+/*
+Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+* @author Chris Jurado, Mike Shipway
+*/
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFile;
 import edu.jhu.icm.ecgFormatConverter.ECGFileWriter;
 
 public class MuseTXTWriter extends ECGFileWriter {
-	
-	private InputStream inputStream;
-	private OutputStream outStream;
+
 	private ECGFile ecgFile;
 
 	@Override
-	public File writeToFile(String outputPath, String recordName, ECGFile ecgFile) throws ECGConverterException, IOException{
+	public File writeToFile(String outputPath, String recordName, ECGFile ecgFile){
 		
 		File outFile = null;
+		FileOutputStream outStream = null;
 		try {
-			outFile = new File(outputPath);
+			outFile = new File(outputPath + recordName + ".txt");
 			outStream = new FileOutputStream(outFile);
+			write(outStream, ecgFile);
+			outStream.close();
 		} catch (FileNotFoundException e) {
-			throw new ECGConverterException(e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		write(outStream, ecgFile);
-		outStream.close();
 		return outFile;
 	}
 
 	@Override
-	public InputStream writeToInputStream(String recordName, ECGFile file) throws IOException {
+	public byte[] writeToByteArray(String recordName, ECGFile file){
 		
 		ecgFile = file;
-		inputStream = new PipedInputStream();
-		outStream = new PipedOutputStream((PipedInputStream)inputStream);
-		
-		new Thread(new Runnable() {
-			public void run(){
-				try {
-					write(outStream, ecgFile);
-				} catch (ECGConverterException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
-		
-		outStream.close();
-		return inputStream;
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		try {
+			write(outputStream, ecgFile);
+			outputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return outputStream.toByteArray();
 	}
 	
-	private OutputStream write(OutputStream outStream, ECGFile ecgFile) throws ECGConverterException, IOException {
+	private OutputStream write(OutputStream outStream, ECGFile ecgFile){
 		String headerLine = "", dataLine = "", EOL = "\r\n";
 
 		try {
@@ -82,7 +90,7 @@ public class MuseTXTWriter extends ECGFileWriter {
 				outStream.flush();
 			}
 		} catch (IOException e) {
-			throw new ECGConverterException(e.getMessage());
+			e.printStackTrace();
 		}
 		return outStream;
 	}

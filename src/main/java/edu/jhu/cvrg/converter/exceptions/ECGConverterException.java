@@ -17,13 +17,12 @@ limitations under the License.
 /**
 * @author Chris Jurado
 */
-import java.io.IOException;
 
 public class ECGConverterException extends Exception{
 	
 	private static final long serialVersionUID = 1L;
 
-	public ECGConverterException(String message) throws IOException{
+	public ECGConverterException(String message){
 		super(message);
 	}
 }

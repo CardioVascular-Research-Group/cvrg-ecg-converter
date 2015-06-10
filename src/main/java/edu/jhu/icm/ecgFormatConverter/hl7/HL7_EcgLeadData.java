@@ -1,10 +1,29 @@
+package edu.jhu.icm.ecgFormatConverter.hl7;
+/*
+Copyright 2015 Johns Hopkins University Institute for Computational Medicine
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 /*
  * Created on Apr 6, 2006
  *
  */
-
-package edu.jhu.icm.ecgFormatConverter.hl7;
-
+/**
+ * Represents the time series from all leads.
+ * 
+ * @author cyang
+ *  
+ */
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -21,12 +40,6 @@ import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.xy.XYDataset;
 
-/**
- * Represents the time series from all leads.
- * 
- * @author cyang
- *  
- */
 public class HL7_EcgLeadData {
 
     private BigDecimal[] leadOriginValue, leadScaleValue;
@@ -170,8 +183,6 @@ public class HL7_EcgLeadData {
             ecgDataset.setOffset(offset);
             ecgDataset.setReadingSize(count);
             ret[i] = ecgDataset;
-//            logger.debug(i + ": offset: " + ecgDataset.getOffset()
-//                    + "; readingSize is " + ecgDataset.getReadingSize());
             if (i==0) totalRead += ecgDataset.getReadingSize();
         }
         return ret;
@@ -180,20 +191,13 @@ public class HL7_EcgLeadData {
     
     public XYDataset getOneXYDataset(int leadIndex) {
         if (leadIndex < 0 || leadIndex >= this.numberOfLeads) {
-//            logger.error("the leadIndex is out of bounds");
             return null;
         } else {
-//            logger.debug("is called");
             PagedEcgXYDataset ecgDataset = new PagedEcgXYDataset(leadIndex);
             return ecgDataset;
         }
     }
 
-    /**
-     * represents one page of data from one lead
-     * 
-     * @author cyang Apr 10, 2006
-     */
     public class PagedEcgXYDataset implements XYDataset {
         public int whichLead;
 
@@ -215,10 +219,6 @@ public class HL7_EcgLeadData {
         public void setReadingSize(int count) {
             if (count > 0)
                 this.readingSize = count;
-//            else
-//                logger
-//                        .error("Error: trying to set readingSize to negative number "
-//                                + count);
         }
 
         /**
@@ -235,10 +235,7 @@ public class HL7_EcgLeadData {
         public void setOffset(int offset) {
             if (offset >= 0 && offset < numberOfPoints) {
                 this.offset = offset;
-            } else {
-//                logger.error("Error: trying to set an invalid offset value, "
-//                        + offset + "; numberofpoints " + numberOfPoints);
-            }
+            } 
         }
 
         /**
