@@ -105,4 +105,12 @@ public class ECGFormatConverter {
 		ECGFile ecgFile = loadInputStream(inputStream, inputFormat);
 		return writeFile(outputFormat, subjectId, ecgFile);
 	}
+	
+	public File convertWFDBFileToWFDBFile(String WFDBSourceFilePath, String WFDBoutputFilePath, DataFileFormat inputFormat, DataFileFormat outputFormat, String subjectId){
+		String header = ConverterUtility.addSeparator(WFDBSourceFilePath) + subjectId + ".hea";
+		String data = ConverterUtility.addSeparator(WFDBSourceFilePath) + subjectId + ".dat";
+		ECGFile ecgFile = loadWFDBFilesData(header, data, inputFormat);
+		ECGFormatWriter writer = new ECGFormatWriter();
+		return writer.writeToFile(outputFormat, WFDBoutputFilePath, subjectId, ecgFile);
+	}
 }

@@ -88,7 +88,7 @@ public class ConverterTest extends TestCase{
     	boolean result = false;
     	File file = new File(getClass().getResource(MUSE_TXT_INPUT_FILE_PATH).getFile());
     	ECGFormatConverter converter = new ECGFormatConverter();
-    	converter.convertFileToFile(file.getAbsolutePath(), DataFileFormat.HL7, DataFileFormat.WFDB, "gemusetowfdbsubject");
+    	converter.convertFileToFile(file.getAbsolutePath(), DataFileFormat.GEMUSE, DataFileFormat.WFDB, "gemusetowfdbsubject");
     	try {
 			Thread.sleep(4000);
 		} catch (InterruptedException e) {
