@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class RDTWrapper extends ECGFormatWrapper{
@@ -35,12 +35,12 @@ public class RDTWrapper extends ECGFormatWrapper{
 	private static final ByteOrder BYTEORDER = ByteOrder.LITTLE_ENDIAN;
 	
 	public RDTWrapper(String filePath){
-		this.ecgFile = new ECGFile();
+		this.ecgFile = new ECGFileData();
 		init(filePath);
 	}
 	
 	public RDTWrapper(InputStream inputStream){
-		this.ecgFile = new ECGFile();
+		this.ecgFile = new ECGFileData();
 		init(inputStream);
 	}
 	
@@ -57,7 +57,7 @@ public class RDTWrapper extends ECGFormatWrapper{
 	}
 
 	@Override
-	public ECGFile parse(){
+	public ECGFileData parse(){
 		if (inputStream != null) {
 			parseInputStream();
 		} else if (filePath != null) {

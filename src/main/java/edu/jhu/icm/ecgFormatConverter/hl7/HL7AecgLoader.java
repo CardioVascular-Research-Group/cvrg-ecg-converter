@@ -19,28 +19,28 @@ limitations under the License.
 */
 import java.io.InputStream;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class HL7AecgLoader extends ECGFileLoader{
 
 	@Override
-	public ECGFile load(InputStream inputStream) {
+	public ECGFileData load(InputStream inputStream) {
 		HL7AecgWrapper hl7 = null;
 		hl7 = new HL7AecgWrapper(inputStream);
 		return load(hl7);
 	}
 
 	@Override
-	public ECGFile load(String filePath) {
+	public ECGFileData load(String filePath) {
 		HL7AecgWrapper hl7 = null;
 		hl7 = new HL7AecgWrapper(filePath);
 		return load(hl7);	
 	}
 
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapper) {
+	protected ECGFileData load(ECGFormatWrapper wrapper) {
 		HL7AecgWrapper hl7Wrapper = (HL7AecgWrapper) wrapper;
 		ecgFile = hl7Wrapper.parse();
 		return ecgFile;

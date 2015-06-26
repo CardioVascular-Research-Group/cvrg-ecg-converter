@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatReader;
 import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBUtilities;
 import edu.jhu.icm.enums.DataFileFormat;
@@ -28,7 +28,7 @@ public class LoaderTest extends TestCase{
 	private final String WFDB_HEADER_FILE_PATH = "/jhu315.hea";
 	private final String WFDB_DATA_FILE_PATH = "/jhu315.dat";
 	
-	private ECGFile ecgFile = null;
+	private ECGFileData ecgFile = null;
 
     public LoaderTest(String testName)
     {

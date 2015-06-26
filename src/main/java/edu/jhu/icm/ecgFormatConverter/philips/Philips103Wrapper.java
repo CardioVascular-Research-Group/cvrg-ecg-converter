@@ -32,7 +32,7 @@ import org.sierraecg.schema.Leadmeasurement;
 import org.sierraecg.schema.Restingecgdata;
 import org.sierraecg.schema.Signalcharacteristics;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class Philips103Wrapper extends ECGFormatWrapper{
@@ -40,12 +40,12 @@ public class Philips103Wrapper extends ECGFormatWrapper{
 	private DecodedLead[] leadData;
 	
 	public Philips103Wrapper(String filePath){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(filePath);
 	}
 	
 	public Philips103Wrapper(InputStream inputStream){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(inputStream);
 	}
 
@@ -76,7 +76,7 @@ public class Philips103Wrapper extends ECGFormatWrapper{
 		}
 	}
 	
-	public ECGFile parse() {
+	public ECGFileData parse() {
 		if(philipsECG != null) {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
 			List<Leadmeasurement> leads = philipsECG.getMeasurements().getLeadmeasurements().getLeadmeasurement();

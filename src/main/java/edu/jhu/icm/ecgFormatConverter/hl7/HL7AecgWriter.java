@@ -39,7 +39,7 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlSimpleList;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileWriter;
 
 public class HL7AecgWriter extends ECGFileWriter{
@@ -50,7 +50,7 @@ public class HL7AecgWriter extends ECGFileWriter{
 	 private static ByteArrayOutputStream outputStream;
 
 	@Override
-	public File writeToFile(String outputPath, String recordName, ECGFile ecgFile) {
+	public File writeToFile(String outputPath, String recordName, ECGFileData ecgFile) {
         AnnotatedECGDocument aecgdoc;
         File file = null;
 		aecgdoc = createTemplate(true);
@@ -61,7 +61,7 @@ public class HL7AecgWriter extends ECGFileWriter{
 	}
 
 	@Override
-	public byte[] writeToByteArray(String recordName, ECGFile ecgFile) {
+	public byte[] writeToByteArray(String recordName, ECGFileData ecgFile) {
         AnnotatedECGDocument aecgdoc = null;
 		aecgdoc = createTemplate(true);
 		aecgdoc = createAecgDoc(ecgFile.data, ecgFile.samplingRate, aecgdoc);

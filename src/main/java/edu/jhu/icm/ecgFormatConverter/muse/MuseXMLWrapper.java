@@ -20,7 +20,7 @@ limitations under the License.
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 
@@ -31,12 +31,12 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 	private ArrayList<int[]> leadData;
 	
 	public MuseXMLWrapper(String filePath){
-		this.ecgFile = new ECGFile();
+		this.ecgFile = new ECGFileData();
 		init(filePath);
 	}
 	
 	public MuseXMLWrapper(InputStream inputStream){
-		this.ecgFile = new ECGFile();
+		this.ecgFile = new ECGFileData();
 		init(inputStream);
 	}
 
@@ -58,7 +58,7 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 	}
 		
 	@Override
-	public ECGFile parse() {
+	public ECGFileData parse() {
 		
 		try {
 			if(inputStream != null){

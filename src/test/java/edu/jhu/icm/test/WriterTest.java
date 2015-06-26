@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatReader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWriter;
 import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
@@ -36,7 +36,7 @@ public class WriterTest extends TestCase{
     	return false;
     }
     
-    private boolean compareDataFiles(ECGFile firstFile, ECGFile secondFile){
+    private boolean compareDataFiles(ECGFileData firstFile, ECGFileData secondFile){
 
     	if(firstFile.channels == secondFile.channels){System.out.println("Channels match.");}
     	else{return false;}
@@ -57,8 +57,8 @@ public class WriterTest extends TestCase{
     	return true;
     }
 
-    private ECGFile loadFile(String fileName, DataFileFormat format){
-    	ECGFile ecgFile = null;
+    private ECGFileData loadFile(String fileName, DataFileFormat format){
+    	ECGFileData ecgFile = null;
     	ECGFormatReader reader = new ECGFormatReader();
     	File file = new File(getClass().getResource(fileName).getFile());
 		if(file.exists()){
@@ -68,8 +68,8 @@ public class WriterTest extends TestCase{
 		return ecgFile;
     }
     
-    private ECGFile loadWFDBFiles(String headerFileName, String dataFileName, DataFileFormat format){
-    	ECGFile ecgFile = null;
+    private ECGFileData loadWFDBFiles(String headerFileName, String dataFileName, DataFileFormat format){
+    	ECGFileData ecgFile = null;
     	ECGFormatReader reader = new ECGFormatReader();
 
 		File headerFile = new File(getClass().getResource(headerFileName).getFile());
@@ -82,7 +82,7 @@ public class WriterTest extends TestCase{
     }
   
     private boolean genericWriteFileTest(DataFileFormat format, String inputFilePath, String outputFileName, String subjectId){
-    	ECGFile ecgFile = null;
+    	ECGFileData ecgFile = null;
     	ECGFormatReader reader = new ECGFormatReader();
     	File file = new File(getClass().getResource(inputFilePath).getFile());
     	ecgFile = reader.read(format, file.getAbsolutePath());
@@ -94,7 +94,7 @@ public class WriterTest extends TestCase{
 		}
 		
 		ECGFormatReader newReader = new ECGFormatReader();
-		ECGFile newECGFile = newReader.read(format, file.getAbsolutePath());
+		ECGFileData newECGFile = newReader.read(format, file.getAbsolutePath());
 		return compareDataFiles(ecgFile, newECGFile);
     }
     
@@ -105,7 +105,7 @@ public class WriterTest extends TestCase{
     
     @Test
     public void testWriteRDTByteArray(){
-    	ECGFile ecgFile = loadFile(RDT_INPUT_FILE_PATH, DataFileFormat.RDT);
+    	ECGFileData ecgFile = loadFile(RDT_INPUT_FILE_PATH, DataFileFormat.RDT);
     	ECGFormatWriter writer = new ECGFormatWriter();
     	byte[] fileData = null;
     	fileData = writer.writeToByteArray(DataFileFormat.RDT, ecgFile, "RDTTest");
@@ -122,7 +122,7 @@ public class WriterTest extends TestCase{
     
     @Test
     public void testWriteHL7AecgByteArray(){
-    	ECGFile ecgFile = loadFile(HL7AECG_INPUT_FILE_PATH, DataFileFormat.HL7);
+    	ECGFileData ecgFile = loadFile(HL7AECG_INPUT_FILE_PATH, DataFileFormat.HL7);
     	ECGFormatWriter writer = new ECGFormatWriter();
     	byte[] fileData = null;
     	fileData = writer.writeToByteArray(DataFileFormat.HL7, ecgFile, "HL7Test");
@@ -139,7 +139,7 @@ public class WriterTest extends TestCase{
     
     @Test
     public void testWriteMuseTXTByteArray(){
-    	ECGFile ecgFile = loadFile(MUSE_TXT_INPUT_FILE_PATH, DataFileFormat.GEMUSE);
+    	ECGFileData ecgFile = loadFile(MUSE_TXT_INPUT_FILE_PATH, DataFileFormat.GEMUSE);
     	ECGFormatWriter writer = new ECGFormatWriter();
     	byte[] fileData = null;
     	fileData = writer.writeToByteArray(DataFileFormat.GEMUSE, ecgFile, "GeMuseTest");
@@ -151,7 +151,7 @@ public class WriterTest extends TestCase{
     
     @Test
     public void testWriteWFDBFile(){
-    	ECGFile ecgFile = loadWFDBFiles(WFDB_HEADER_FILE_PATH, WFDB_DATA_FILE_PATH, DataFileFormat.WFDB);
+    	ECGFileData ecgFile = loadWFDBFiles(WFDB_HEADER_FILE_PATH, WFDB_DATA_FILE_PATH, DataFileFormat.WFDB);
     	ECGFormatWriter writer = new ECGFormatWriter();
 		String outputFolder = ConverterUtility.getProperty(TEMP_FOLDER);
     	writer.writeToFile(DataFileFormat.WFDB, outputFolder, "WFDBTest", ecgFile);

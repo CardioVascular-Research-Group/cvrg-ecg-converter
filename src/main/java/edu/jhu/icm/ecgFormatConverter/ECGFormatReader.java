@@ -33,22 +33,22 @@ import edu.jhu.icm.enums.DataFileFormat;
 public class ECGFormatReader {
 
 	//All formats
-	public ECGFile read(DataFileFormat inputFormat, String fileName){
+	public ECGFileData read(DataFileFormat inputFormat, String fileName){
 		ECGFileLoader loader = createLoader(inputFormat);
 		return loader.load(fileName);
 	}
 	
 	//Non-WFDB formats
-	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream){
+	public ECGFileData read(DataFileFormat inputFormat, InputStream dataStream){
 		ECGFileLoader loader = null;
-		ECGFile ecgFile = null;
+		ECGFileData ecgFile = null;
 		loader = createLoader(inputFormat);
 		ecgFile = loader.load(dataStream);
 		return ecgFile;
 	}
 
 	//WFDB format
-	public ECGFile read(DataFileFormat inputFormat, InputStream dataStream, InputStream headerStream, String subjectId){
+	public ECGFileData read(DataFileFormat inputFormat, InputStream dataStream, InputStream headerStream, String subjectId){
 		WFDBLoader loader = null;
 		try{
 			switch(inputFormat) {

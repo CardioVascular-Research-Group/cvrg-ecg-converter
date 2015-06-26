@@ -27,19 +27,19 @@ import org.cvrgrid.schiller.DecodedLead;
 import org.cvrgrid.schiller.PreprocessReturn;
 import org.cvrgrid.schiller.SchillerEcgFiles;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class SchillerWrapper extends ECGFormatWrapper{
 	private DecodedLead[] leadData;
 	
 	public SchillerWrapper(String filePath){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(filePath);
 	}
 	
 	public SchillerWrapper(InputStream inputStream){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(inputStream);
 	}
 
@@ -75,7 +75,7 @@ public class SchillerWrapper extends ECGFormatWrapper{
 		ecgFile.scalingFactor = 1;
 	}
 	
-	public ECGFile parse() {
+	public ECGFileData parse() {
 
 		ecgFile.channels = leadData.length;	
 		int previousSample = leadData[0].size();

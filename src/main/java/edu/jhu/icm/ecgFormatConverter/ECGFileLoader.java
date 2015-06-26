@@ -26,14 +26,14 @@ import edu.jhu.icm.enums.LeadEnum;
 
 public abstract class ECGFileLoader {
 
-	protected ECGFile ecgFile = new ECGFile();
+	protected ECGFileData ecgFile = new ECGFileData();
 	public DataFileFormat inputFormat;
 	
-	public abstract ECGFile load(InputStream inputStream);
+	public abstract ECGFileData load(InputStream inputStream);
 	
-	public abstract ECGFile load(String filePath);
+	public abstract ECGFileData load(String filePath);
 	
-	protected abstract ECGFile load(ECGFormatWrapper wrapper);
+	protected abstract ECGFileData load(ECGFormatWrapper wrapper);
 	
 	protected void setLeadNames(List<String> leadNames){
 		String leadNamesOut = null;
@@ -79,7 +79,7 @@ public abstract class ECGFileLoader {
 		this.ecgFile.leadNames = leadNamesOut;
 	}
 
-	public ECGFile getECGFile(){
+	public ECGFileData getECGFile(){
 		return ecgFile;
 	}
 }

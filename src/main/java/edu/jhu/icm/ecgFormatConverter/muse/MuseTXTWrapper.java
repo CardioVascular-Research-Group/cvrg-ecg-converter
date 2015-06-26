@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class MuseTXTWrapper extends ECGFormatWrapper{
@@ -38,12 +38,12 @@ public class MuseTXTWrapper extends ECGFormatWrapper{
 	private BufferedReader bufferedReader;
 
 	public MuseTXTWrapper(String filename) {
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(filename);
 	}
 	
 	public MuseTXTWrapper(InputStream inputStream) {
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(inputStream);
 	}
 
@@ -58,7 +58,7 @@ public class MuseTXTWrapper extends ECGFormatWrapper{
 	}
 
 	@Override
-	public ECGFile parse() {
+	public ECGFileData parse() {
 		validate();
 		parseHeader();
 		parseECGdata();

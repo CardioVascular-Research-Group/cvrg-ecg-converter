@@ -20,7 +20,7 @@ limitations under the License.
 import java.util.ArrayList;
 import java.util.List;
 
-public class ECGFile {
+public class ECGFileData {
 
 	public int data[][]; // common, shared work space populated by LoadXXX, used by WriteXXX methods
 	public int channels = 0; // number of channels read by LoadXXX methods

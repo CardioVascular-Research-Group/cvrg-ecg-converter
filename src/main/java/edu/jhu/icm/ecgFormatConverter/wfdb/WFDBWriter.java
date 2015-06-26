@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileWriter;
 import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 
@@ -42,7 +42,7 @@ public class WFDBWriter extends ECGFileWriter {
 	}
 
 	@Override
-	public File writeToFile(String outputPath, String subjectId, ECGFile ecgFile) {
+	public File writeToFile(String outputPath, String subjectId, ECGFileData ecgFile) {
 		String path = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 		String contentFileName = path + subjectId + ".txt";
 		File contentFile = new File(contentFileName);
@@ -96,7 +96,7 @@ public class WFDBWriter extends ECGFileWriter {
 	}
 
 	@Override
-	public byte[] writeToByteArray(String subjectId, ECGFile ecgFile) {
+	public byte[] writeToByteArray(String subjectId, ECGFileData ecgFile) {
 		byte[] fileBytes = null;
 		String tempPath =  ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 		writeToFile(tempPath, subjectId, ecgFile);

@@ -19,7 +19,7 @@ limitations under the License.
 */
 import java.io.InputStream;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
@@ -28,19 +28,19 @@ public class SchillerLoader extends ECGFileLoader{
 	private Object comXiriuzSemaXmlSchillerEDI;
 
 	@Override
-	public ECGFile load(String filePath) {
+	public ECGFileData load(String filePath) {
 		SchillerWrapper schillerWrap = new SchillerWrapper(filePath);
 		return load(schillerWrap);	
 	}
 	
 	@Override
-	public ECGFile load(InputStream inputStream) {
+	public ECGFileData load(InputStream inputStream) {
 		SchillerWrapper schillerWrap = new SchillerWrapper(inputStream);
 		return load(schillerWrap);
 	}
 	
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapperLoader) {
+	protected ECGFileData load(ECGFormatWrapper wrapperLoader) {
 		SchillerWrapper schillerWrapper = (SchillerWrapper)wrapperLoader;
 		ecgFile = schillerWrapper.parse();
 		return ecgFile;

@@ -22,11 +22,11 @@ import java.util.List;
 
 public abstract class ECGFormatWrapper {
 	
-	protected ECGFile ecgFile;
+	protected ECGFileData ecgFile;
 	protected String filePath;
 	protected InputStream inputStream;
 
-	public abstract ECGFile parse();
+	public abstract ECGFileData parse();
 	
 	protected abstract void init(String filename);
 	

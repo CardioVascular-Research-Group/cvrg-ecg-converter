@@ -33,7 +33,7 @@ import org.cvrgrid.philips.jaxb.beans.Restingecgdata;
 import org.cvrgrid.philips.jaxb.beans.Signalcharacteristics;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class Philips104Wrapper extends ECGFormatWrapper{
@@ -41,12 +41,12 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 	private DecodedLead[] leadData;
 	
 	public Philips104Wrapper(String filePath){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(filePath);
 	}
 	
 	public Philips104Wrapper(InputStream inputStream){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(inputStream);
 	}
 
@@ -78,7 +78,7 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 
 	}
 	
-	public ECGFile parse() {
+	public ECGFileData parse() {
 		if(philipsECG != null) {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
 			

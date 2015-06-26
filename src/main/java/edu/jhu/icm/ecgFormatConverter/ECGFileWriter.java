@@ -21,7 +21,7 @@ import java.io.File;
 
 public abstract class ECGFileWriter{
 	
-	public abstract File writeToFile(String outputPath, String recordName, ECGFile ecgFile);
+	public abstract File writeToFile(String outputPath, String recordName, ECGFileData ecgFile);
 	
-	public abstract byte[] writeToByteArray(String recordName, ECGFile ecgFile);
+	public abstract byte[] writeToByteArray(String recordName, ECGFileData ecgFile);
 }

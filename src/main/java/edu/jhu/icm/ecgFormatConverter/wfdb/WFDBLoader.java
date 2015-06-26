@@ -20,7 +20,7 @@ limitations under the License.
 import java.io.InputStream;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
@@ -40,7 +40,7 @@ public class WFDBLoader extends ECGFileLoader{
 	}
 	
 	@Override
-	public ECGFile load(InputStream dataStream) {
+	public ECGFileData load(InputStream dataStream) {
 		try {
 			if (this.headerStream != null) {
 				WFDBWrapper wfdbWrap;
@@ -57,14 +57,14 @@ public class WFDBLoader extends ECGFileLoader{
 	}
 
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapper) {
+	protected ECGFileData load(ECGFormatWrapper wrapper) {
 		WFDBWrapper wfdbWrap = (WFDBWrapper)wrapper;
 		ecgFile = wfdbWrap.parse();
 		return ecgFile;
 	}
 
 	@Override
-	public ECGFile load(String subjectId) {
+	public ECGFileData load(String subjectId) {
 		WFDBWrapper wfdbWrap = null;
 		wfdbWrap = new WFDBWrapper(subjectId);
 		return load(wfdbWrap);	

@@ -19,7 +19,7 @@ limitations under the License.
 */
 import java.io.InputStream;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
@@ -28,19 +28,19 @@ public class Philips104Loader extends ECGFileLoader{
 	private Object philipsRestingecgdata;
 	
 	@Override
-	public ECGFile load(InputStream inputStream) {
+	public ECGFileData load(InputStream inputStream) {
 		Philips104Wrapper philipsWrap = new Philips104Wrapper(inputStream);
 		return load(philipsWrap);
 	}
 
 	@Override
-	public ECGFile load(String filePath) {
+	public ECGFileData load(String filePath) {
 		Philips104Wrapper philipsWrap = new Philips104Wrapper(filePath);
 		return load(philipsWrap);
 	}
 
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapper) {
+	protected ECGFileData load(ECGFormatWrapper wrapper) {
 		Philips104Wrapper philipsWrap = (Philips104Wrapper) wrapper;
 		ecgFile = philipsWrap.parse();
 		return ecgFile;

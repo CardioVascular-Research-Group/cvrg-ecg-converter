@@ -19,26 +19,26 @@ limitations under the License.
 */
 import java.io.InputStream;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class MuseXMLLoader extends ECGFileLoader{
 	
 	@Override
-	public ECGFile load(String filePath) {
+	public ECGFileData load(String filePath) {
 		MuseXMLWrapper museXMLWrap = new MuseXMLWrapper(filePath);
 		return load(museXMLWrap);
 	}
 	
 	@Override
-	public ECGFile load(InputStream inputStream){
+	public ECGFileData load(InputStream inputStream){
 		MuseXMLWrapper museXMLWrap = new MuseXMLWrapper(inputStream);
 		return load(museXMLWrap);
 	}
 	
 	@Override
-	protected ECGFile load(ECGFormatWrapper wrapper) {
+	protected ECGFileData load(ECGFormatWrapper wrapper) {
 
 		MuseXMLWrapper museXMLWrap = (MuseXMLWrapper)wrapper;
 		ecgFile = museXMLWrap.parse();

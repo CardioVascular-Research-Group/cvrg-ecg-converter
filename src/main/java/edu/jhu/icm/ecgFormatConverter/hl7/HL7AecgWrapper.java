@@ -31,7 +31,7 @@ import org.cvrgrid.hl7aecg.jaxb.beans.PORTMT020001Component9;
 import org.jfree.data.xy.XYDataset;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class HL7AecgWrapper extends ECGFormatWrapper{
@@ -39,12 +39,12 @@ public class HL7AecgWrapper extends ECGFormatWrapper{
 	private List<PORTMT020001Component9> components;
 	
 	public HL7AecgWrapper(String filename){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(filename);
 	}
 	
 	public HL7AecgWrapper(InputStream inputStream){
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		init(inputStream);
 	}
 
@@ -82,7 +82,7 @@ public class HL7AecgWrapper extends ECGFormatWrapper{
 	}
 	
 	@Override
-	public ECGFile parse() {
+	public ECGFileData parse() {
 		
 		HL7_EcgLeadData ds = new HL7_EcgLeadData(components);	
 		double volt=0;

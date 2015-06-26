@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 
@@ -42,7 +42,7 @@ public class WFDBWrapper extends ECGFormatWrapper{
 
 	public WFDBWrapper(InputStream headerStream, InputStream dataStream, String subjectId){
 		sourceFilePath = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		this.headerStream = headerStream;
 		this.subjectId = subjectId;
 		init(dataStream);
@@ -50,7 +50,7 @@ public class WFDBWrapper extends ECGFormatWrapper{
 	
 	public WFDBWrapper(String subjectId){
 		sourceFilePath = ConverterUtility.getProperty(ConverterUtility.WFDB_FILE_PATH);
-		ecgFile = new ECGFile();
+		ecgFile = new ECGFileData();
 		this.subjectId = subjectId;
 		init(subjectId);
 	}
@@ -134,7 +134,7 @@ public class WFDBWrapper extends ECGFormatWrapper{
 	}
 
 	@Override
-	public ECGFile parse() {
+	public ECGFileData parse() {
 
 		String command = "sampfreq -H " + this.subjectId;
 		try {

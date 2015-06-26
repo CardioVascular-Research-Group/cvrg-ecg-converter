@@ -24,15 +24,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileWriter;
 
 public class MuseTXTWriter extends ECGFileWriter {
 
-	private ECGFile ecgFile;
+	private ECGFileData ecgFile;
 
 	@Override
-	public File writeToFile(String outputPath, String recordName, ECGFile ecgFile){
+	public File writeToFile(String outputPath, String recordName, ECGFileData ecgFile){
 		
 		File outFile = null;
 		FileOutputStream outStream = null;
@@ -50,7 +50,7 @@ public class MuseTXTWriter extends ECGFileWriter {
 	}
 
 	@Override
-	public byte[] writeToByteArray(String recordName, ECGFile file){
+	public byte[] writeToByteArray(String recordName, ECGFileData file){
 		
 		ecgFile = file;
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -65,7 +65,7 @@ public class MuseTXTWriter extends ECGFileWriter {
 		return outputStream.toByteArray();
 	}
 	
-	private OutputStream write(OutputStream outStream, ECGFile ecgFile){
+	private OutputStream write(OutputStream outStream, ECGFileData ecgFile){
 		String headerLine = "", dataLine = "", EOL = "\r\n";
 
 		try {

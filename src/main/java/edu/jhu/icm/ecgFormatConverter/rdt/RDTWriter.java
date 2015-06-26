@@ -24,15 +24,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileWriter;
 
 public class RDTWriter extends ECGFileWriter{
 	
-	private ECGFile ecgFile;
+	private ECGFileData ecgFile;
 
 	@Override
-	public File writeToFile(String outputPath, String subjectId, ECGFile ecgFile) {
+	public File writeToFile(String outputPath, String subjectId, ECGFileData ecgFile) {
 		this.ecgFile = ecgFile;
 		String fileName = subjectId + ".rdt";
 		File rdtFile = new File(outputPath + fileName);
@@ -41,7 +41,7 @@ public class RDTWriter extends ECGFileWriter{
 	}
 
 	@Override
-	public byte[] writeToByteArray(String recordName, ECGFile file){
+	public byte[] writeToByteArray(String recordName, ECGFileData file){
 		this.ecgFile = file;
 		return writeRDTtoByteArray();
 	}

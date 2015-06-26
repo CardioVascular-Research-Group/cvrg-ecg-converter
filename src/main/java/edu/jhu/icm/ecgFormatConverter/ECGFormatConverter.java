@@ -28,37 +28,37 @@ import edu.jhu.icm.enums.DataFileFormat;
 
 public class ECGFormatConverter { 
 	
-    private ECGFile loadFileData(String absoluteFileName, DataFileFormat format){
-    	ECGFile ecgFile = null;
+    private ECGFileData loadFileData(String absoluteFileName, DataFileFormat format){
+    	ECGFileData ecgFile = null;
     	ECGFormatReader reader = new ECGFormatReader();
 		ecgFile = reader.read(format, absoluteFileName);
 		return ecgFile;
     }
     
-    private ECGFile loadWFDBFilesData(String headerFileName, String dataFileName, DataFileFormat format){
-    	ECGFile ecgFile = null;
+    private ECGFileData loadWFDBFilesData(String headerFileName, String dataFileName, DataFileFormat format){
+    	ECGFileData ecgFile = null;
     	ECGFormatReader reader = new ECGFormatReader();
 		String subjectId = ConverterUtility.getSubjectIdFromFilename(headerFileName);
 		ecgFile = reader.read(format, subjectId);
 		return ecgFile;
     }
     
-    private File writeFile(DataFileFormat format, String subjectId, ECGFile ecgFile){
+    private File writeFile(DataFileFormat format, String subjectId, ECGFileData ecgFile){
     	ECGFormatWriter writer = new ECGFormatWriter();
 		String outputFolder = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 		return writer.writeToFile(format, outputFolder, subjectId, ecgFile);
     }
     
-    private ECGFile loadWFDBInputStreams(InputStream headerInputStream, InputStream dataInputStream, String subjectId, DataFileFormat format){
-    	ECGFile ecgFile = null;
+    private ECGFileData loadWFDBInputStreams(InputStream headerInputStream, InputStream dataInputStream, String subjectId, DataFileFormat format){
+    	ECGFileData ecgFile = null;
 		ECGFormatReader reader = new ECGFormatReader();
 		ecgFile = reader.read(format, dataInputStream, headerInputStream, subjectId);
 
 		return ecgFile;
     }
     
-    private ECGFile loadInputStream(InputStream inputStream, DataFileFormat format){
-    	ECGFile ecgFile = null;
+    private ECGFileData loadInputStream(InputStream inputStream, DataFileFormat format){
+    	ECGFileData ecgFile = null;
 		ECGFormatReader reader = new ECGFormatReader();
 		ecgFile = reader.read(format, inputStream);
 		return ecgFile;
@@ -67,17 +67,17 @@ public class ECGFormatConverter {
 	public File convertWFDBFilesToFile(String WFDBSourceFilePath, String outputFolder, DataFileFormat outputFormat, String subjectId){
 		String header = ConverterUtility.addSeparator(WFDBSourceFilePath) + subjectId + ".hea";
 		String data = ConverterUtility.addSeparator(WFDBSourceFilePath) + subjectId + ".dat";
-		ECGFile ecgFile = loadWFDBFilesData(header, data, DataFileFormat.WFDB);
+		ECGFileData ecgFile = loadWFDBFilesData(header, data, DataFileFormat.WFDB);
 		return writeFile(outputFormat, subjectId, ecgFile);
 	}
 
 	public File convertWFDBInputStreamsToFile(InputStream headerInputStream, InputStream dataInputStream, String subjectId, DataFileFormat outputFormat){
-		ECGFile ecgFile = loadWFDBInputStreams(headerInputStream, dataInputStream, subjectId, DataFileFormat.WFDB);
+		ECGFileData ecgFile = loadWFDBInputStreams(headerInputStream, dataInputStream, subjectId, DataFileFormat.WFDB);
 		return writeFile(outputFormat, subjectId, ecgFile);
 	}
 	
 	public byte[] convertWFDBInputStreamsToByteArray(InputStream headerInputStream, InputStream dataInputStream, String subjectId, DataFileFormat outputFormat){
-		ECGFile ecgFile = loadWFDBInputStreams(headerInputStream, dataInputStream, subjectId, DataFileFormat.WFDB);
+		ECGFileData ecgFile = loadWFDBInputStreams(headerInputStream, dataInputStream, subjectId, DataFileFormat.WFDB);
     	ECGFormatWriter writer = new ECGFormatWriter();
     	byte[] fileData = null;
     	fileData = writer.writeToByteArray(outputFormat, ecgFile, "subjectId");
@@ -85,31 +85,31 @@ public class ECGFormatConverter {
 	}
 	
 	public File convertFileToWFDBFiles(String absoluteFileName, DataFileFormat inputFormat, String subjectId, String outputFolder){
-		ECGFile ecgFile = loadFileData(absoluteFileName, inputFormat);
+		ECGFileData ecgFile = loadFileData(absoluteFileName, inputFormat);
 		ECGFormatWriter writer = new ECGFormatWriter();
 		return writer.writeToFile(DataFileFormat.WFDB, outputFolder, subjectId, ecgFile);
 	}
 
 	public File convertInputStreamToWFDBFiles(InputStream inputStream, DataFileFormat inputFormat, String subjectId, String outputFolder){
-		ECGFile ecgFile = loadInputStream(inputStream, inputFormat);
+		ECGFileData ecgFile = loadInputStream(inputStream, inputFormat);
 		ECGFormatWriter writer = new ECGFormatWriter();
 		return writer.writeToFile(DataFileFormat.WFDB, outputFolder, subjectId, ecgFile);
 	}
 	
 	public File convertFileToFile(String inputFilename, DataFileFormat inputFormat, DataFileFormat outputFormat, String subjectId){
-		ECGFile ecgFile = loadFileData(inputFilename, inputFormat);
+		ECGFileData ecgFile = loadFileData(inputFilename, inputFormat);
 		return writeFile(outputFormat, subjectId, ecgFile);
 	}
 
 	public File convertInputStreamToFile(InputStream inputStream, DataFileFormat inputFormat, DataFileFormat outputFormat, String subjectId){
-		ECGFile ecgFile = loadInputStream(inputStream, inputFormat);
+		ECGFileData ecgFile = loadInputStream(inputStream, inputFormat);
 		return writeFile(outputFormat, subjectId, ecgFile);
 	}
 	
 	public File convertWFDBFileToWFDBFile(String WFDBSourceFilePath, String WFDBoutputFilePath, DataFileFormat inputFormat, DataFileFormat outputFormat, String subjectId){
 		String header = ConverterUtility.addSeparator(WFDBSourceFilePath) + subjectId + ".hea";
 		String data = ConverterUtility.addSeparator(WFDBSourceFilePath) + subjectId + ".dat";
-		ECGFile ecgFile = loadWFDBFilesData(header, data, inputFormat);
+		ECGFileData ecgFile = loadWFDBFilesData(header, data, inputFormat);
 		ECGFormatWriter writer = new ECGFormatWriter();
 		return writer.writeToFile(outputFormat, WFDBoutputFilePath, subjectId, ecgFile);
 	}

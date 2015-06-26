@@ -28,7 +28,7 @@ import edu.jhu.icm.enums.DataFileFormat;
 
 public class ECGFormatWriter {
 
-	public File writeToFile(DataFileFormat outputFormat, String outputPath, String subjectId, ECGFile ecgFile){
+	public File writeToFile(DataFileFormat outputFormat, String outputPath, String subjectId, ECGFileData ecgFile){
 		ECGFileWriter writer = null;
 		try {
 			writer = buildWriter(outputFormat);
@@ -38,7 +38,7 @@ public class ECGFormatWriter {
 		return writer.writeToFile(outputPath, subjectId, ecgFile);
 	}
 	
-	public byte[] writeToByteArray(DataFileFormat outputFormat, ECGFile ecgFile, String subjectId){
+	public byte[] writeToByteArray(DataFileFormat outputFormat, ECGFileData ecgFile, String subjectId){
 		ECGFileWriter writer = null;
 		try {
 			writer = buildWriter(outputFormat);

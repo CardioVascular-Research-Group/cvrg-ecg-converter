@@ -11,7 +11,7 @@ import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFile;
+import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatConverter;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatReader;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWriter;
