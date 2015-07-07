@@ -1,61 +1,40 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
 
-<project name="ECG_Converter4" basedir="." default="generateJarFiles">
+<project name="ECG_Converter4" basedir="." default="local-server-deploy">
 	
 	<property name="liferay" value="/opt/liferay" />
-	
-	<property name="portlet-ext" value="${liferay}/portlet-ext"/>
-	<property file="${liferay}/liferay-plugins-sdk-6.1.1/build.${user.name}.properties" />
+	<property name="liferay-sdk" value="${liferay}/liferay-plugins-sdk-6.1.1" />
+	<property file="${liferay-sdk}/build.${user.name}.properties" />
 	<property name="dependencies" value="${liferay}/projects-dependencies" />
-	
-	<target name="clean">
-		<echo>Clean the temporary area</echo>
-		<delete dir="build"/>
-	</target>
-	
-	<target name="copyDependenciesToServer">
-		<copy todir="${app.server.lib.global.dir}">
-			<fileset dir="${dependencies}/${ant.project.name}-dependencies">
-				<include name="*.jar"/>
+	<property name="portlets" value="${liferay-sdk}/portlets/" />
+			
+	<target name="local-server-deploy" description="Move the generated jar to the local server.">
+		
+		<delete>
+			<fileset dir="/opt/liferay/portlet-ext">
+			    <include name="${ant.project.name}*.jar"/>
 			</fileset>
-		</copy>
-	</target>
+			<fileset dir="${app.server.deploy.dir}/axis2/WEB-INF/lib">
+			    <include name="${ant.project.name}*.jar"/>
+			</fileset>
+			<fileset dir="${portlets}/analyze-portlet/docroot/WEB-INF/lib">
+			    <include name="${ant.project.name}*.jar"/>
+			</fileset>
+			<fileset dir="${portlets}/upload-portlet/docroot/WEB-INF/lib">
+			    <include name="${ant.project.name}*.jar"/>
+			</fileset>
+			<fileset dir="${portlets}/download-portlet/docroot/WEB-INF/lib">
+			    <include name="${ant.project.name}*.jar"/>
+			</fileset>
+			<fileset dir="${portlets}/visualize-portlet/docroot/WEB-INF/lib">
+			    <include name="${ant.project.name}*.jar"/>
+			</fileset>
+		</delete>
 
-	
-	<target name="generateJarFiles" depends="clean">
+		<copy todir="/opt/liferay/portlet-ext" file="target/${ant.project.name}-${project.version}.jar" />
+		<copy todir="${portlets}/upload-portlet/docroot/WEB-INF/lib" file="target/${ant.project.name}-${project.version}.jar" />
 		
-		<mkdir dir="${dependencies}"/>
-        <mkdir dir="${dependencies}/${ant.project.name}-dependencies"/>
-    	<!--<copy todir="${dependencies}/${ant.project.name}-dependencies">
-    		<fileset dir="${dropbox.home}/jars/projects-dependencies/${ant.project.name}-dependencies">
-				<include name="*.jar"/>    		
-    		</fileset>
-    	</copy>-->
-		
-		<path id="project-classpath">
-			<fileset dir="${dependencies}/${ant.project.name}-dependencies">
-				<include name="*.jar"/>
-			</fileset>
-		</path>
-		
-		<echo>Create the temporary area</echo>
-		<mkdir dir="build"/>
-		<mkdir dir="build/class"/>
-		<mkdir dir="build/dist"/>
-		
-		<javac target="1.5" classpathref="project-classpath" srcdir="src" destdir="build/class" excludes="edu/jhu/icm/test/*" debug="true" />
-		
-		<jar destfile="build/dist/ecgFormatConverter.jar" basedir="build/class">
-			<include name="**/**"/>
-		</jar>
-		
-		<mkdir dir="${dependencies}/cvrg-broker-service-dependencies"/>
-		<mkdir dir="${dependencies}/physionet-analysis-service-dependencies"/>
-		
-    	<copy todir="${dependencies}/cvrg-broker-service-dependencies" file="build/dist/ecgFormatConverter.jar" />
-		<copy todir="${dependencies}/physionet-analysis-service-dependencies" file="build/dist/ecgFormatConverter.jar" />
-		<copy todir="${app.server.deploy.dir}/axis2/WEB-INF/lib" file="build/dist/ecgFormatConverter.jar" />
-	</target>
+    </target>
 	
 </project>
