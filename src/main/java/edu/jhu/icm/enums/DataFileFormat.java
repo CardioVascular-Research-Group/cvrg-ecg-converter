@@ -1,6 +1,5 @@
 package edu.jhu.icm.enums;
 
-import edu.jhu.cvrg.filestore.enums.EnumFileExtension;
 /*
 Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
