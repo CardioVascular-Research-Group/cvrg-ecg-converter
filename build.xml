@@ -1,34 +1,42 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
 
-<project name="ECG_Converter4" basedir="." default="local-server-deploy">
+<project name="cvrg-ecg-converter" basedir="." default="local-server-deploy">
 	
 	<property name="liferay" value="/opt/liferay" />
 	<property name="liferay-sdk" value="${liferay}/liferay-plugins-sdk-6.1.1" />
 	<property file="${liferay-sdk}/build.${user.name}.properties" />
 	<property name="dependencies" value="${liferay}/projects-dependencies" />
 	<property name="portlets" value="${liferay-sdk}/portlets/" />
+	
+	<property name="project.old.name" value="ECG_Converter4" />
 			
 	<target name="local-server-deploy" description="Move the generated jar to the local server.">
 		
 		<delete>
 			<fileset dir="/opt/liferay/portlet-ext">
 			    <include name="${ant.project.name}*.jar"/>
+				<include name="${project.old.name}*.jar"/>
 			</fileset>
 			<fileset dir="${app.server.deploy.dir}/axis2/WEB-INF/lib">
 			    <include name="${ant.project.name}*.jar"/>
+				<include name="${project.old.name}*.jar"/>
 			</fileset>
 			<fileset dir="${portlets}/analyze-portlet/docroot/WEB-INF/lib">
 			    <include name="${ant.project.name}*.jar"/>
+				<include name="${project.old.name}*.jar"/>
 			</fileset>
 			<fileset dir="${portlets}/upload-portlet/docroot/WEB-INF/lib">
 			    <include name="${ant.project.name}*.jar"/>
+				<include name="${project.old.name}*.jar"/>
 			</fileset>
 			<fileset dir="${portlets}/download-portlet/docroot/WEB-INF/lib">
 			    <include name="${ant.project.name}*.jar"/>
+				<include name="${project.old.name}*.jar"/>
 			</fileset>
 			<fileset dir="${portlets}/visualize-portlet/docroot/WEB-INF/lib">
 			    <include name="${ant.project.name}*.jar"/>
+				<include name="${project.old.name}*.jar"/>
 			</fileset>
 		</delete>
 
