@@ -20,7 +20,6 @@
 			</fileset>
 			<fileset dir="${app.server.deploy.dir}/axis2/WEB-INF/lib">
 			    <include name="${ant.project.name}*.jar"/>
-				<include name="${project.old.name}*.jar"/>
 			</fileset>
 			<fileset dir="${portlets}/analyze-portlet/docroot/WEB-INF/lib">
 			    <include name="${ant.project.name}*.jar"/>
