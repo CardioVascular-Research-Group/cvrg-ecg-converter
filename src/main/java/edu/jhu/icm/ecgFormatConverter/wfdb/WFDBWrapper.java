@@ -48,11 +48,19 @@ public class WFDBWrapper extends ECGFormatWrapper{
 		init(dataStream);
 	}
 	
-	public WFDBWrapper(String subjectId){
-		sourceFilePath = ConverterUtility.getProperty(ConverterUtility.WFDB_FILE_PATH);
+	public WFDBWrapper(String inputFile){
+		
+		int lastSlash = inputFile.lastIndexOf('/');
+		if(lastSlash > -1){
+			this.sourceFilePath = inputFile.substring(0, lastSlash+1);
+			this.subjectId = inputFile.substring(lastSlash+1, inputFile.lastIndexOf('.')); 	
+		}else{
+			this.sourceFilePath = ConverterUtility.getProperty(ConverterUtility.WFDB_FILE_PATH);
+			this.subjectId = inputFile;
+		}
+		
 		ecgFile = new ECGFileData();
-		this.subjectId = subjectId;
-		init(subjectId);
+		init(inputFile);
 	}
 	
 	@Override
@@ -151,7 +159,7 @@ public class WFDBWrapper extends ECGFormatWrapper{
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} 
-		WFDBUtilities.clearTempFolder();
+		WFDBUtilities.clearTempFiles(sourceFilePath, subjectId);
 		return ecgFile;
 	}
 

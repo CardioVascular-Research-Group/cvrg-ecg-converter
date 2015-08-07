@@ -31,6 +31,8 @@ public class ECGFileData {
 	public List<String> leadNamesList = new ArrayList<String>();
 	public int sampleOffset = 0;
 	
+	public Object annotationData;
+	
 	@Override
 	public String toString(){
 		StringBuilder string = new StringBuilder();

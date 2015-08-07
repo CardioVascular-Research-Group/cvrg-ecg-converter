@@ -32,12 +32,18 @@ import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 
 public class WFDBUtilities {
 	
-    public static void clearTempFolder(){
-		String tempFilePath = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
+    public static void clearTempFiles(String tempFilePath, String subjectId){
+//		String tempFilePath = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 		File folder = new File(tempFilePath);
 		if(folder.isDirectory()){
 			for(File file : folder.listFiles()){
-				file.delete();
+				if(subjectId != null){
+					if(file.getName().startsWith(subjectId)){
+						file.delete();
+					}
+				}else{
+					file.delete();
+				}
 			}
 		}
     }
@@ -54,38 +60,38 @@ public class WFDBUtilities {
 		Runtime rt = Runtime.getRuntime();
 		String[] commandArray = sCommand.split("\\|");
 		try{
-		if (commandArray.length == 1) {
-
-			Process process = rt.exec(sCommand, asEnvVar, fWorkingDir);
-			InputStream is = process.getInputStream(); // The input stream for
-														// this method comes
-														// from the output from
-														// rt.exec()
-			InputStreamReader isr = new InputStreamReader(is);
-			stdInputBuffer = new BufferedReader(isr);
-			InputStream errs = process.getErrorStream();
-			InputStreamReader esr = new InputStreamReader(errs);
-			stdError = new BufferedReader(esr);
-		} 
-		else {
-			Process[] processArray = new Process[commandArray.length];
-			// Start processes: ps ax | grep rbe | grep JavaVM
-			for (int i = 0; i < commandArray.length; i++) {
-				processArray[i] = rt.exec(commandArray[i].trim(), asEnvVar,	fWorkingDir);
+			if (commandArray.length == 1) {
+	
+				Process process = rt.exec(sCommand, asEnvVar, fWorkingDir);
+				InputStream is = process.getInputStream(); // The input stream for
+															// this method comes
+															// from the output from
+															// rt.exec()
+				InputStreamReader isr = new InputStreamReader(is);
+				stdInputBuffer = new BufferedReader(isr);
+				InputStream errs = process.getErrorStream();
+				InputStreamReader esr = new InputStreamReader(errs);
+				stdError = new BufferedReader(esr);
+			} else {
+				Process[] processArray = new Process[commandArray.length];
+				// Start processes: ps ax | grep rbe | grep JavaVM
+				for (int i = 0; i < commandArray.length; i++) {
+					processArray[i] = rt.exec(commandArray[i].trim(), asEnvVar,	fWorkingDir);
+				}
+				// Start piping
+				java.io.InputStream in = Piper.pipe(processArray);
+	
+				// Show output of last process
+				InputStreamReader isr = new InputStreamReader(in);
+				stdInputBuffer = new BufferedReader(isr);
+				InputStream errs = processArray[processArray.length - 1].getErrorStream();
+				InputStreamReader esr = new InputStreamReader(errs);
+				stdError = new BufferedReader(esr);
 			}
-			// Start piping
-			java.io.InputStream in = Piper.pipe(processArray);
-
-			// Show output of last process
-			InputStreamReader isr = new InputStreamReader(in);
-			stdInputBuffer = new BufferedReader(isr);
-			InputStream errs = processArray[processArray.length - 1].getErrorStream();
-			InputStreamReader esr = new InputStreamReader(errs);
-			stdError = new BufferedReader(esr);
-		}
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+		
 		return stdInputBuffer;
 	}
 	
