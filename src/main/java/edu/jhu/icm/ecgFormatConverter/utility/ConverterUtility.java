@@ -22,11 +22,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 public class ConverterUtility {
 	
 	public static String PROPS_FILE = "converter.properties";
 	public static String TEMP_FOLDER = "temp.folder.path";
 	public static String WFDB_FILE_PATH = "wfdb.file.path";
+	
+	private static Properties props;
+	
+	private static Logger log = Logger.getLogger(ConverterUtility.class);
 
 	public static String addSeparator(String filePath){
 		if(!filePath.endsWith(File.separator)){
@@ -36,18 +42,25 @@ public class ConverterUtility {
 	}
 	
 	private static Properties getProperties(){
-		Properties props = new Properties();
-		InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(PROPS_FILE);
-		try {
-			props.load(resourceStream);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(props == null || props.isEmpty()){
+			try {
+				props = new Properties();
+				InputStream resourceStream = Thread.currentThread().getClass().getResourceAsStream('/'+PROPS_FILE);
+				props.load(resourceStream);
+			} catch (IOException e) {
+				log.error("Unable to load properties file. Please try again.");
+				e.printStackTrace();
+			}
 		}
 		return props;
 	}
 	
 	public static String getProperty(String key){
-		return addSeparator(getProperties().getProperty(key));
+		String value = getProperties().getProperty(key);
+		if(value != null && !value.isEmpty()){
+			return addSeparator(value);	
+		}
+		return value;
 	}
 	
 	public static String getSubjectIdFromFilename(String filepath){

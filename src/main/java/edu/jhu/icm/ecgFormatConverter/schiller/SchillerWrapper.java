@@ -73,6 +73,7 @@ public class SchillerWrapper extends ECGFormatWrapper{
 		leadData = ret.getDecodedLeads();
 		ecgFile.leadNamesList = ret.getLeadNames();
 		ecgFile.scalingFactor = 1;
+		ecgFile.annotationData = ret.getComXiriuzSemaXmlSchillerEDISchillerEDI();
 	}
 	
 	public ECGFileData parse() {

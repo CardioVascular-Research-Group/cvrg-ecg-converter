@@ -43,8 +43,21 @@ public class WFDBWriter extends ECGFileWriter {
 
 	@Override
 	public File writeToFile(String outputPath, String subjectId, ECGFileData ecgFile) {
+		boolean isUnitTest = false;
+		
 		String path = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
-		String contentFileName = path + subjectId + ".txt";
+		File targetFile;
+		String contentFileName;
+		if(path == null || path.isEmpty()){
+			contentFileName = outputPath + subjectId + ".txt";
+			targetFile 		= new File(outputPath + subjectId + ".hea");
+			isUnitTest = false;
+		}else{
+			contentFileName = path + subjectId + ".txt";
+			targetFile 		= new File(path + subjectId + ".hea");
+			isUnitTest = true;
+		}
+		
 		File contentFile = new File(contentFileName);
 		BufferedWriter bWriter;
 		try {
@@ -66,13 +79,33 @@ public class WFDBWriter extends ECGFileWriter {
 					+ subjectId + " -F " + ecgFile.samplingRate + " -G "
 					+ ecgFile.scalingFactor + " -O " + bitFormat;
 
-			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command,	null, path);
+			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command,	null, isUnitTest ? path : outputPath);
 			stdErrorHandler();
+			
+			long waitingTime = 0;
+			long maxWaitingTime = 30000;
+			while(!targetFile.exists() && waitingTime < maxWaitingTime){
+				try {
+					Thread.sleep(100);
+					waitingTime += 100;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(waitingTime >= maxWaitingTime){
+				throw new RuntimeException("WFDB file generation timeout. Max = "+maxWaitingTime+"ms");
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		contentFile.delete();
-		return new File(path);
+		if(!isUnitTest){
+			contentFile.delete();
+			return new File(outputPath);
+		}else{
+			return new File(path);
+		}
 	}
 	
 	protected void stdErrorHandler() {

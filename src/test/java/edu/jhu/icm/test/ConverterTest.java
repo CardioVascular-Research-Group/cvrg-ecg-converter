@@ -3,23 +3,15 @@ package edu.jhu.icm.test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBException;
+import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
-import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatConverter;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatReader;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatWriter;
 import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
-import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBUtilities;
 import edu.jhu.icm.enums.DataFileFormat;
-
-import junit.framework.TestCase;
 
 public class ConverterTest extends TestCase{
 

@@ -85,6 +85,7 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 			
 			ecgFile.scalingFactor = base64Parser.getAduGain();
 			ecgFile.leadNamesList = base64Parser.getLeadNames();
+			ecgFile.annotationData = base64Parser.getInitialXML();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

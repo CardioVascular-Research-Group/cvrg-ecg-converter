@@ -1,18 +1,15 @@
 package edu.jhu.icm.test;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.bind.JAXBException;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatReader;
+import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 import edu.jhu.icm.ecgFormatConverter.wfdb.WFDBUtilities;
 import edu.jhu.icm.enums.DataFileFormat;
 
@@ -33,7 +30,7 @@ public class LoaderTest extends TestCase{
     public LoaderTest(String testName)
     {
         super(testName);
-        WFDBUtilities.clearTempFolder();
+        WFDBUtilities.clearTempFiles(ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER), null);
     }
     
     private boolean loadFileTest(String fileName, DataFileFormat format){
