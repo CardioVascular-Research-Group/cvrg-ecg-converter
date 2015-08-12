@@ -17,6 +17,8 @@ limitations under the License.
 /**
 * @author Chris Jurado
 */
+//NOTE: The order of values listed in this Enum is CRITICAL.  In modifying this Enum, you may
+//add new terms, but you MUST NOT change the order of existing values.  
 public enum LeadEnum {
 	I, II, III, AVR, AVL, AVF, V1, V1R, V2, V2R, V3, V3R, V4, V4R, V5, V5R, V6, V6R, V7, VX, VY, VZ,
 	
