@@ -1,6 +1,5 @@
 package edu.jhu.icm.enums;
 
-import edu.jhu.cvrg.filestore.enums.EnumFileExtension;
 /*
 Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
@@ -21,29 +20,21 @@ limitations under the License.
 */
 public enum DataFileFormat {
 
-//	RDT, 
-//	HL7, 
-//	WFDB, 
 	WFDB_16, 
 	WFDB_61, 
 	WFDB_212, 
 	GEMUSE, 
 //	RAW_XY_CONST_SAMPLE, 
-//	RAW_XY_VAR_SAMPLE, 
+	RAW_XY_VAR_SAMPLE, 
 	PHILIPS103, 
 	PHILIPS104, 
-//	SCHILLER, 
 	MUSEXML,
 	GE_MAGELLAN,
 	WFDB,
 	RDT, 
 	HOLTER12,
 	HOLTER3, 
-//	GE_MUSE,
 	HL7,
 	XY_FILE,
-//	PHILIPS_103,
-//	PHILIPS_104("Philips 1.04", EnumFileExtension.XML),
-//	MUSE_XML("Muse", EnumFileExtension.XML),
 	SCHILLER;
 }
