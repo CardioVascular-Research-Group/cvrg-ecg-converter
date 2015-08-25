@@ -123,6 +123,7 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 					ecgFile.data[i][j] = leadData[i].get(j);
 				}
 			}
+			ecgFile.formatDataObject = philipsECG;
 		}
 		return ecgFile;
 	}
