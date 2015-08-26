@@ -30,7 +30,6 @@ public class ECGFileData {
 	public double scalingFactor = 1;
 	public List<String> leadNamesList = new ArrayList<String>();
 	public int sampleOffset = 0;
-	public Object formatDataObject;
 	
 	@Override
 	public String toString(){

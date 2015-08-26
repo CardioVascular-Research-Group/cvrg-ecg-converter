@@ -38,14 +38,16 @@ import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 public class Philips103Wrapper extends ECGFormatWrapper{
 	private Restingecgdata philipsECG;
 	private DecodedLead[] leadData;
+
+	private Philips103ECGFileData ecgFile;
 	
 	public Philips103Wrapper(String filePath){
-		ecgFile = new ECGFileData();
+		ecgFile = new Philips103ECGFileData();
 		init(filePath);
 	}
 	
 	public Philips103Wrapper(InputStream inputStream){
-		ecgFile = new ECGFileData();
+		ecgFile = new Philips103ECGFileData();
 		init(inputStream);
 	}
 
@@ -102,7 +104,7 @@ public class Philips103Wrapper extends ECGFormatWrapper{
 					ecgFile.data[i][j] = leadData[i].get(j);
 				}
 			}
-			ecgFile.formatDataObject = philipsECG;
+			ecgFile.restingecgdata = philipsECG;	
 		}
 		return ecgFile;
 	}
