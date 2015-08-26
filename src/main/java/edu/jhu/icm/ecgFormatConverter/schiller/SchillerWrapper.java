@@ -32,14 +32,15 @@ import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class SchillerWrapper extends ECGFormatWrapper{
 	private DecodedLead[] leadData;
+	private SchillerECGFileData ecgFile;
 	
 	public SchillerWrapper(String filePath){
-		ecgFile = new ECGFileData();
+		ecgFile = new SchillerECGFileData();
 		init(filePath);
 	}
 	
 	public SchillerWrapper(InputStream inputStream){
-		ecgFile = new ECGFileData();
+		ecgFile = new SchillerECGFileData();
 		init(inputStream);
 	}
 
@@ -73,6 +74,7 @@ public class SchillerWrapper extends ECGFormatWrapper{
 		leadData = ret.getDecodedLeads();
 		ecgFile.leadNamesList = ret.getLeadNames();
 		ecgFile.scalingFactor = 1;
+		ecgFile.schillerEDI = ret.getComXiriuzSemaXmlSchillerEDISchillerEDI();
 	}
 	
 	public ECGFileData parse() {
@@ -85,6 +87,7 @@ public class SchillerWrapper extends ECGFormatWrapper{
 			ecgFile.samplesPerChannel = (currentSample == previousSample) ? currentSample : 0;
 		}
 		ecgFile.data = new int[ecgFile.channels][ecgFile.samplesPerChannel];
+
 			
 		for(int i=0; i < ecgFile.channels; i++) {
 			for(int j=0; j<leadData[i].size(); j++) {

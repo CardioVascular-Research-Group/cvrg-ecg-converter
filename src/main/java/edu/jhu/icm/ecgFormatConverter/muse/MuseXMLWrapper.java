@@ -29,14 +29,15 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 	private InputStream inputStream = null;
 	private MuseBase64Parser base64Parser;
 	private ArrayList<int[]> leadData;
+	private MuseXMLECGFileData ecgFile;
 	
 	public MuseXMLWrapper(String filePath){
-		this.ecgFile = new ECGFileData();
+		this.ecgFile = new MuseXMLECGFileData();
 		init(filePath);
 	}
 	
 	public MuseXMLWrapper(InputStream inputStream){
-		this.ecgFile = new ECGFileData();
+		this.ecgFile = new MuseXMLECGFileData();
 		init(inputStream);
 	}
 
@@ -69,6 +70,7 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 
 			ecgFile.samplingRate = base64Parser.getSamplingRate();
 			leadData = base64Parser.getDecodedData();
+			ecgFile.museRawXML = base64Parser.getInitialXML();
 			ecgFile.channels = leadData.size();
 			int[] singleLead = leadData.get(0);
 			int previousSample = singleLead.length;
