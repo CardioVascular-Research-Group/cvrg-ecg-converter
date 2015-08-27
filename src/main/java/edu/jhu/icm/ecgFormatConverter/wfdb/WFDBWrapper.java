@@ -31,6 +31,7 @@ import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
+import edu.jhu.icm.enums.DataFileFormat;
 
 public class WFDBWrapper extends ECGFormatWrapper{
 
@@ -248,5 +249,10 @@ public class WFDBWrapper extends ECGFormatWrapper{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.WFDB;
 	}
 }

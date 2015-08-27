@@ -27,6 +27,7 @@ import java.nio.ByteOrder;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.enums.DataFileFormat;
 
 public class RDTWrapper extends ECGFormatWrapper{
 
@@ -139,5 +140,10 @@ public class RDTWrapper extends ECGFormatWrapper{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.RDT;
 	}
 }

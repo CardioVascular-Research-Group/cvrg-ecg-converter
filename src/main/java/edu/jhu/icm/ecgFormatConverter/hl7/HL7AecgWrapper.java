@@ -32,6 +32,7 @@ import org.jfree.data.xy.XYDataset;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.enums.DataFileFormat;
 
 public class HL7AecgWrapper extends ECGFormatWrapper{
 
@@ -70,7 +71,6 @@ public class HL7AecgWrapper extends ECGFormatWrapper{
 	}
 	
 	protected void init(InputStream inputStream){
-		HL7PreprocessReturn ret;
 		try {
 			preprocessReturn = Hl7Ecg.preprocess(inputStream);
 		} catch (IOException e) {
@@ -119,8 +119,13 @@ public class HL7AecgWrapper extends ECGFormatWrapper{
 			ecgFile.samplingRate = (int)(1/ds.getTimeIncrement());
 		}
 		
-		ecgFile.leadNamesList = Arrays.asList(ds.getLeadName());
+		ecgFile.leadNames = this.extractLeadNames(Arrays.asList(ds.getLeadName()), ecgFile.channels);
 		ecgFile.samplesPerChannel = sampleCount;
 		return ecgFile;
+	}
+	
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.HL7;
 	}
 }

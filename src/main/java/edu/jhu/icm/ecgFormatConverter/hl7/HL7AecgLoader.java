@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class HL7AecgLoader extends ECGFileLoader{
 
@@ -37,12 +36,5 @@ public class HL7AecgLoader extends ECGFileLoader{
 		HL7AecgWrapper hl7 = null;
 		hl7 = new HL7AecgWrapper(filePath);
 		return load(hl7);	
-	}
-
-	@Override
-	protected ECGFileData load(ECGFormatWrapper wrapper) {
-		HL7AecgWrapper hl7Wrapper = (HL7AecgWrapper) wrapper;
-		ecgFile = hl7Wrapper.parse();
-		return ecgFile;
 	}
 }

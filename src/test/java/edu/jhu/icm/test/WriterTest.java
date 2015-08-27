@@ -44,8 +44,6 @@ public class WriterTest extends TestCase{
     	else{return false;}
     	if(firstFile.leadNames == secondFile.leadNames){System.out.println("leadNames match.");}
     	else{return false;}
-    	if(firstFile.leadNamesList.equals(secondFile.leadNamesList)){System.out.println("leadNamesList match.");}
-    	else{return false;}
     	if(firstFile.sampleOffset == secondFile.sampleOffset){System.out.println("sampleOffset match.");}
     	else{return false;}
     	if(firstFile.samplesPerChannel == secondFile.samplesPerChannel){System.out.println("samplesPerChannel match.");}

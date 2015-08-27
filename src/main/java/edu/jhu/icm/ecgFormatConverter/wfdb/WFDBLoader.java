@@ -22,7 +22,6 @@ import java.io.InputStream;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class WFDBLoader extends ECGFileLoader{
 	
@@ -54,13 +53,6 @@ public class WFDBLoader extends ECGFileLoader{
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	@Override
-	protected ECGFileData load(ECGFormatWrapper wrapper) {
-		WFDBWrapper wfdbWrap = (WFDBWrapper)wrapper;
-		ecgFile = wfdbWrap.parse();
-		return ecgFile;
 	}
 
 	@Override

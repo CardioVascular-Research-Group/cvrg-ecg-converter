@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class RDTLoader extends ECGFileLoader{
 
@@ -37,9 +36,4 @@ public class RDTLoader extends ECGFileLoader{
 		return load(wrapper);
 	}	
 	
-	protected ECGFileData load(ECGFormatWrapper wrapper){
-		RDTWrapper rdtWrapper = (RDTWrapper)wrapper;
-		ecgFile = rdtWrapper.parse();
-		return ecgFile;
-	}
 }

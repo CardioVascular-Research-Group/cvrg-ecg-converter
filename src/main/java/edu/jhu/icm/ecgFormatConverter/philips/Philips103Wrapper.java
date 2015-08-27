@@ -34,6 +34,7 @@ import org.sierraecg.schema.Signalcharacteristics;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.enums.DataFileFormat;
 
 public class Philips103Wrapper extends ECGFormatWrapper{
 	private Restingecgdata philipsECG;
@@ -79,17 +80,20 @@ public class Philips103Wrapper extends ECGFormatWrapper{
 	public ECGFileData parse() {
 		if(philipsECG != null) {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
-			List<Leadmeasurement> leads = philipsECG.getMeasurements().getLeadmeasurements().getLeadmeasurement();
-			if(leads != null){
-				ecgFile.leadNamesList = new ArrayList<String>();
-				for (Leadmeasurement lead : leads) {
-					ecgFile.leadNamesList.add(lead.getLeadname().toUpperCase());
-				}
-			}
 			ecgFile.samplingRate = Float.valueOf(signalMetaData.getSamplingrate());
 			ecgFile.channels = Integer.valueOf(signalMetaData.getNumberchannelsvalid());
+			
+			List<Leadmeasurement> leads = philipsECG.getMeasurements().getLeadmeasurements().getLeadmeasurement();
+			if(leads != null){
+				List<String> leadNamesList = new ArrayList<String>();
+				for (Leadmeasurement lead : leads) {
+					leadNamesList.add(lead.getLeadname().toUpperCase());
+				}
+				ecgFile.leadNames = extractLeadNames(leadNamesList, ecgFile.channels);
+			}
+			
 			int previousSample = leadData[0].size();
-			ecgFile.scalingFactor = 1;
+			ecgFile.scalingFactor = 200;
 			for(int i=0; i < leadData.length; i++) {
 				int currentSample = leadData[i].size();
 				ecgFile.samplesPerChannel = (currentSample == previousSample) ? currentSample : 0;
@@ -109,5 +113,10 @@ public class Philips103Wrapper extends ECGFormatWrapper{
 
 	public Restingecgdata getPhilipsECG() {
 		return philipsECG;
-	}	
+	}
+	
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.PHILIPS103;
+	}
 }

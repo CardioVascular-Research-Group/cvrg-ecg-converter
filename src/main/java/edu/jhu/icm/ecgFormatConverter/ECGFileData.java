@@ -17,8 +17,6 @@ limitations under the License.
 /**
 * @author Chris Jurado
 */
-import java.util.ArrayList;
-import java.util.List;
 
 public class ECGFileData {
 
@@ -28,7 +26,6 @@ public class ECGFileData {
 	public float samplingRate = 0; // Hz read by LoadXXX methods
 	public String leadNames;
 	public double scalingFactor = 1;
-	public List<String> leadNamesList = new ArrayList<String>();
 	public int sampleOffset = 0;
 	
 	public Object annotationData;
@@ -38,24 +35,9 @@ public class ECGFileData {
 		StringBuilder string = new StringBuilder();
 		string.append("Channels = " + channels + "\n");
 		string.append("Sample Offset = " + sampleOffset + "\n");
-		string.append("Lead Names = " + printLeadNameList() + "\n");
 		string.append("Samples per Channel = " + samplesPerChannel + "\n");
 		string.append("Sampling Rate = " + samplingRate + "\n");
 		string.append("Scaling Factor = " + scalingFactor + "\n");
-		return string.toString();
-	}
-	
-	public String printLeadNameList(){
-		if(leadNamesList == null){
-			return "null";
-		}
-		if(leadNamesList.size() == 0){
-			return "empty";
-		}
-		StringBuilder string = new StringBuilder();
-		for(String name : leadNamesList){
-			string.append(name + "\t");
-		}
 		return string.toString();
 	}
 	

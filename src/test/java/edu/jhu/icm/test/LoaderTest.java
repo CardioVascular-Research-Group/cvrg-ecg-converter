@@ -355,7 +355,7 @@ public class LoaderTest extends TestCase{
     private void printStuff(){
 		System.out.println("Sampling Rate is " + ecgFile.samplingRate);
 		System.out.println("Channels is " + ecgFile.channels);
-		System.out.println("Lead names is " + ecgFile.printLeadNameList());
+		System.out.println("Lead names is " + ecgFile.leadNames);
 		System.out.println("Samples per channel is " + ecgFile.samplesPerChannel);
 		System.out.println("Scale is " + ecgFile.scalingFactor);
 		System.out.println("The ECGFile itself:");

@@ -35,6 +35,7 @@ import org.cvrgrid.philips.jaxb.beans.Signalcharacteristics;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.enums.DataFileFormat;
 
 public class Philips104Wrapper extends ECGFormatWrapper{
 	private Restingecgdata philipsECG;
@@ -81,16 +82,8 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 	public ECGFileData parse() {
 		if(philipsECG != null) {
 			Signalcharacteristics signalMetaData = philipsECG.getDataacquisition().getSignalcharacteristics();
-			
-			List<Leadmeasurement> leads = philipsECG.getInternalmeasurements().getLeadmeasurements().getLeadmeasurement();
-			if(leads != null){
-				ecgFile.leadNamesList = new ArrayList<String>();
-				for (Leadmeasurement lead : leads) {
-					ecgFile.leadNamesList.add(lead.getLeadname().toUpperCase());
-				}
-			}
 			ecgFile.samplingRate = Float.valueOf(signalMetaData.getSamplingrate());
-			ecgFile.scalingFactor = 1;
+			ecgFile.scalingFactor = 200;
 			
 			int allocatedChannels = signalMetaData.getNumberchannelsallocated().intValue(); // Method returns a BigInteger, so a conversion to int is required.
 			int validChannels = signalMetaData.getNumberchannelsvalid().intValue();
@@ -103,6 +96,15 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 				}
 			} catch (ECGConverterException e) {
 				e.printStackTrace();
+			}
+			
+			List<Leadmeasurement> leads = philipsECG.getInternalmeasurements().getLeadmeasurements().getLeadmeasurement();
+			if(leads != null){
+				List<String> leadNamesList = new ArrayList<String>();
+				for (Leadmeasurement lead : leads) {
+					leadNamesList.add(lead.getLeadname().toUpperCase());
+				}
+				
 			}
 			
 			int previousSample = leadData[0].size();
@@ -118,11 +120,16 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 			}
 			ecgFile.data = new int[ecgFile.channels][ecgFile.samplesPerChannel];
 			
+			List<String> leadNamesList = new ArrayList<String>() ;
+			
 			for(int i=0; i< ecgFile.channels; i++) {
 				for(int j=0; j<leadData[i].size(); j++) {
 					ecgFile.data[i][j] = leadData[i].get(j);
 				}
+				leadNamesList.add(leadData[i].getName().replace("Lead ", "").toUpperCase());
 			}
+			
+			ecgFile.leadNames = this.extractLeadNames(leadNamesList, ecgFile.channels);
 			
 			ecgFile.annotationData = philipsECG;
 		}
@@ -131,5 +138,10 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 
 	public Restingecgdata getPhilipsECG() {
 		return philipsECG;
+	}
+
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.PHILIPS104;
 	}
 }

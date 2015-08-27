@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.enums.DataFileFormat;
 
 public class MuseTXTWrapper extends ECGFormatWrapper{
 
@@ -141,5 +142,10 @@ public class MuseTXTWrapper extends ECGFormatWrapper{
 				e.printStackTrace();
 			}
 		}	
+	}
+	
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.GEMUSE;
 	}
 }

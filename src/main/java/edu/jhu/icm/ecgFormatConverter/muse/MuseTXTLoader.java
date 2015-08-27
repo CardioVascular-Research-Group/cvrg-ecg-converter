@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class MuseTXTLoader extends ECGFileLoader{
 	
@@ -35,12 +34,5 @@ public class MuseTXTLoader extends ECGFileLoader{
 	public ECGFileData load(String filePath) {
 		MuseTXTWrapper geMuseWrap = new MuseTXTWrapper(filePath);
 		return load(geMuseWrap);
-	}
-
-	@Override
-	protected ECGFileData load(ECGFormatWrapper wrapper) {
-		MuseTXTWrapper geMuseWrap = (MuseTXTWrapper)wrapper;
-		ecgFile = geMuseWrap.parse();
-		return ecgFile;
 	}
 }

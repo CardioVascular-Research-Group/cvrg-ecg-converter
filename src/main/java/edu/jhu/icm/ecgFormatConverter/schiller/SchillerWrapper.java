@@ -20,6 +20,7 @@ limitations under the License.
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -29,9 +30,11 @@ import org.cvrgrid.schiller.SchillerEcgFiles;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.enums.DataFileFormat;
 
 public class SchillerWrapper extends ECGFormatWrapper{
 	private DecodedLead[] leadData;
+	private List<String> leadNames;
 	
 	public SchillerWrapper(String filePath){
 		ecgFile = new ECGFileData();
@@ -71,8 +74,8 @@ public class SchillerWrapper extends ECGFormatWrapper{
 	private void init(PreprocessReturn ret){
 		ecgFile.samplingRate = Float.valueOf(ret.getPrepSampleRate());
 		leadData = ret.getDecodedLeads();
-		ecgFile.leadNamesList = ret.getLeadNames();
-		ecgFile.scalingFactor = 1;
+		leadNames = ret.getLeadNames();
+		ecgFile.scalingFactor = 200;
 		ecgFile.annotationData = ret.getComXiriuzSemaXmlSchillerEDISchillerEDI();
 	}
 	
@@ -92,6 +95,14 @@ public class SchillerWrapper extends ECGFormatWrapper{
 				ecgFile.data[i][j] = leadData[i].get(j);
 			}
 		}
+		
+		ecgFile.leadNames = this.extractLeadNames(leadNames, ecgFile.channels);
+		
 		return ecgFile;
+	}
+	
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.SCHILLER;
 	}
 }

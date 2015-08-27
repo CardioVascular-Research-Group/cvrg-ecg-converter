@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class SchillerLoader extends ECGFileLoader{
 	
@@ -37,13 +36,6 @@ public class SchillerLoader extends ECGFileLoader{
 	public ECGFileData load(InputStream inputStream) {
 		SchillerWrapper schillerWrap = new SchillerWrapper(inputStream);
 		return load(schillerWrap);
-	}
-	
-	@Override
-	protected ECGFileData load(ECGFormatWrapper wrapperLoader) {
-		SchillerWrapper schillerWrapper = (SchillerWrapper)wrapperLoader;
-		ecgFile = schillerWrapper.parse();
-		return ecgFile;
 	}
 	
 	public Object getComXiriuzSemaXmlSchillerEDI() {

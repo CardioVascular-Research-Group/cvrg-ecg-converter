@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFileLoader;
-import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 
 public class Philips103Loader extends ECGFileLoader{
 
@@ -35,12 +34,5 @@ public class Philips103Loader extends ECGFileLoader{
 	public ECGFileData load(String filePath){
 		Philips103Wrapper philipsWrap = new Philips103Wrapper(filePath);
 		return load(philipsWrap);
-	}
-
-	@Override
-	protected ECGFileData load(ECGFormatWrapper wrapper){
-		Philips103Wrapper philipsWrap = (Philips103Wrapper)wrapper;
-		ecgFile = philipsWrap.parse();
-		return ecgFile;
 	}
 }

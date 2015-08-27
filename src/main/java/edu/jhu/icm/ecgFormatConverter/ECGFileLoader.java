@@ -18,11 +18,8 @@ limitations under the License.
 * @author Chris Jurado
 */
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
 
 import edu.jhu.icm.enums.DataFileFormat;
-import edu.jhu.icm.enums.LeadEnum;
 
 public abstract class ECGFileLoader {
 
@@ -33,52 +30,11 @@ public abstract class ECGFileLoader {
 	
 	public abstract ECGFileData load(String filePath);
 	
-	protected abstract ECGFileData load(ECGFormatWrapper wrapper);
+	protected ECGFileData load(ECGFormatWrapper wrapper){
+		ecgFile = wrapper.parse();
+		return ecgFile;	
+	};
 	
-	protected void setLeadNames(List<String> leadNames){
-		String leadNamesOut = null;
-		
-		if(leadNames != null){
-			boolean leadNamesOK = true;
-			String lName = null;
-
-				for (Iterator<String> iterator = leadNames.iterator(); iterator.hasNext();) {
-					lName = iterator.next();
-					if(LeadEnum.valueOf(lName) == null){
-						leadNamesOK = false;
-						break;
-					}
-				}
-
-			
-			if(!leadNamesOK){
-				if(ecgFile.channels == 15){
-					switch (inputFormat) {
-						case MUSEXML:
-						case PHILIPS103:
-						case PHILIPS104:
-							leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6,V3R,V4R,V7";
-							break;
-						default:
-							leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6,VX,VY,VZ";
-							break;
-					}
-				}else if(ecgFile.channels == 12){
-					leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6";
-				}
-			}else{
-				StringBuilder sb = new StringBuilder();
-				for (String l : leadNames) {
-					sb.append(l).append(',');
-				}
-				sb.deleteCharAt(sb.length()-1);
-				leadNamesOut = sb.toString();
-			}
-		}
-		
-		this.ecgFile.leadNames = leadNamesOut;
-	}
-
 	public ECGFileData getECGFile(){
 		return ecgFile;
 	}

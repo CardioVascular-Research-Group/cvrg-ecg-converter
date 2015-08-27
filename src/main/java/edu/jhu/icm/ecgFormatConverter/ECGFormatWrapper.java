@@ -18,7 +18,11 @@ limitations under the License.
  * Author: Mike Shipway, Chris Jurado
  */
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
+
+import edu.jhu.icm.enums.DataFileFormat;
+import edu.jhu.icm.enums.LeadEnum;
 
 public abstract class ECGFormatWrapper {
 	
@@ -32,6 +36,8 @@ public abstract class ECGFormatWrapper {
 	
 	protected abstract void init(InputStream inputStream);
 
+	protected abstract DataFileFormat getFormat();
+	
 	/**
 	 * Get the frequency
 	 * */
@@ -57,12 +63,49 @@ public abstract class ECGFormatWrapper {
 		return ecgFile.data;
 	}
 	
-	/**
-	 * Get the lead names in order. <br>
-	 * <br>
-	 * @return List of extracted lead names from original file. 
-	 * */
-	public List<String> getLeadNames(){
-		return ecgFile.leadNamesList;
+	protected String extractLeadNames(List<String> leadNames, int channels){
+		String leadNamesOut = null;
+		
+		if(leadNames != null){
+			boolean leadNamesOK = true;
+			String lName = null;
+
+			for (Iterator<String> iterator = leadNames.iterator(); iterator.hasNext();) {
+				lName = iterator.next();
+				if(LeadEnum.valueOf(lName.toUpperCase()) == null){
+					leadNamesOK = false;
+					break;
+				}
+			}
+			
+			if(!leadNamesOK){
+				if(channels == 15){
+					switch (this.getFormat()) {
+						case MUSEXML:
+						case PHILIPS103:
+						case PHILIPS104:
+							leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6,V3R,V4R,V7";
+							break;
+						default:
+							leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6,VX,VY,VZ";
+							break;
+					}
+				}else if(channels == 12){
+					leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6";
+				}
+			}else{
+				StringBuilder sb = new StringBuilder();
+				for (String l : leadNames) {
+					if(l.startsWith("AV")){
+						l = l.replace('A', 'a');
+					}
+					sb.append(l).append(',');
+				}
+				sb.deleteCharAt(sb.length()-1);
+				leadNamesOut = sb.toString();
+			}
+		}
+		
+		return leadNamesOut;
 	}
 }

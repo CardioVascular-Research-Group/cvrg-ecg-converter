@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
+import edu.jhu.icm.enums.DataFileFormat;
 
 
 public class MuseXMLWrapper extends ECGFormatWrapper{
@@ -84,11 +85,16 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 			}
 			
 			ecgFile.scalingFactor = base64Parser.getAduGain();
-			ecgFile.leadNamesList = base64Parser.getLeadNames();
+			ecgFile.leadNames = this.extractLeadNames(base64Parser.getLeadNames(), ecgFile.channels);
 			ecgFile.annotationData = base64Parser.getInitialXML();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return ecgFile;
+	}
+	
+	@Override
+	protected DataFileFormat getFormat() {
+		return DataFileFormat.MUSEXML;
 	}
 }
