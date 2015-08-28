@@ -35,14 +35,15 @@ import edu.jhu.icm.enums.DataFileFormat;
 public class SchillerWrapper extends ECGFormatWrapper{
 	private DecodedLead[] leadData;
 	private List<String> leadNames;
+	private SchillerECGFileData ecgFile;
 	
 	public SchillerWrapper(String filePath){
-		ecgFile = new ECGFileData();
+		ecgFile = new SchillerECGFileData();
 		init(filePath);
 	}
 	
 	public SchillerWrapper(InputStream inputStream){
-		ecgFile = new ECGFileData();
+		ecgFile = new SchillerECGFileData();
 		init(inputStream);
 	}
 
@@ -76,7 +77,7 @@ public class SchillerWrapper extends ECGFormatWrapper{
 		leadData = ret.getDecodedLeads();
 		leadNames = ret.getLeadNames();
 		ecgFile.scalingFactor = 200;
-		ecgFile.annotationData = ret.getComXiriuzSemaXmlSchillerEDISchillerEDI();
+		this.ecgFile.schillerEDI = ret.getComXiriuzSemaXmlSchillerEDISchillerEDI();
 	}
 	
 	public ECGFileData parse() {

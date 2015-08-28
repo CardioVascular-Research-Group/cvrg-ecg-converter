@@ -40,14 +40,15 @@ import edu.jhu.icm.enums.DataFileFormat;
 public class Philips104Wrapper extends ECGFormatWrapper{
 	private Restingecgdata philipsECG;
 	private DecodedLead[] leadData;
+	private Philips104ECGFileData ecgFile;
 	
 	public Philips104Wrapper(String filePath){
-		ecgFile = new ECGFileData();
+		ecgFile = new Philips104ECGFileData();
 		init(filePath);
 	}
 	
 	public Philips104Wrapper(InputStream inputStream){
-		ecgFile = new ECGFileData();
+		ecgFile = new Philips104ECGFileData();
 		init(inputStream);
 	}
 
@@ -130,7 +131,7 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 			}
 			
 			ecgFile.leadNames = this.extractLeadNames(leadNamesList, ecgFile.channels);
-			ecgFile.annotationData = philipsECG;
+			ecgFile.restingecgdata = philipsECG;
 
 		}
 		return ecgFile;

@@ -28,8 +28,6 @@ public class ECGFileData {
 	public double scalingFactor = 1;
 	public int sampleOffset = 0;
 	
-	public Object annotationData;
-	
 	@Override
 	public String toString(){
 		StringBuilder string = new StringBuilder();
