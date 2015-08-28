@@ -70,6 +70,7 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 
 			ecgFile.samplingRate = base64Parser.getSamplingRate();
 			leadData = base64Parser.getDecodedData();
+			ecgFile.annotationData = base64Parser.getInitialXML();
 			ecgFile.channels = leadData.size();
 			int[] singleLead = leadData.get(0);
 			int previousSample = singleLead.length;

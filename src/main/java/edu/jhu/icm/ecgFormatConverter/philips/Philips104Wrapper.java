@@ -130,8 +130,8 @@ public class Philips104Wrapper extends ECGFormatWrapper{
 			}
 			
 			ecgFile.leadNames = this.extractLeadNames(leadNamesList, ecgFile.channels);
-			
 			ecgFile.annotationData = philipsECG;
+
 		}
 		return ecgFile;
 	}
