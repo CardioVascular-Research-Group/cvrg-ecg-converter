@@ -63,6 +63,16 @@ public class WFDBWriter extends ECGFileWriter {
 		try {
 			bWriter = new BufferedWriter(new FileWriter(contentFile));
 
+			if(ecgFile.leadNames != null){
+				String[] leadNames = ecgFile.leadNames.split(",");
+				if(ecgFile.channels == leadNames.length){
+					for (String signalName : leadNames) {
+						bWriter.write(signalName + "\t");
+					}
+					bWriter.newLine();		
+				}
+			}
+			
 			for (int i = 0; i < ecgFile.samplesPerChannel; i++) {
 				for (int j = 0; j < ecgFile.channels; j++) {
 					int item = ecgFile.data[j][i];
