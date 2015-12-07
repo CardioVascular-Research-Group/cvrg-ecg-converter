@@ -125,14 +125,17 @@ public class WFDBWrapper extends ECGFormatWrapper{
 			}
 			reader.close();
 			String command = "signame -r " + this.subjectId;
-			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command,	null, sourceFilePath);
+			stdInputBuffer = WFDBUtilities.executeCommand(stdError, stdInputBuffer, command,	null, sourceFilePath);
 			String signameRet = stdReturnHandler(true);
 
 			if (signameRet != null) {
 				String[] signames = signameRet.split("\n");
+				StringBuilder leadNamesStr = new StringBuilder();
 				for (String name : signames) {
 					leadNames.add(name.toUpperCase());
+					leadNamesStr.append(name.toUpperCase()).append(',');
 				}
+				ecgFile.leadNames = leadNamesStr.substring(0, leadNamesStr.length()-1);
 			}
 
 			reader.close();
@@ -153,8 +156,9 @@ public class WFDBWrapper extends ECGFormatWrapper{
 			ecgFile.channels = getSignalCount();
 			ecgFile.data = new int[ecgFile.channels][ecgFile.samplesPerChannel];
 			command = "rdsamp -r " + this.subjectId + " -c -p -v -H";
-			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command, null, sourceFilePath);
+			stdInputBuffer = WFDBUtilities.executeCommand(stdError, stdInputBuffer, command, null, sourceFilePath);
 			stdReturnMethodHandler(stdInputBuffer);
+			ecgFile.scalingFactor = 1000;
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
