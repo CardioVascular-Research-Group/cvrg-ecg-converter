@@ -51,7 +51,7 @@ public class WFDBWrapper extends ECGFormatWrapper{
 	
 	public WFDBWrapper(String inputFile){
 		
-		int lastSlash = inputFile.lastIndexOf('/');
+		int lastSlash = inputFile.lastIndexOf(File.separatorChar);
 		if(lastSlash > -1){
 			this.sourceFilePath = inputFile.substring(0, lastSlash+1);
 			this.subjectId = inputFile.substring(lastSlash+1, inputFile.lastIndexOf('.')); 	

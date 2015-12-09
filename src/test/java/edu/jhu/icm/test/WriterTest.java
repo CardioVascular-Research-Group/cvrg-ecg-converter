@@ -74,7 +74,7 @@ public class WriterTest extends TestCase{
 		File dataFile = new File(getClass().getResource(dataFileName).getFile());
 
 		if(headerFile.exists() && dataFile.exists()){
-			ecgFile = reader.read(format, headerFileName.split("\\.")[0]);
+			ecgFile = reader.read(format, headerFile.getAbsolutePath());
 		}
 		return ecgFile;
     }
