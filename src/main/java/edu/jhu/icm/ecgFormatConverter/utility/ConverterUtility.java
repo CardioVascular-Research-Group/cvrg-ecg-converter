@@ -50,6 +50,8 @@ public class ConverterUtility {
 			} catch (IOException e) {
 				log.error("Unable to load properties file. Please try again.");
 				e.printStackTrace();
+			} catch (NullPointerException e) {
+				log.error("Unable to load properties file, file not found.");
 			}
 		}
 		return props;

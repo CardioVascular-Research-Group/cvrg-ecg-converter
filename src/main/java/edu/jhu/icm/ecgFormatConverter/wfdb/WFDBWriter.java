@@ -43,26 +43,29 @@ public class WFDBWriter extends ECGFileWriter {
 
 	@Override
 	public File writeToFile(String outputPath, String subjectId, ECGFileData ecgFile) {
-		boolean isUnitTest = false;
 		
-		String path = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
+		boolean isUnitTest = outputPath.equals(ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER));
+		
 		File targetFile;
 		String contentFileName;
-		if(path == null || path.isEmpty()){
-			contentFileName = outputPath + subjectId + ".txt";
-			targetFile 		= new File(outputPath + subjectId + ".hea");
-			isUnitTest = false;
-		}else{
-			contentFileName = path + subjectId + ".txt";
-			targetFile 		= new File(path + subjectId + ".hea");
-			isUnitTest = true;
-		}
+		contentFileName = outputPath + subjectId + ".txt";
+		targetFile 		= new File(outputPath + subjectId + ".hea");
 		
 		File contentFile = new File(contentFileName);
 		BufferedWriter bWriter;
 		try {
 			bWriter = new BufferedWriter(new FileWriter(contentFile));
 
+			if(ecgFile.leadNames != null){
+				String[] leadNames = ecgFile.leadNames.split(",");
+				if(ecgFile.channels == leadNames.length){
+					for (String signalName : leadNames) {
+						bWriter.write(signalName + "\t");
+					}
+					bWriter.newLine();		
+				}
+			}
+			
 			for (int i = 0; i < ecgFile.samplesPerChannel; i++) {
 				for (int j = 0; j < ecgFile.channels; j++) {
 					int item = ecgFile.data[j][i];
@@ -79,7 +82,7 @@ public class WFDBWriter extends ECGFileWriter {
 					+ subjectId + " -F " + ecgFile.samplingRate + " -G "
 					+ ecgFile.scalingFactor + " -O " + bitFormat;
 
-			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command,	null, isUnitTest ? path : outputPath);
+			WFDBUtilities.executeCommand(stdError, stdInputBuffer, command,	null, outputPath);
 			stdErrorHandler();
 			
 			long waitingTime = 0;
@@ -100,12 +103,12 @@ public class WFDBWriter extends ECGFileWriter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		if(!isUnitTest){
 			contentFile.delete();
-			return new File(outputPath);
-		}else{
-			return new File(path);
 		}
+		
+		return new File(outputPath);
 	}
 	
 	protected void stdErrorHandler() {
