@@ -34,6 +34,7 @@ public class SchillerLoader extends ECGFileLoader{
 	
 	@Override
 	public ECGFileData load(InputStream inputStream) {
+		System.out.println("DEBUG: SchillerLoader.load(<inputStream>)");
 		SchillerWrapper schillerWrap = new SchillerWrapper(inputStream);
 		return load(schillerWrap);
 	}

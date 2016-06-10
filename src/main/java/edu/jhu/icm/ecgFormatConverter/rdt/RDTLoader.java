@@ -35,5 +35,4 @@ public class RDTLoader extends ECGFileLoader{
 		RDTWrapper wrapper = new RDTWrapper(inputStream);
 		return load(wrapper);
 	}	
-	
 }

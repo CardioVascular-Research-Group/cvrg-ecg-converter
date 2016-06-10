@@ -34,15 +34,18 @@ public class ECGFormatReader {
 
 	//All formats
 	public ECGFileData read(DataFileFormat inputFormat, String fileName){
+		System.out.println("DEBUG: ECGFormatReader.read(" + inputFormat + "," + fileName);
 		ECGFileLoader loader = createLoader(inputFormat);
 		return loader.load(fileName);
 	}
 	
 	//Non-WFDB formats
 	public ECGFileData read(DataFileFormat inputFormat, InputStream dataStream){
+		System.out.println("DEBUG: ECGFormatReader.read(" + inputFormat + ",<InputStream>)");
 		ECGFileLoader loader = null;
 		ECGFileData ecgFile = null;
 		loader = createLoader(inputFormat);
+		System.out.println("DEBUG: ECGFormatReader.read loader is null:" + (loader == null));
 		ecgFile = loader.load(dataStream);
 		return ecgFile;
 	}
@@ -68,6 +71,7 @@ public class ECGFormatReader {
 	}
 	
 	private ECGFileLoader createLoader(DataFileFormat inputFormat){
+		System.out.println("DEBUG: ECGFormatReader.createLoader(" + inputFormat + ")");
 		ECGFileLoader loader = null;
 		try{
 			switch(inputFormat) {

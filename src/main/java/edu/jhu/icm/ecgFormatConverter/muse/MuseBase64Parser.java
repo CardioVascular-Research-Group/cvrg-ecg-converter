@@ -37,7 +37,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-
 public class MuseBase64Parser {
 	
 	private StringBuilder initialXML = new StringBuilder();

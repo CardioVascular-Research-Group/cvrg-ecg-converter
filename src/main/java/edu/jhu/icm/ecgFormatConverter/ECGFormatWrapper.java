@@ -37,28 +37,19 @@ public abstract class ECGFormatWrapper {
 	protected abstract void init(InputStream inputStream);
 
 	protected abstract DataFileFormat getFormat();
-	
-	/**
-	 * Get the frequency
-	 * */
+
 	public float getSamplingRate(){
 		return ecgFile.samplingRate;
 	}
-	/**
-	 * Get the number of points per lead
-	 * */
+
 	public int getSamplesPerChannel(){
 		return ecgFile.samplesPerChannel;
 	}
-	/**
-	 * Get the number of leads
-	 * */
+
 	public int getChannels(){
 		return ecgFile.channels;
 	}
-	/**
-	 * Get the ECG point matrix
-	 * */
+
 	public int[][] getData(){
 		return ecgFile.data;
 	}
@@ -78,6 +69,8 @@ public abstract class ECGFormatWrapper {
 				}
 			}
 			
+			System.out.println("DEBUG: ECGFormatWrapper.extractLeadNames.channels = " + channels);
+			
 			if(!leadNamesOK){
 				if(channels == 15){
 					switch (this.getFormat()) {
@@ -92,6 +85,7 @@ public abstract class ECGFormatWrapper {
 					}
 				}else if(channels == 12){
 					leadNamesOut = "I,II,III,aVR,aVL,aVF,V1,V2,V3,V4,V5,V6";
+					System.out.println("DEBUG: ECGFormatWrapper.extractLeadNames.getFormat() = " + this.getFormat());
 				}
 			}else{
 				StringBuilder sb = new StringBuilder();

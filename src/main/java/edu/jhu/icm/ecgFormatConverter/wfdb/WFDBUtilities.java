@@ -33,7 +33,6 @@ import edu.jhu.icm.ecgFormatConverter.utility.ConverterUtility;
 public class WFDBUtilities {
 	
     public static void clearTempFiles(String tempFilePath, String subjectId){
-//		String tempFilePath = ConverterUtility.getProperty(ConverterUtility.TEMP_FOLDER);
 		File folder = new File(tempFilePath);
 		if(folder.isDirectory()){
 			for(File file : folder.listFiles()){

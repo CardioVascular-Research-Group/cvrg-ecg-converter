@@ -1,5 +1,4 @@
 package edu.jhu.icm.enums;
-
 /*
 Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
@@ -21,28 +20,20 @@ limitations under the License.
 public enum DataFileFormat {
 
 	GE_MAGELLAN,
-	
 	WFDB,
 	WFDB_16, 
 	WFDB_61, 
 	WFDB_212, 
-	
 	RDT, 
-	
 	HOLTER12,
 	HOLTER3, 
-	
 	GEMUSE,
-	
 	HL7,
 	XY_FILE,
-	
 //	RAW_XY_CONST_SAMPLE, 
 	RAW_XY_VAR_SAMPLE, 
-	
 	PHILIPS103, 
 	PHILIPS104, 
-	
 	MUSEXML,
 	SCHILLER;
 }

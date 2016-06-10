@@ -4,7 +4,7 @@
   <groupId>edu.jhu.icm</groupId>
   <artifactId>cvrg-ecg-converter</artifactId>
   <packaging>jar</packaging>
-  <version>1.5.8-SNAPSHOT</version>
+  <version>1.5.9-SNAPSHOT</version>
   <name>cvrg-ecg-converter</name>
   <url>http://maven.apache.org</url>
 
@@ -14,7 +14,18 @@
     <version>1.0-SNAPSHOT</version>
     <relativePath>../maven-parents/waveform/pom.xml</relativePath>
   </parent>
-
+  <distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <name>ICM Release Repository</name>
+      <url>http://128.220.76.138:8081/nexus/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <name>ICM Snapshot Repository</name>
+      <url>http://128.220.76.138:8081/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
   <dependencies>
   	<dependency>
 		<groupId>junit</groupId>
@@ -62,7 +73,7 @@
 	<dependency>
 	    <groupId>org.cvrgrid.schiller</groupId>
   		<artifactId>schiller-data</artifactId>
-	    <version>1.1-SNAPSHOT</version>
+	    <version>1.2-SNAPSHOT</version>
 	    <scope>provided</scope>
 	</dependency>
 	<dependency>
@@ -76,35 +87,35 @@
   		<version>1.0</version>
 	</dependency>
   </dependencies>
-  <build>
-		<plugins>
-  			<plugin>
-		    	<groupId>org.apache.maven.plugins</groupId>
-		    	<artifactId>maven-antrun-plugin</artifactId>
-		    	<version>1.7</version>
-	        	<executions>
-	          		<execution>
-	            		<id>install</id>
-	            		<phase>install</phase>
-	            		<configuration>
-		              		<target>
-		                		<property name="compile_classpath" refid="maven.compile.classpath"/>
-		                		<property name="runtime_classpath" refid="maven.runtime.classpath"/>
-		                		<property name="test_classpath" refid="maven.test.classpath"/>
-		                		<property name="plugin_classpath" refid="maven.plugin.classpath"/>
-								<property name="project.version" value="${project.version}"/>
-				                <ant antfile="${basedir}/build.xml">
-				                  <target name="local-server-deploy"/>
-				                </ant>
-		              		</target>
-	            		</configuration>
-		            	<goals>
-		             		<goal>run</goal>
-		            	</goals>
-		        	</execution>
-		    	</executions>
-			</plugin>
-		</plugins>
-  </build>
+<!--   <build> -->
+<!-- 		<plugins> -->
+<!--   			<plugin> -->
+<!-- 		    	<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 		    	<artifactId>maven-antrun-plugin</artifactId> -->
+<!-- 		    	<version>1.7</version> -->
+<!-- 	        	<executions> -->
+<!-- 	          		<execution> -->
+<!-- 	            		<id>install</id> -->
+<!-- 	            		<phase>install</phase> -->
+<!-- 	            		<configuration> -->
+<!-- 		              		<target> -->
+<!-- 		                		<property name="compile_classpath" refid="maven.compile.classpath"/> -->
+<!-- 		                		<property name="runtime_classpath" refid="maven.runtime.classpath"/> -->
+<!-- 		                		<property name="test_classpath" refid="maven.test.classpath"/> -->
+<!-- 		                		<property name="plugin_classpath" refid="maven.plugin.classpath"/> -->
+<!-- 								<property name="project.version" value="${project.version}"/> -->
+<!-- 				                <ant antfile="${basedir}/build.xml"> -->
+<!-- 				                  <target name="local-server-deploy"/> -->
+<!-- 				                </ant> -->
+<!-- 		              		</target> -->
+<!-- 	            		</configuration> -->
+<!-- 		            	<goals> -->
+<!-- 		             		<goal>run</goal> -->
+<!-- 		            	</goals> -->
+<!-- 		        	</execution> -->
+<!-- 		    	</executions> -->
+<!-- 			</plugin> -->
+<!-- 		</plugins> -->
+<!--   </build> -->
 </project>
 

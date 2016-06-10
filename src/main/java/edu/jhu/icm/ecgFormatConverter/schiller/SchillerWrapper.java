@@ -64,6 +64,7 @@ public class SchillerWrapper extends ECGFormatWrapper{
 		PreprocessReturn ret;
 		try {
 			ret = SchillerEcgFiles.preprocess(inputStream);
+			System.out.println("DEBUG SchillerWrapper.init Leadnames is null:" + (ret.getLeadNames() == null));
 			init(ret);
 		} catch (IOException e) {
 			e.printStackTrace();

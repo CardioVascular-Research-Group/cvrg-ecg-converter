@@ -24,7 +24,6 @@ import edu.jhu.icm.ecgFormatConverter.ECGFileData;
 import edu.jhu.icm.ecgFormatConverter.ECGFormatWrapper;
 import edu.jhu.icm.enums.DataFileFormat;
 
-
 public class MuseXMLWrapper extends ECGFormatWrapper{
 
 	private InputStream inputStream = null;
@@ -61,7 +60,7 @@ public class MuseXMLWrapper extends ECGFormatWrapper{
 		
 	@Override
 	public ECGFileData parse() {
-		
+
 		try {
 			if(inputStream != null){
 				base64Parser.parse(inputStream);

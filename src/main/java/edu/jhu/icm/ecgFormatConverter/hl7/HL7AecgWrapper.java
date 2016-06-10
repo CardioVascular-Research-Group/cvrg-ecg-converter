@@ -26,7 +26,6 @@ import javax.xml.bind.JAXBException;
 
 import org.cvrgrid.hl7aecg.HL7PreprocessReturn;
 import org.cvrgrid.hl7aecg.Hl7Ecg;
-import org.cvrgrid.hl7aecg.Hl7EcgLeadData;
 import org.jfree.data.xy.XYDataset;
 
 import edu.jhu.cvrg.converter.exceptions.ECGConverterException;
@@ -83,7 +82,7 @@ public class HL7AecgWrapper extends ECGFormatWrapper{
 	@Override
 	public ECGFileData parse() {
 		
-		Hl7EcgLeadData ds = preprocessReturn.getLeadData();	
+		org.cvrgrid.hl7aecg.Hl7EcgLeadData ds = preprocessReturn.getLeadData();	
 		double volt=0;
        	int leadCount = preprocessReturn.getLeadCount();
 		int pageCount = ds.getPageCount();

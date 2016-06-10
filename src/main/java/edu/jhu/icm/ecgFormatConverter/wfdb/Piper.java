@@ -1,7 +1,4 @@
 package edu.jhu.icm.ecgFormatConverter.wfdb;
-
-import java.io.IOException;
-import java.io.InputStream;
 /*
 Copyright 2015 Johns Hopkins University Institute for Computational Medicine
 
@@ -20,6 +17,9 @@ limitations under the License.
 /**
 * @author Andre Vilardo, Chris Jurado
 */
+import java.io.IOException;
+import java.io.InputStream;
+
 public class Piper implements Runnable{
 
     private java.io.InputStream input;
